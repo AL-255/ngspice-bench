@@ -69,9 +69,9 @@ python3 scripts/run_bench.py \
   --compiler "GCC 13.3.0" \
   --ngspice-repo "https://github.com/AL-255/ngspice-sf-mirror" \
   --ngspice-ref "opt/zen4-transient@53747dbda" \
-  --configure-flags "--without-x --with-readline=no --disable-debug --enable-openmp --enable-klu" \
-  --cflags "-O3 -march=native -fno-math-errno -fno-trapping-math -flto" \
-  --ldflags "-flto -O3 -march=native" \
+  --configure-flags="--without-x --with-readline=no --disable-debug --enable-openmp --enable-klu" \
+  --cflags="-O3 -march=native -fno-math-errno -fno-trapping-math -flto" \
+  --ldflags="-flto -O3 -march=native" \
   --opt-general 1 \
   --opt-zen4 0 \
   --notes "Optional notes about cooling, governor, RAM speed, etc."

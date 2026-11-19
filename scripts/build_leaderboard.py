@@ -68,13 +68,13 @@ DECK_META = {
     },
 }
 
-# Reference baseline (stock ngspice-47 Sparse 1-core on AMD Ryzen 9 7940HX) for normalized speedup scores
+# Reference baseline (stock ngspice-47 Sparse 1-core pinned to cpu0 on AMD Ryzen 9 7940HX)
 REFERENCE_BASELINE_WALL_S = {
     "sar12_hero_16cyc": 628.48,
-    "sar12_probe_2cyc": 98.94,
-    "ti12_full_probe_30ns": 61.07,
-    "pll1p2g_probe_20ns": 11.00,
-    "sdm16_probe_8cyc": 8.29,
+    "sar12_probe_2cyc": 79.66,
+    "ti12_full_probe_30ns": 51.52,
+    "pll1p2g_probe_20ns": 11.46,
+    "sdm16_probe_8cyc": 7.94,
 }
 
 

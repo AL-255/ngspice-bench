@@ -42,7 +42,7 @@ jobs:
           data = json.loads(Path("docs/data/leaderboard.json").read_text())
           assert data["mode"] == "single_core"
           assert isinstance(data["entries"], list)
-          print(f"Validated leaderboard.json: {data[\"entry_count\"]} entries")
+          print("Validated leaderboard.json:", data["entry_count"], "entries")
           '
 
       - name: Configure GitHub Pages
