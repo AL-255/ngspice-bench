@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ngspice-bench — Single-Core SPICE Performance Leaderboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div>
+        <div class="eyebrow">GF180MCU Post-PEX Transient Suite &middot; Strict IEEE-754 Verification</div>
+        <h1>ngspice-bench <span class="badge-mode">Single-Core (1c / 1t)</span></h1>
+        <p class="subtitle">
+          Single-core processor &amp; build performance leaderboard across real GlobalFoundries 180nm post-PEX mixed-signal circuits.
+          Hybrid / big.LITTLE CPUs report each core class (e.g. P-core, E-core, Big, Little) separately.
+        </p>
+      </div>
+      <div class="header-links">
+        <a class="btn-link" href="https://github.com/AL-255/ngspice-bench" target="_blank" rel="noopener">GitHub Repo</a>
+        <a class="btn-link btn-secondary" href="https://github.com/AL-255/ngspice-bench#submitting-results" target="_blank" rel="noopener">Run &amp; Submit</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="kpi-grid" id="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Fastest Probe Geomean (1c)</div>
+        <div class="kpi-value" id="kpi-probe-val">—</div>
+        <div class="kpi-sub" id="kpi-probe-sub">Loading...</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Fastest Hero 16-Cyc SAR ADC (1c)</div>
+        <div class="kpi-value" id="kpi-hero-val">—</div>
+        <div class="kpi-sub" id="kpi-hero-sub">Loading...</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Peak Speedup vs Stock Sparse 1c</div>
+        <div class="kpi-value" id="kpi-speedup-val">—</div>
+        <div class="kpi-sub" id="kpi-speedup-sub">Reference: stock ngspice-47 on Ryzen 9 7940HX</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Verified Single-Core Entries</div>
+        <div class="kpi-value" id="kpi-count-val">—</div>
+        <div class="kpi-sub" id="kpi-count-sub">All waveforms checked vs golden</div>
+      </div>
+    </section>
+
+    <section class="controls-bar">
+      <div class="control-group">
+        <label for="workload-select">Workload</label>
+        <select id="workload-select">
+          <option value="probe_geomean">Probe Suite Geomean (4 Decks)</option>
+          <option value="sar12_hero_16cyc">Hero: 12-bit SAR ADC (16 Cycles, 1,559 eqns)</option>
+          <option value="sar12_probe_2cyc">Probe: 12-bit SAR ADC (2 Cycles, 1,559 eqns)</option>
+          <option value="ti12_full_probe_30ns">Probe: 3-ch TI 12b SAR + PLL (30 ns, 7,221 eqns)</option>
+          <option value="pll1p2g_probe_20ns">Probe: 1.2 GHz AD-PLL (20 ns, 1,307 eqns)</option>
+          <option value="sdm16_probe_8cyc">Probe: 16-bit Switched-Cap SDM (8 Cycles, 3,609 eqns)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="solver-select">Solver</label>
+        <select id="solver-select">
+          <option value="all">All Solvers</option>
+          <option value="klu">KLU</option>
+          <option value="sparse">Sparse</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="pdk-select">PDK Mode</label>
+        <select id="pdk-select">
+          <option value="all">All Modes</option>
+          <option value="standard">Standard (.lib / .include)</option>
+          <option value="precompiled_uselib">Precompiled (.uselib)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="coreclass-select">Core Class</label>
+        <select id="coreclass-select">
+          <option value="all">All Core Classes</option>
+        </select>
+      </div>
+      <div class="control-group control-search">
+        <label for="search-input">Search</label>
+        <input id="search-input" type="search" placeholder="CPU, build, CFLAGS, compiler..." />
+      </div>
+    </section>
+
+    <section class="card workload-banner" id="workload-banner"></section>
+
+    <section class="card chart-card">
+      <div class="card-header">
+        <h2 id="chart-title">Single-Core Wall Time Comparison (Lower is Faster)</h2>
+        <span class="hint">Click any table row below to expand full compile flags, ISA features, and per-deck breakdowns</span>
+      </div>
+      <div id="bar-chart" class="bar-chart"></div>
+    </section>
+
+    <section class="card table-card">
+      <div class="table-wrap">
+        <table id="leaderboard-table">
+          <thead>
+            <tr>
+              <th class="col-rank">#</th>
+              <th class="sortable" data-sort="cpu">Processor &amp; Core Class</th>
+              <th class="sortable" data-sort="build">ngspice Build &amp; Flags</th>
+              <th class="sortable" data-sort="solver">Solver</th>
+              <th class="sortable num" data-sort="metric">Wall Time</th>
+              <th class="sortable num" data-sort="speedup">Speedup</th>
+              <th class="num" id="col-secondary-hdr">Hero 16-Cyc</th>
+              <th class="col-acc">Verification</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body">
+            <tr><td colspan="8" class="empty">Loading leaderboard data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card info-card">
+      <h2>About This Benchmark Suite</h2>
+      <div class="info-grid">
+        <div>
+          <h3>Single-Core &amp; Hybrid Core-Class Policy</h3>
+          <p>
+            Every entry runs strictly single-threaded (<code>num_threads=1</code>, <code>OMP_NUM_THREADS=1</code>) pinned to a single logical CPU.
+            On heterogeneous / big.LITTLE CPUs (Intel P/E/LP-E, AMD Zen/Zen-c, ARM big.LITTLE, Apple Silicon P/E),
+            <code>scripts/run_bench.py --all-core-classes</code> detects and pins each core class separately so every microarchitecture is ranked independently.
+          </p>
+        </div>
+        <div>
+          <h3>Strict Numerical Verification</h3>
+          <p>
+            Every run's binary <code>.raw</code> output is verified against stock <code>ngspice-47</code> golden waveforms.
+            SAR ADC decks additionally verify bit-exact digital output codes across every conversion cycle (16/16 codes on the hero test) and EOC timing (&lt;500 ps).
+            <code>-ffast-math</code> or physics approximations that fail verification are marked <strong>FAIL</strong>.
+          </p>
+        </div>
+        <div>
+          <h3>Open-Source Circuits &amp; PDK</h3>
+          <p>
+            Models use the official open-source GlobalFoundries 180nm MCU PDK (<code>wafer-space/gf180mcu</code> git submodule).
+            Circuits are real post-PEX mixed-signal netlists from <code>aicdb</code> (12b SAR ADC, 3-ch TI 12b SAR+PLL, 1.2 GHz AD-PLL, 16b switched-cap SDM).
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span id="footer-meta">ngspice-bench &middot; Single-Core Leaderboard</span>
+      <span><a href="data/leaderboard.json">Raw JSON</a></span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

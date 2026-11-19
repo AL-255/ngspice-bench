@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.raw
+*.log
+*.nglib
+work_*/
+.spiceinit

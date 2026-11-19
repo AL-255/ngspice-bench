@@ -1,0 +1,37 @@
+* GF180 Post-PEX 12-bit SAR ADC Coherent FFT Transient (2 cycles)
+.include "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/design.ngspice"
+.param sw_stat_global=0
+.param sw_stat_mismatch=0
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" res_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" mimcap_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" cap_mim
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" moscap_typical
+.include "../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/spice/gf180mcu_fd_sc_mcu7t5v0.spice"
+.subckt nfet_06v0_nvt_mm d g s b W=1.6u L=1.8u nf=1 ad=0.7p as=0.7p pd=2.5u ps=2.5u
+.param sig = '0.0116 / sqrt((W*1e6) * (L*1e6))'
+.param dvth = 'agauss(0, sig, 1) * sw_stat_mismatch'
+Voff g gi dc {dvth}
+XM0 d gi s b nfet_06v0_nvt W={W} L={L} nf={nf} ad={ad} as={as} pd={pd} ps={ps}
+.ends nfet_06v0_nvt_mm
+.temp 27
+.option method=gear gmin=1e-12 reltol=1e-3 abstol=5e-12 vntol=2e-5 itl4=150 cshunt=1.5e-16
+.include "../circuits/sar_12b_1v8_mvote_mim.spice"
+
+Vvdd vdd 0 1.8
+Vvss vss 0 0
+Vvcm vcm 0 0.9
+Vphis phi_s 0 PWL(0 0 1.80000e-09 0 1.90000e-09 1.8000 2.79000e-08 1.8000 2.80000e-08 0 4.12400e-07 0 4.12500e-07 1.8000 4.40400e-07 1.8000 4.40500e-07 0 8.25000e-07 0)
+Vvip vip 0 PWL(0 1.192634 1.00000e-10 1.192634 3.08000e-08 1.192634 4.12600e-07 0.607366 4.43300e-07 0.607366)
+Vvin vin 0 PWL(0 0.607366 1.00000e-10 0.607366 3.08000e-08 0.607366 4.12600e-07 1.192634 4.43300e-07 1.192634)
+Xdut vip vin vcm phi_s vdd vss comp_clk eoc bit_0 bit_1 bit_2 bit_3 bit_4 bit_5 bit_6 bit_7 bit_8 bit_9 bit_10 bit_11 bit_12 bit_13 bit_14 sar_adc_sar_12b_1v8_mvote_mim
+Cmeta_cmp xdut.comp_outp 0 0.4f
+
+.save v(phi_s) v(comp_clk) v(eoc) i(Vvdd) v(bit_0) v(bit_1) v(bit_2) v(bit_3) v(bit_4) v(bit_5) v(bit_6) v(bit_7) v(bit_8) v(bit_9) v(bit_10) v(bit_11) v(bit_12) v(bit_13) v(bit_14)
+.control
+tran 150p 8.25000e-07
+rusage all
+write sar12_probe_2cyc.raw v(phi_s) v(comp_clk) v(eoc) i(Vvdd) v(bit_0) v(bit_1) v(bit_2) v(bit_3) v(bit_4) v(bit_5) v(bit_6) v(bit_7) v(bit_8) v(bit_9) v(bit_10) v(bit_11) v(bit_12) v(bit_13) v(bit_14)
+quit
+.endc
+.end

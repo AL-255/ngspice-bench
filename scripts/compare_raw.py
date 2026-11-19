@@ -1,0 +1,151 @@
+#!/usr/bin/env python3
+"""Compare candidate ngspice raw waveforms against golden baseline (.raw or .raw.gz)."""
+from __future__ import annotations
+
+import gzip
+import re
+import sys
+from pathlib import Path
+from typing import Any, Dict, List
+
+import numpy as np
+
+
+def _read_raw_bytes(path: Path) -> bytes:
+    if path.suffix == ".gz":
+        with gzip.open(path, "rb") as fh:
+            return fh.read()
+    return path.read_bytes()
+
+
+def parse_raw(path: Path) -> Dict[str, np.ndarray]:
+    data = _read_raw_bytes(path)
+    m = re.search(rb"\nBinary:\r?\n", data)
+    if m is None:
+        raise ValueError(f"No Binary section in {path}")
+    hdr = data[: m.start()].decode("latin-1")
+    body = data[m.end() :]
+    nvars = int(re.search(r"No\. Variables:\s*(\d+)", hdr).group(1))
+    npts = int(re.search(r"No\. Points:\s*(\d+)", hdr).group(1))
+    vars_ = re.findall(r"^\s*\d+\s+(\S+)\s+", hdr, re.M)
+    arr = np.frombuffer(body[: nvars * npts * 8], dtype=np.float64).reshape(npts, nvars)
+    return {vars_[i].lower(): arr[:, i] for i in range(nvars)}
+
+
+def decode_sar12_codes(d: Dict[str, np.ndarray], vdd: float = 1.8, t_per: float = 412.5e-9) -> List[int]:
+    """Extract 15-bit redundant SAR codes at the end of each conversion cycle."""
+    if "v(bit_0)" not in d or "v(bit_14)" not in d:
+        return []
+    t = d["time"]
+    n_cyc = int(round(float(t[-1]) / t_per))
+    codes: List[int] = []
+    vth = 0.5 * vdd
+    for c in range(n_cyc):
+        t_sample = (c + 0.98) * t_per
+        idx = int(np.argmin(np.abs(t - t_sample)))
+        code = 0
+        for b in range(15):
+            if float(d[f"v(bit_{b})"][idx]) > vth:
+                code |= 1 << (14 - b)
+        codes.append(code)
+    return codes
+
+
+def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) -> Dict[str, Any]:
+    ref = parse_raw(ref_path)
+    cand = parse_raw(cand_path)
+    t_ref = ref["time"]
+    t_cand = cand["time"]
+    t_min = max(float(t_ref[0]), float(t_cand[0]))
+    t_max = min(float(t_ref[-1]), float(t_cand[-1]))
+    t_cov = abs(float(t_cand[-1]) - float(t_ref[-1])) / max(abs(float(t_ref[-1])), 1e-30)
+    exact_grid = (len(t_ref) == len(t_cand)) and bool(np.allclose(t_ref, t_cand, rtol=1e-12, atol=1e-20))
+    t_eval = t_ref if exact_grid else np.linspace(t_min, t_max, min(8000, max(len(t_ref), 1000)))
+
+    per_vec: Dict[str, Dict[str, float]] = {}
+    worst_rel_rms = 0.0
+    worst_vec = ""
+    for k in ref:
+        if k == "time" or k not in cand:
+            continue
+        vr = ref[k] if exact_grid else np.interp(t_eval, t_ref, ref[k])
+        vc = cand[k] if exact_grid else np.interp(t_eval, t_cand, cand[k])
+        if not np.all(np.isfinite(vc)):
+            return {
+                "pass": False,
+                "error": f"Non-finite values in {k}",
+                "worst_rel_rms": float("inf"),
+                "exact_grid": exact_grid,
+            }
+        diff = np.abs(vc - vr)
+        max_abs = float(np.max(diff))
+        rms = float(np.sqrt(np.mean(diff * diff)))
+        scale = max(float(np.max(np.abs(vr))), 1e-9)
+        rel_rms = rms / scale
+        per_vec[k] = {"max_abs": max_abs, "rms": rms, "rel_rms": rel_rms}
+        if rel_rms > worst_rel_rms:
+            worst_rel_rms = rel_rms
+            worst_vec = k
+
+    ref_codes = decode_sar12_codes(ref)
+    cand_codes = decode_sar12_codes(cand)
+    codes_match = (ref_codes == cand_codes) if ref_codes else True
+
+    eoc_max_dt_ps = 0.0
+    if ref_codes:
+        def _edges(d: Dict[str, np.ndarray], sig: str, vth: float = 0.9) -> List[float]:
+            tt, vv = d["time"], d[sig]
+            idx = np.where((vv[:-1] < vth) & (vv[1:] >= vth))[0]
+            return [float(tt[i] + (vth - vv[i]) / (vv[i + 1] - vv[i]) * (tt[i + 1] - tt[i])) for i in idx]
+
+        er = _edges(ref, "v(eoc)")
+        ec = _edges(cand, "v(eoc)")
+        if len(er) != len(ec):
+            eoc_max_dt_ps = float("inf")
+        elif er:
+            eoc_max_dt_ps = max(abs(a - b) * 1e12 for a, b in zip(er, ec))
+        t_post = np.linspace(max(t_min, 5e-9), t_max, min(8000, max(len(t_ref), 1000)))
+        post_worst = 0.0
+        for k in ref:
+            if k == "time" or k not in cand:
+                continue
+            vr = np.interp(t_post, t_ref, ref[k])
+            vc = np.interp(t_post, t_cand, cand[k])
+            rms = float(np.sqrt(np.mean((vc - vr) ** 2)))
+            scale = max(float(np.max(np.abs(vr))), 1e-9)
+            post_worst = max(post_worst, rms / scale)
+        worst_rel_rms = post_worst
+        passed = (t_cov < 1e-6) and codes_match and (eoc_max_dt_ps < 500.0) and (post_worst < 0.05)
+    else:
+        passed = (t_cov < 1e-6) and (worst_rel_rms <= tol_rms) and codes_match
+
+    return {
+        "pass": passed,
+        "exact_grid": exact_grid,
+        "npts_ref": int(len(t_ref)),
+        "npts_cand": int(len(t_cand)),
+        "t_end_rel_diff": t_cov,
+        "worst_rel_rms": worst_rel_rms,
+        "worst_vec": worst_vec,
+        "sar_codes_ref": ref_codes,
+        "sar_codes_cand": cand_codes,
+        "sar_codes_match": codes_match,
+        "eoc_max_dt_ps": eoc_max_dt_ps,
+        "per_vec": per_vec,
+    }
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print("Usage: compare_raw.py <ref.raw[.gz]> <cand.raw[.gz]> [tol_rms]")
+        sys.exit(2)
+    tol = float(sys.argv[3]) if len(sys.argv) > 3 else 1e-3
+    res = compare_waveforms(Path(sys.argv[1]), Path(sys.argv[2]), tol_rms=tol)
+    print(
+        f"Compare {Path(sys.argv[2]).name} vs {Path(sys.argv[1]).name}: "
+        f"{'PASS' if res['pass'] else 'FAIL'} | exact_grid={res['exact_grid']} | "
+        f"npts={res['npts_cand']}/{res['npts_ref']} | worst_rel_rms={res['worst_rel_rms']:.3e} ({res['worst_vec']})"
+    )
+    if res.get("sar_codes_ref"):
+        print(f"  SAR codes match={res['sar_codes_match']}: ref={res['sar_codes_ref']} cand={res['sar_codes_cand']}")
+    sys.exit(0 if res["pass"] else 1)

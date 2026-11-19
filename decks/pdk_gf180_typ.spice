@@ -1,0 +1,9 @@
+* GF180MCU Typical Corner + 7T 5V Standard Cell Library Bundle (for --precompile / .uselib)
+.include "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/design.ngspice"
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" res_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" moscap_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" mimcap_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" cap_mim
+.include "../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/spice/gf180mcu_fd_sc_mcu7t5v0.spice"
+.end

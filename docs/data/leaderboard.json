@@ -1,0 +1,70 @@
+{
+  "generated_utc": "2026-11-19T19:45:58Z",
+  "mode": "single_core",
+  "reference_baseline": {
+    "description": "Stock ngspice-47 (Sparse 1-core) on AMD Ryzen 9 7940HX (Zen 4)",
+    "wall_s": {
+      "sar12_hero_16cyc": 628.48,
+      "sar12_probe_2cyc": 98.94,
+      "ti12_full_probe_30ns": 61.07,
+      "pll1p2g_probe_20ns": 11.0,
+      "sdm16_probe_8cyc": 8.29
+    }
+  },
+  "probe_decks": [
+    "sdm16_probe_8cyc",
+    "pll1p2g_probe_20ns",
+    "ti12_full_probe_30ns",
+    "sar12_probe_2cyc"
+  ],
+  "hero_deck": "sar12_hero_16cyc",
+  "deck_meta": {
+    "sar12_hero_16cyc": {
+      "title": "12-bit SAR ADC (16 Cycles, Hero)",
+      "category": "hero",
+      "eqns": 1559,
+      "iters_approx": 206500,
+      "pdk": "GF180MCU D",
+      "source": "aicdb/sar-gen-gemini4",
+      "description": "12-bit redundant post-PEX SAR ADC running 16 full conversion cycles (>10 min on stock ngspice-47 Sparse 1c). Verified bit-exact on all 16 output codes."
+    },
+    "sar12_probe_2cyc": {
+      "title": "12-bit SAR ADC (2 Cycles)",
+      "category": "probe",
+      "eqns": 1559,
+      "iters_approx": 26000,
+      "pdk": "GF180MCU D",
+      "source": "aicdb/sar-gen-gemini4",
+      "description": "2-cycle probe of the 12-bit post-PEX redundant SAR ADC."
+    },
+    "ti12_full_probe_30ns": {
+      "title": "Full-Chip 3-ch TI 12b SAR + PLL (30 ns)",
+      "category": "probe",
+      "eqns": 7221,
+      "iters_approx": 2121,
+      "pdk": "GF180MCU D",
+      "source": "aicdb/ti-gen-gemini4",
+      "description": "7,221-equation post-PEX full-chip time-interleaved 12-bit ADC + PLL."
+    },
+    "pll1p2g_probe_20ns": {
+      "title": "1.2 GHz All-Digital PLL (20 ns)",
+      "category": "probe",
+      "eqns": 1307,
+      "iters_approx": 2866,
+      "pdk": "GF180MCU D",
+      "source": "aicdb/pll-gen-gemini4",
+      "description": "Post-PEX 1.2 GHz all-digital PLL transient simulation."
+    },
+    "sdm16_probe_8cyc": {
+      "title": "16-bit Switched-Cap SDM (8 Cycles)",
+      "category": "probe",
+      "eqns": 3609,
+      "iters_approx": 5596,
+      "pdk": "GF180MCU D",
+      "source": "aicdb/sdm-gen-gemini4",
+      "description": "Post-PEX 16-bit switched-capacitor CIFB sigma-delta modulator."
+    }
+  },
+  "entry_count": 0,
+  "entries": []
+}

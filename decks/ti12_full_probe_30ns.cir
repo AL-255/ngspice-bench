@@ -1,0 +1,43 @@
+* GF180 Full-Chip Post-PEX 3-Ch Time-Interleaved 12-bit SAR ADC + 200MHz PLL + Digital Cal (30.0 ns)
+.include "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/design.ngspice"
+.param sw_stat_global=0
+.param sw_stat_mismatch=0
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" res_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" mimcap_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" cap_mim
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" moscap_typical
+.include "../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/spice/gf180mcu_fd_sc_mcu7t5v0.spice"
+.subckt nfet_06v0_nvt_mm d g s b W=1.6u L=1.8u nf=1 ad=0.7p as=0.7p pd=2.5u ps=2.5u
+.param sig = '0.0116 / sqrt((W*1e6) * (L*1e6))'
+.param dvth = 'agauss(0, sig, 1) * sw_stat_mismatch'
+Voff g gi dc {dvth}
+XM0 d gi s b nfet_06v0_nvt W={W} L={L} nf={nf} ad={ad} as={as} pd={pd} ps={ps}
+.ends nfet_06v0_nvt_mm
+.temp 27
+.options method=gear gmin=1e-12 reltol=2e-3 abstol=1e-11 vntol=2e-5 itl4=150 cshunt=1.5e-16 rshunt=1e12
+.include "../circuits/mp3_direct_1v8_12b_hs_pex.spice"
+
+VVDD vdd 0 DC 1.8
+VVSS vss 0 DC 0
+VVCM vcm_ext 0 DC 0.9
+IBIAS vdd ibias 10u
+VVCTRL vctrl_ext 0 DC 1.044
+VFREF fref 0 PULSE(0 1.8 2n 100p 100p 9.9n 20n)
+VRSTN rst_n 0 PWL(0 0 5n 0 5.2n 1.8)
+VB0 b0 0 DC 1.8
+VB1 b1 0 DC 0
+VB2 b2 0 DC 1.8
+VVIP vip 0 SIN(0.9 0.45 1.370e+07 0)
+VVIN vin 0 SIN(0.9 -0.45 1.370e+07 0)
+
+XTI vdd vss vip vin vcm_ext ibias vctrl_ext fref rst_n b0 b1 b2 phi_s vsh_p dout_0 dout_1 dout_2 dout_3 dout_4 dout_5 dout_6 dout_7 dout_8 dout_9 dout_10 dout_11 cal_lock ti_mp3_direct_1v8_12b_hs
+
+.save v(vip) v(vin) v(fref) v(phi_s) v(vsh_p) v(cal_lock) i(VVDD) v(dout_0) v(dout_1) v(dout_2) v(dout_3) v(dout_4) v(dout_5) v(dout_6) v(dout_7) v(dout_8) v(dout_9) v(dout_10) v(dout_11)
+.control
+tran 5.0000e-11 3.0000e-08 uic
+rusage all
+write ti12_full_probe_30ns.raw v(vip) v(vin) v(fref) v(phi_s) v(vsh_p) v(cal_lock) i(VVDD) v(dout_0) v(dout_1) v(dout_2) v(dout_3) v(dout_4) v(dout_5) v(dout_6) v(dout_7) v(dout_8) v(dout_9) v(dout_10) v(dout_11)
+quit
+.endc
+.end

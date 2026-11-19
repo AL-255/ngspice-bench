@@ -1,0 +1,4 @@
+[submodule "pdk/gf180mcu"]
+	path = pdk/gf180mcu
+	url = https://github.com/wafer-space/gf180mcu.git
+	shallow = true

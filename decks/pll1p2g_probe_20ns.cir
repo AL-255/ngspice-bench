@@ -1,0 +1,36 @@
+* GF180 Post-PEX 1.2 GHz All-Digital PLL Transient (20.0 ns)
+.include "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/design.ngspice"
+.param sw_stat_global=0
+.param sw_stat_mismatch=0
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" res_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" mimcap_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" cap_mim
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" moscap_typical
+.include "../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/spice/gf180mcu_fd_sc_mcu7t5v0.spice"
+.temp 27
+.options reltol=2e-3 abstol=1e-11 vntol=1e-5 method=trap rshunt=1e12
+.include "../circuits/ad_pll_1v8_1p2g_pex.spice"
+
+VVDD vdd 0 DC 1.8
+VVSS vss 0 DC 0
+VFREF fref 0 PULSE(0 1.8 1n 50p 50p 4.95n 10n)
+VFB fb_div 0 DC 0
+VVCTRL vctrl 0 DC 0.9
+VB0 b0 0 DC 1.8
+VB1 b1 0 DC 0
+VB2 b2 0 DC 1.8
+IKICK out outn PULSE(0 180u 10p 15p 15p 100p 4.0000e-08)
+
+XPLL vdd vss fref fb_div vctrl b0 b1 b2 out outn pll_ad_pll_1v8_1p2g
+CL_OUT out 0 4f
+CL_OUTN outn 0 4f
+
+.save v(out) v(outn) i(VVDD)
+.control
+tran 2.0000e-11 2.0000e-08 uic
+rusage all
+write pll1p2g_probe_20ns.raw v(out) v(outn) i(VVDD)
+quit
+.endc
+.end
