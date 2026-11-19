@@ -377,6 +377,11 @@
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       DATA = await resp.json();
       populateCoreClasses();
+      const hash = window.location.hash.replace(/^#/, "");
+      const wsel = $("workload-select");
+      if (hash && Array.from(wsel.options).some((o) => o.value === hash)) {
+        wsel.value = hash;
+      }
       renderKPIs();
       render();
       $("footer-meta").textContent = `ngspice-bench · Single-Core Leaderboard · Updated ${DATA.generated_utc}`;

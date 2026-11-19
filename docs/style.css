@@ -477,7 +477,35 @@ code {
   gap: 10px;
 }
 
-.site-footer a { color: var(--accent); text-decoration: none; }
+.site-footer a, .inline-link { color: var(--accent); text-decoration: none; }
+.inline-link:hover { text-decoration: underline; }
+
+.workload-card {
+  padding: 20px 22px;
+  scroll-margin-top: 16px;
+}
+
+.workload-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.workload-head h2 {
+  margin: 8px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.workload-desc {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 960px;
+}
 
 @media (max-width: 760px) {
   .bar-row { grid-template-columns: 1fr; gap: 4px; }
