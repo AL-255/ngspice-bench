@@ -58,6 +58,8 @@
     let accText = `rms ${fmtSci(d.rel_rms)}`;
     if (d.sar_codes_count > 0) {
       accText = `${d.sar_codes_count}/${d.sar_codes_count} codes${d.sar_codes_match ? "" : " MISMATCH"}`;
+    } else if (d.sdm_bits_count > 0) {
+      accText = `${d.sdm_bits_count}/${d.sdm_bits_count} PDM bits${d.sdm_bits_match ? "" : " MISMATCH"}`;
     } else if (d.exact_grid) {
       accText += " · exact";
     }
@@ -132,8 +134,9 @@
         DATA.probe_decks.reduce((acc, d) => acc + Math.log(DATA.reference_baseline.wall_s[d]), 0) /
           DATA.probe_decks.length
       );
+      const deckListHtml = DATA.probe_decks.map((d) => `<code>${esc(d)}</code>`).join(", ");
       el.innerHTML =
-        `<div><strong>Probe Suite Geomean</strong> — Geometric mean of single-core wall times across all 4 GF180 post-PEX circuits (<code>sar12_probe_2cyc</code>, <code>ti12_full_probe_30ns</code>, <code>pll1p2g_probe_20ns</code>, <code>sdm16_probe_8cyc</code>).</div>` +
+        `<div><strong>Probe Suite Geomean</strong> — Geometric mean of single-core wall times across all ${DATA.probe_decks.length} GF180 post-PEX circuits (${deckListHtml}).</div>` +
         `<div>Reference Baseline (Stock Sparse 1c): <strong>${refGeomean.toFixed(2)} s</strong></div>`;
     } else {
       const m = DATA.deck_meta[workload] || {};
@@ -194,6 +197,8 @@
         let acc = fmtSci(d.rel_rms);
         if (d.sar_codes_count > 0) {
           acc = `${d.sar_codes_count}/${d.sar_codes_count} codes (EOC Δt ${d.eoc_max_dt_ps != null ? d.eoc_max_dt_ps.toFixed(1) + " ps" : "—"})`;
+        } else if (d.sdm_bits_count > 0) {
+          acc = `${d.sdm_bits_count}/${d.sdm_bits_count} PDM bits (Δt ${d.sdm_pdm_max_dt_ps != null ? d.sdm_pdm_max_dt_ps.toFixed(1) + " ps" : "—"})`;
         } else if (d.exact_grid) {
           acc += " (exact grid)";
         }
@@ -371,7 +376,23 @@
     });
   }
 
+  function initThemeToggle() {
+    const btn = $("theme");
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      const root = document.documentElement;
+      const dark = root.dataset.theme
+        ? root.dataset.theme === "dark"
+        : window.matchMedia("(prefers-color-scheme: dark)").matches;
+      root.dataset.theme = dark ? "light" : "dark";
+      try {
+        localStorage.setItem("ngspice-bench-theme", root.dataset.theme);
+      } catch (_) {}
+    });
+  }
+
   async function init() {
+    initThemeToggle();
     try {
       const resp = await fetch("data/leaderboard.json", { cache: "no-cache" });
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);

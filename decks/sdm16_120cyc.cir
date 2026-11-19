@@ -1,4 +1,4 @@
-* GF180 Post-PEX 16-bit Switched-Capacitor Sigma-Delta ADC (8 cycles)
+* GF180 Post-PEX 16-bit Switched-Capacitor Sigma-Delta ADC (120 cycles, 37.5 us)
 .include "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/design.ngspice"
 .param sw_stat_global=0
 .param sw_stat_mismatch=0
@@ -33,9 +33,9 @@ Xdut vin_p vin_n vcm clk rst_int ib_s1 ib_s2 ib_vcm dout_0 dout_1 dout_2 dout_3 
 
 .save v(vin_p) v(vin_n) v(clk) v(xdut.phi1) v(xdut.phi2) v(xdut.vout1_p) v(xdut.vout1_n) v(xdut.vout2_p) v(xdut.vout2_n) v(xdut.pdm_bit) v(dout_0) v(dout_valid) i(Vvdd)
 .control
-tran 1.56250e-08 3.75000e-06 uic
+tran 1.56250e-08 3.75000e-05 uic
 rusage all
-write sdm16_probe_8cyc.raw v(vin_p) v(vin_n) v(clk) v(xdut.phi1) v(xdut.phi2) v(xdut.vout1_p) v(xdut.vout1_n) v(xdut.vout2_p) v(xdut.vout2_n) v(xdut.pdm_bit) v(dout_0) v(dout_valid) i(Vvdd)
+write sdm16_120cyc.raw v(vin_p) v(vin_n) v(clk) v(xdut.phi1) v(xdut.phi2) v(xdut.vout1_p) v(xdut.vout1_n) v(xdut.vout2_p) v(xdut.vout2_n) v(xdut.pdm_bit) v(dout_0) v(dout_valid) i(Vvdd)
 quit
 .endc
 .end

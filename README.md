@@ -12,11 +12,11 @@ All 5 workloads are real post-layout-extraction (post-PEX) mixed-signal circuits
 
 | Deck | Suite | Equations | Approx. Newton Iters | Description |
 |---|---|---:|---:|---|
-| `sar12_hero_16cyc` | `hero` | 1,559 | ~206,500 | 12-bit redundant post-PEX SAR ADC, 16 full conversion cycles (>10 min on stock `ngspice-47` Sparse 1c). Verified bit-exact on all 16 digital output codes and EOC timing. |
-| `sar12_probe_2cyc` | `probe` | 1,559 | ~26,000 | 2-cycle probe of the 12-bit post-PEX redundant SAR ADC. |
-| `ti12_full_probe_30ns` | `probe` | 7,221 | ~2,121 | Full-chip 3-channel time-interleaved 12-bit SAR ADC + PLL. |
-| `pll1p2g_probe_20ns` | `probe` | 1,307 | ~2,866 | 1.2 GHz all-digital PLL (post-PEX). |
-| `sdm16_probe_8cyc` | `probe` | 3,609 | ~5,596 | 16-bit switched-capacitor CIFB sigma-delta modulator (post-PEX). |
+| `sar12_hero_16cyc` | `hero` | 1,559 | ~208,490 | 12-bit redundant post-PEX SAR ADC, 16 full conversion cycles (>10 min on stock `ngspice-47` Sparse 1c). Verified bit-exact on all 16 digital output codes and EOC timing. |
+| `sar12_probe_2cyc` | `probe` | 1,559 | ~27,301 | 2-cycle probe of the 12-bit post-PEX redundant SAR ADC. |
+| `ti12_full_300ns` | `probe` | 7,221 | ~17,619 | Full-chip 3-channel time-interleaved 12-bit SAR ADC + PLL (300 ns transient). |
+| `pll1p2g_200ns` | `probe` | 1,307 | ~27,864 | 1.2 GHz all-digital PLL (post-PEX, 200 ns / ~240 cycles, trapezoidal integration). |
+| `sdm16_120cyc` | `probe` | 3,609 | ~54,739 | 16-bit switched-capacitor CIFB sigma-delta modulator (post-PEX, 37.5 µs / 120 clock cycles, bit-exact on all 120 PDM bits). |
 
 ---
 
@@ -25,7 +25,8 @@ All 5 workloads are real post-layout-extraction (post-PEX) mixed-signal circuits
 1. **Single-Core Only:** Every leaderboard entry runs strictly single-threaded (`num_threads=1`, `OMP_NUM_THREADS=1`), pinned to one logical CPU (`taskset -c <cpu>` on Linux).
 2. **Heterogeneous / big.LITTLE Core Classes Reported Separately:** On hybrid CPUs (Intel P-core / E-core / LP-E-core, AMD Zen / Zen-c, ARM big.LITTLE, Apple Silicon P-core / E-core), each distinct core class is benchmarked separately and gets its own leaderboard entry.
 3. **Strict Golden Waveform Verification:** Every run's binary `.raw` output is compared against stock `ngspice-47` golden waveforms (`golden/*.raw.gz`) via `scripts/compare_raw.py`.
-   - Non-SAR circuits require relative RMS waveform error `<= 1e-3` across all saved signals.
+   - Non-SAR/SDM circuits (`ti12_full_300ns`, `pll1p2g_200ns`) require relative RMS waveform error `<= 1e-3` across all saved signals.
+   - SDM circuits (`sdm16_120cyc`) require **bit-exact** PDM output across all `120/120` clock cycles, PDM edge skew `< 500 ps`, and relative RMS `<= 1e-3` across all analog signals.
    - SAR ADC circuits require **bit-exact** output codes on every conversion cycle (`16/16` on `sar12_hero_16cyc`, `2/2` on `sar12_probe_2cyc`), EOC edge skew `< 500 ps`, and post-reset waveform agreement.
    - Builds using `-ffast-math` or unsafe approximations that fail golden verification are marked **FAIL**.
 

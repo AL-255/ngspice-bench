@@ -51,6 +51,31 @@ def decode_sar12_codes(d: Dict[str, np.ndarray], vdd: float = 1.8, t_per: float 
     return codes
 
 
+def decode_sdm_bits(d: Dict[str, np.ndarray], vdd: float = 1.8, sample_offset: float = 100e-9) -> List[int]:
+    """Extract settled PDM output bits on every rising edge of v(clk)."""
+    if "v(xdut.pdm_bit)" not in d or "v(clk)" not in d:
+        return []
+    t = d["time"]
+    clk = d["v(clk)"]
+    pdm = d["v(xdut.pdm_bit)"]
+    vth = 0.5 * vdd
+    idx = np.where((clk[:-1] < vth) & (clk[1:] >= vth))[0]
+    bits: List[int] = []
+    for i in idx:
+        ts = float(t[i]) + sample_offset
+        if ts > float(t[-1]):
+            break
+        k = int(np.argmin(np.abs(t - ts)))
+        bits.append(1 if float(pdm[k]) > vth else 0)
+    return bits
+
+
+def _rising_edges(d: Dict[str, np.ndarray], sig: str, vth: float = 0.9) -> List[float]:
+    tt, vv = d["time"], d[sig]
+    idx = np.where((vv[:-1] < vth) & (vv[1:] >= vth))[0]
+    return [float(tt[i] + (vth - vv[i]) / (vv[i + 1] - vv[i]) * (tt[i + 1] - tt[i])) for i in idx]
+
+
 def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) -> Dict[str, Any]:
     ref = parse_raw(ref_path)
     cand = parse_raw(cand_path)
@@ -91,15 +116,15 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
     cand_codes = decode_sar12_codes(cand)
     codes_match = (ref_codes == cand_codes) if ref_codes else True
 
+    ref_sdm = decode_sdm_bits(ref)
+    cand_sdm = decode_sdm_bits(cand)
+    sdm_match = (ref_sdm == cand_sdm) if ref_sdm else True
+    sdm_pdm_max_dt_ps = 0.0
+
     eoc_max_dt_ps = 0.0
     if ref_codes:
-        def _edges(d: Dict[str, np.ndarray], sig: str, vth: float = 0.9) -> List[float]:
-            tt, vv = d["time"], d[sig]
-            idx = np.where((vv[:-1] < vth) & (vv[1:] >= vth))[0]
-            return [float(tt[i] + (vth - vv[i]) / (vv[i + 1] - vv[i]) * (tt[i + 1] - tt[i])) for i in idx]
-
-        er = _edges(ref, "v(eoc)")
-        ec = _edges(cand, "v(eoc)")
+        er = _rising_edges(ref, "v(eoc)")
+        ec = _rising_edges(cand, "v(eoc)")
         if len(er) != len(ec):
             eoc_max_dt_ps = float("inf")
         elif er:
@@ -116,6 +141,24 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
             post_worst = max(post_worst, rms / scale)
         worst_rel_rms = post_worst
         passed = (t_cov < 1e-6) and codes_match and (eoc_max_dt_ps < 500.0) and (post_worst < 0.05)
+    elif ref_sdm:
+        pr = _rising_edges(ref, "v(xdut.pdm_bit)")
+        pc = _rising_edges(cand, "v(xdut.pdm_bit)")
+        if len(pr) != len(pc):
+            sdm_pdm_max_dt_ps = float("inf")
+        elif pr:
+            sdm_pdm_max_dt_ps = max(abs(a - b) * 1e12 for a, b in zip(pr, pc))
+        analog_worst = max(
+            (v["rel_rms"] for k, v in per_vec.items() if k != "v(xdut.pdm_bit)"),
+            default=0.0,
+        )
+        passed = (
+            (t_cov < 1e-6)
+            and sdm_match
+            and (sdm_pdm_max_dt_ps < 500.0)
+            and (analog_worst <= tol_rms)
+            and (worst_rel_rms < 0.01)
+        )
     else:
         passed = (t_cov < 1e-6) and (worst_rel_rms <= tol_rms) and codes_match
 
@@ -131,6 +174,9 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
         "sar_codes_cand": cand_codes,
         "sar_codes_match": codes_match,
         "eoc_max_dt_ps": eoc_max_dt_ps,
+        "sdm_bits_count": len(ref_sdm),
+        "sdm_bits_match": sdm_match,
+        "sdm_pdm_max_dt_ps": sdm_pdm_max_dt_ps,
         "per_vec": per_vec,
     }
 

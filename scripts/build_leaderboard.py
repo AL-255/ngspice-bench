@@ -13,9 +13,9 @@ RESULTS_DIR = REPO_ROOT / "results"
 OUT_PATH = REPO_ROOT / "docs" / "data" / "leaderboard.json"
 
 PROBE_DECKS = [
-    "sdm16_probe_8cyc",
-    "pll1p2g_probe_20ns",
-    "ti12_full_probe_30ns",
+    "sdm16_120cyc",
+    "pll1p2g_200ns",
+    "ti12_full_300ns",
     "sar12_probe_2cyc",
 ]
 HERO_DECK = "sar12_hero_16cyc"
@@ -25,7 +25,7 @@ DECK_META = {
         "title": "12-bit SAR ADC (16 Cycles, Hero)",
         "category": "hero",
         "eqns": 1559,
-        "iters_approx": 206500,
+        "iters_approx": 208490,
         "pdk": "GF180MCU D",
         "source": "aicdb/sar-gen-gemini4",
         "description": "12-bit redundant post-PEX SAR ADC running 16 full conversion cycles (>10 min on stock ngspice-47 Sparse 1c). Verified bit-exact on all 16 output codes.",
@@ -34,37 +34,37 @@ DECK_META = {
         "title": "12-bit SAR ADC (2 Cycles)",
         "category": "probe",
         "eqns": 1559,
-        "iters_approx": 26000,
+        "iters_approx": 27301,
         "pdk": "GF180MCU D",
         "source": "aicdb/sar-gen-gemini4",
         "description": "2-cycle probe of the 12-bit post-PEX redundant SAR ADC.",
     },
-    "ti12_full_probe_30ns": {
-        "title": "Full-Chip 3-ch TI 12b SAR + PLL (30 ns)",
+    "ti12_full_300ns": {
+        "title": "Full-Chip 3-ch TI 12b SAR + PLL (300 ns)",
         "category": "probe",
         "eqns": 7221,
-        "iters_approx": 2121,
+        "iters_approx": 17619,
         "pdk": "GF180MCU D",
         "source": "aicdb/ti-gen-gemini4",
-        "description": "7,221-equation post-PEX full-chip time-interleaved 12-bit ADC + PLL.",
+        "description": "7,221-equation post-PEX full-chip time-interleaved 12-bit ADC + PLL over 300 ns (17.6k Newton iterations).",
     },
-    "pll1p2g_probe_20ns": {
-        "title": "1.2 GHz All-Digital PLL (20 ns)",
+    "pll1p2g_200ns": {
+        "title": "1.2 GHz All-Digital PLL (200 ns)",
         "category": "probe",
         "eqns": 1307,
-        "iters_approx": 2866,
+        "iters_approx": 27864,
         "pdk": "GF180MCU D",
         "source": "aicdb/pll-gen-gemini4",
-        "description": "Post-PEX 1.2 GHz all-digital PLL transient simulation.",
+        "description": "Post-PEX 1.2 GHz all-digital PLL transient simulation over 200 ns (~240 oscillation cycles, 27.9k Newton iterations).",
     },
-    "sdm16_probe_8cyc": {
-        "title": "16-bit Switched-Cap SDM (8 Cycles)",
+    "sdm16_120cyc": {
+        "title": "16-bit Switched-Cap SDM (120 Cycles)",
         "category": "probe",
         "eqns": 3609,
-        "iters_approx": 5596,
+        "iters_approx": 54739,
         "pdk": "GF180MCU D",
         "source": "aicdb/sdm-gen-gemini4",
-        "description": "Post-PEX 16-bit switched-capacitor CIFB sigma-delta modulator.",
+        "description": "Post-PEX 16-bit switched-capacitor CIFB sigma-delta modulator over 37.5 µs (120 clock cycles, 54.7k Newton iterations, verified bit-exact on all 120 PDM bits).",
     },
 }
 
@@ -72,9 +72,9 @@ DECK_META = {
 REFERENCE_BASELINE_WALL_S = {
     "sar12_hero_16cyc": 628.48,
     "sar12_probe_2cyc": 79.66,
-    "ti12_full_probe_30ns": 51.52,
-    "pll1p2g_probe_20ns": 11.46,
-    "sdm16_probe_8cyc": 7.94,
+    "ti12_full_300ns": 464.51,
+    "pll1p2g_200ns": 86.68,
+    "sdm16_120cyc": 74.65,
 }
 
 
@@ -155,6 +155,9 @@ def build() -> None:
                     "sar_codes_match": ac.get("sar_codes_match"),
                     "sar_codes_count": len(ac.get("sar_codes_cand", [])),
                     "eoc_max_dt_ps": ac.get("eoc_max_dt_ps"),
+                    "sdm_bits_match": ac.get("sdm_bits_match"),
+                    "sdm_bits_count": ac.get("sdm_bits_count", 0),
+                    "sdm_pdm_max_dt_ps": ac.get("sdm_pdm_max_dt_ps"),
                 }
 
             entries.append({

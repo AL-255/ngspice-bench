@@ -35,9 +35,9 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from compare_raw import compare_waveforms  # noqa: E402
 
 PROBE_DECKS = [
-    "sdm16_probe_8cyc",
-    "pll1p2g_probe_20ns",
-    "ti12_full_probe_30ns",
+    "sdm16_120cyc",
+    "pll1p2g_200ns",
+    "ti12_full_300ns",
     "sar12_probe_2cyc",
 ]
 HERO_DECKS = ["sar12_hero_16cyc"]

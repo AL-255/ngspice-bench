@@ -4,14 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Workloads — ngspice-bench Single-Core Leaderboard</title>
+  <meta name="theme-color" content="#d9423a" />
   <link rel="stylesheet" href="style.css" />
+  <script>try{var t=localStorage.getItem('ngspice-bench-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 </head>
 <body>
   <header class="site-header">
     <div class="container header-inner">
       <div>
         <div class="eyebrow">GF180MCU Post-PEX Transient Suite &middot; Benchmark Specifications</div>
-        <h1>ngspice-bench <span class="badge-mode">Workloads</span></h1>
+        <h1><span class="brand-mark">ngspice</span>-bench <span class="badge-mode">Workloads</span></h1>
         <p class="subtitle">
           Detailed specifications of all 5 post-layout-extraction (post-PEX) mixed-signal circuits, solver &amp; matrix dimensions,
           integration tolerances, saved waveforms, and golden numerical verification rules.
@@ -21,6 +23,7 @@
         <a class="btn-link btn-secondary" href="index.html">Leaderboard</a>
         <a class="btn-link" href="workloads.html" aria-current="page">Workloads</a>
         <a class="btn-link btn-secondary" href="https://github.com/AL-255/ngspice-bench" target="_blank" rel="noopener">GitHub Repo</a>
+        <button class="iconbtn" id="theme" title="Toggle light / dark theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg></button>
       </nav>
     </div>
   </header>
@@ -102,41 +105,41 @@
               <td>BSIM4 Eval + KLU Refactor</td>
               <td class="num">79.66 s</td>
             </tr>
-            <tr class="main-row" onclick="location.hash='ti12_full_probe_30ns'">
-              <td><a class="inline-link" href="#ti12_full_probe_30ns"><code>ti12_full_probe_30ns</code></a></td>
+            <tr class="main-row" onclick="location.hash='ti12_full_300ns'">
+              <td><a class="inline-link" href="#ti12_full_300ns"><code>ti12_full_300ns</code></a></td>
               <td><span class="pill pill-core">Probe</span></td>
               <td class="num">7,221</td>
               <td class="num">63,591</td>
               <td class="num">30,954</td>
-              <td><code>gear</code> · <code>30 ns</code></td>
-              <td class="num">680</td>
-              <td class="num">2,121</td>
-              <td>BSIM4 Eval + PDK/Netlist Load</td>
-              <td class="num">51.52 s</td>
+              <td><code>gear</code> · <code>300 ns</code></td>
+              <td class="num">6,469</td>
+              <td class="num">17,619</td>
+              <td>BSIM4 Eval (Large Footprint)</td>
+              <td class="num">464.51 s</td>
             </tr>
-            <tr class="main-row" onclick="location.hash='pll1p2g_probe_20ns'">
-              <td><a class="inline-link" href="#pll1p2g_probe_20ns"><code>pll1p2g_probe_20ns</code></a></td>
+            <tr class="main-row" onclick="location.hash='pll1p2g_200ns'">
+              <td><a class="inline-link" href="#pll1p2g_200ns"><code>pll1p2g_200ns</code></a></td>
               <td><span class="pill pill-core">Probe</span></td>
               <td class="num">1,307</td>
               <td class="num">12,158</td>
               <td class="num">3,532</td>
-              <td><code>trap</code> · <code>20 ns</code></td>
-              <td class="num">1,062</td>
-              <td class="num">2,866</td>
+              <td><code>trap</code> · <code>200 ns</code></td>
+              <td class="num">10,320</td>
+              <td class="num">27,864</td>
               <td>BSIM4 Eval (High Switching)</td>
-              <td class="num">11.46 s</td>
+              <td class="num">86.68 s</td>
             </tr>
-            <tr class="main-row" onclick="location.hash='sdm16_probe_8cyc'">
-              <td><a class="inline-link" href="#sdm16_probe_8cyc"><code>sdm16_probe_8cyc</code></a></td>
+            <tr class="main-row" onclick="location.hash='sdm16_120cyc'">
+              <td><a class="inline-link" href="#sdm16_120cyc"><code>sdm16_120cyc</code></a></td>
               <td><span class="pill pill-core">Probe</span></td>
               <td class="num">3,609</td>
               <td class="num">30,011</td>
               <td class="num">20,418</td>
-              <td><code>gear</code> · <code>3.75 µs</code></td>
-              <td class="num">1,473</td>
-              <td class="num">5,596</td>
+              <td><code>gear</code> · <code>37.5 µs</code></td>
+              <td class="num">14,184</td>
+              <td class="num">54,739</td>
               <td>KLU / Sparse LU Factor &amp; Solve</td>
-              <td class="num">7.94 s</td>
+              <td class="num">74.65 s</td>
             </tr>
           </tbody>
         </table>
@@ -238,29 +241,29 @@
       </div>
     </section>
 
-    <section class="workload-card card" id="ti12_full_probe_30ns">
+    <section class="workload-card card" id="ti12_full_300ns">
       <div class="workload-head">
         <div>
           <span class="pill pill-core">Probe Workload</span>
           <span class="pill pill-opt">7,221 Equations</span>
-          <span class="pill pill-solver">~2.1k Iterations</span>
-          <h2><code>ti12_full_probe_30ns</code> — Full-Chip 3-Channel Time-Interleaved 12-bit SAR ADC + PLL</h2>
+          <span class="pill pill-solver">~17.6k Iterations</span>
+          <h2><code>ti12_full_300ns</code> — Full-Chip 3-Channel Time-Interleaved 12-bit SAR ADC + PLL (300 ns)</h2>
         </div>
-        <a class="btn-link btn-secondary" href="index.html#ti12_full_probe_30ns">View on Leaderboard &rarr;</a>
+        <a class="btn-link btn-secondary" href="index.html#ti12_full_300ns">View on Leaderboard &rarr;</a>
       </div>
       <p class="workload-desc">
-        Largest circuit in the suite (7,221 equations, 63,591 matrix nonzeros, 854 KB post-PEX netlist with 60 subcircuits and 8,335 subcircuit/device calls).
+        Largest circuit in the suite (7,221 equations, 63,591 matrix nonzeros, 854 KB post-PEX netlist with 60 subcircuits and 8,335 subcircuit/device calls)
+        simulated over 300 ns (17,619 Newton iterations, ~7.7 min on stock single-core Sparse).
         Combines 3 time-interleaved 12-bit SAR channels, sample-and-hold front-ends, calibration logic, and an on-chip clock-generation PLL.
-        Stresses L2/L3 cache footprint during device evaluation, BSIM4 model-binning &amp; PDK/subcircuit netlist expansion (where <code>.uselib</code> shines),
-        and truncation-error evaluation across thousands of MOSFETs.
+        Stresses L2/L3 cache footprint during BSIM4 device evaluation, truncation-error checks across thousands of MOSFETs, and PDK/netlist expansion.
       </p>
       <figure class="waveform-figure">
-        <a href="img/ti12_full_probe_30ns.svg" target="_blank" rel="noopener">
-          <img src="img/ti12_full_probe_30ns.svg" alt="ti12_full_probe_30ns transient waveforms: vip, vin, vsh_p, fref, phi_s, and supply current" loading="lazy" />
+        <a href="img/ti12_full_300ns.svg" target="_blank" rel="noopener">
+          <img src="img/ti12_full_300ns.svg" alt="ti12_full_300ns transient waveforms: vip, vin, vsh_p, fref, phi_s, and supply current" loading="lazy" />
         </a>
         <figcaption>
-          <span>Golden transient waveform (stock <code>ngspice-47</code>): differential analog input, track/hold node <code>v(vsh_p)</code>, reference clock <code>v(fref)</code>, and post-UIC supply current.</span>
-          <a class="inline-link" href="img/ti12_full_probe_30ns.svg" target="_blank" rel="noopener">Open full SVG</a>
+          <span>Golden transient waveform (stock <code>ngspice-47</code>): 300 ns differential analog input, track/hold node <code>v(vsh_p)</code>, reference clock <code>v(fref)</code>, and post-UIC supply current.</span>
+          <a class="inline-link" href="img/ti12_full_300ns.svg" target="_blank" rel="noopener">Open full SVG</a>
         </figcaption>
       </figure>
       <div class="detail-grid">
@@ -268,45 +271,46 @@
           <h4>Simulation Parameters</h4>
           <div class="kv-list">
             <div class="kv-k">Source Design</div><div class="kv-v">aicdb/ti-gen-gemini4 (mp3_direct_1v8_12b_hs_pex)</div>
-            <div class="kv-k">Transient Deck</div><div class="kv-v">tran 5.0000e-11 3.0000e-08 uic (30 ns @ 50 ps step)</div>
+            <div class="kv-k">Transient Deck</div><div class="kv-v">tran 5.0000e-11 3.0000e-07 uic (300 ns @ 50 ps step)</div>
             <div class="kv-k">.options</div><div class="kv-v">method=gear gmin=1e-12 reltol=2e-3 abstol=1e-11 vntol=2e-5 itl4=150 cshunt=1.5e-16 rshunt=1e12</div>
             <div class="kv-k">Matrix Size</div><div class="kv-v">7,221 eqns · 63,591 orig NNZ · 30,954 Sparse fill</div>
-            <div class="kv-k">Work Volume</div><div class="kv-v">680 timepoints (658 acc / 22 rej) · 2,121 total iters</div>
+            <div class="kv-k">Work Volume</div><div class="kv-v">6,469 timepoints (6,300 acc / 169 rej) · 17,619 total iters</div>
           </div>
         </div>
         <div class="detail-box">
           <h4>Saved Signals &amp; Verification Criteria</h4>
           <div class="kv-list">
             <div class="kv-k">Saved Signals</div><div class="kv-v">v(vip), v(vin), v(fref), v(phi_s), v(vsh_p), v(cal_lock), i(VVDD), v(dout_0..dout_11) (19 vectors)</div>
-            <div class="kv-k">Accuracy Check</div><div class="kv-v">Worst relative RMS &le; 1e-3 across all 19 signals (optimized Zen 4 achieves ~1.0e-12 on exact timestep grid)</div>
+            <div class="kv-k">Accuracy Check</div><div class="kv-v">Worst relative RMS &le; 1e-3 across all 19 signals (optimized Zen 4 achieves 2.55e-12 on exact 6,299-pt timestep grid)</div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="workload-card card" id="pll1p2g_probe_20ns">
+    <section class="workload-card card" id="pll1p2g_200ns">
       <div class="workload-head">
         <div>
           <span class="pill pill-core">Probe Workload</span>
           <span class="pill pill-opt">1,307 Equations</span>
-          <span class="pill pill-solver">~2.9k Iterations</span>
-          <h2><code>pll1p2g_probe_20ns</code> — 1.2 GHz Post-PEX All-Digital PLL (20 ns)</h2>
+          <span class="pill pill-solver">~27.9k Iterations</span>
+          <h2><code>pll1p2g_200ns</code> — 1.2 GHz Post-PEX All-Digital PLL (200 ns)</h2>
         </div>
-        <a class="btn-link btn-secondary" href="index.html#pll1p2g_probe_20ns">View on Leaderboard &rarr;</a>
+        <a class="btn-link btn-secondary" href="index.html#pll1p2g_200ns">View on Leaderboard &rarr;</a>
       </div>
       <p class="workload-desc">
         High-frequency 1.8 V 1.2 GHz all-digital PLL (<code>ad_pll_1v8_1p2g_pex.spice</code>, 229 KB, 15 subcircuits, 2,328 device/subckt calls)
-        using <strong>Trapezoidal</strong> integration (the only non-Gear deck in the suite, validating Trap order-1/2 device &amp; capacitor integration paths).
+        simulated over 200 ns (~240 oscillation cycles, 27,864 Newton iterations) using <strong>Trapezoidal</strong> integration
+        (the only non-Gear deck in the suite, validating Trap order-1/2 device &amp; capacitor integration paths).
         Because high-frequency oscillation keeps a large fraction of transistors actively switching every 20 ps timestep, this workload heavily stresses
-        raw BSIM4 evaluation throughput (transcendental <code>exp</code>/<code>log</code>, SIMD efficiency) and frontend PDK load latency.
+        sustained BSIM4 evaluation throughput (transcendental <code>exp</code>/<code>log</code>, SIMD vectorization).
       </p>
       <figure class="waveform-figure">
-        <a href="img/pll1p2g_probe_20ns.svg" target="_blank" rel="noopener">
-          <img src="img/pll1p2g_probe_20ns.svg" alt="pll1p2g_probe_20ns transient waveforms: differential 1.2 GHz out/outn clocks and supply current" loading="lazy" />
+        <a href="img/pll1p2g_200ns.svg" target="_blank" rel="noopener">
+          <img src="img/pll1p2g_200ns.svg" alt="pll1p2g_200ns transient waveforms: zoomed 190-200ns 1.2 GHz clocks, full 200ns envelope, and supply current" loading="lazy" />
         </a>
         <figcaption>
-          <span>Golden transient waveform (stock <code>ngspice-47</code>): differential 1.2 GHz oscillator clocks <code>v(out)</code> / <code>v(outn)</code> and post-UIC dynamic supply current.</span>
-          <a class="inline-link" href="img/pll1p2g_probe_20ns.svg" target="_blank" rel="noopener">Open full SVG</a>
+          <span>Golden transient waveform (stock <code>ngspice-47</code>): zoomed 190–200 ns steady-state 1.2 GHz differential clocks <code>v(out)</code>/<code>v(outn)</code>, full 200 ns envelope, and post-UIC supply current.</span>
+          <a class="inline-link" href="img/pll1p2g_200ns.svg" target="_blank" rel="noopener">Open full SVG</a>
         </figcaption>
       </figure>
       <div class="detail-grid">
@@ -314,45 +318,46 @@
           <h4>Simulation Parameters</h4>
           <div class="kv-list">
             <div class="kv-k">Source Design</div><div class="kv-v">aicdb/pll-gen-gemini4 (ad_pll_1v8_1p2g_pex)</div>
-            <div class="kv-k">Transient Deck</div><div class="kv-v">tran 2.0000e-11 2.0000e-08 uic (20 ns @ 20 ps step)</div>
+            <div class="kv-k">Transient Deck</div><div class="kv-v">tran 2.0000e-11 2.0000e-07 uic (200 ns @ 20 ps step)</div>
             <div class="kv-k">.options</div><div class="kv-v">reltol=2e-3 abstol=1e-11 vntol=1e-5 method=trap rshunt=1e12</div>
             <div class="kv-k">Matrix Size</div><div class="kv-v">1,307 eqns · 12,158 orig NNZ · 3,532 Sparse fill</div>
-            <div class="kv-k">Work Volume</div><div class="kv-v">1,062 timepoints (1,059 acc / 3 rej) · 2,866 total iters</div>
+            <div class="kv-k">Work Volume</div><div class="kv-v">10,320 timepoints (10,298 acc / 22 rej) · 27,864 total iters</div>
           </div>
         </div>
         <div class="detail-box">
           <h4>Saved Signals &amp; Verification Criteria</h4>
           <div class="kv-list">
             <div class="kv-k">Saved Signals</div><div class="kv-v">v(out), v(outn), i(VVDD) (3 vectors)</div>
-            <div class="kv-k">Accuracy Check</div><div class="kv-v">Worst relative RMS &le; 1e-3 across all signals (optimized Zen 4 achieves 1.52e-11 on exact timestep grid)</div>
+            <div class="kv-k">Accuracy Check</div><div class="kv-v">Worst relative RMS &le; 1e-3 across all signals over 240 oscillation cycles (optimized Zen 4 achieves 3.35e-4)</div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="workload-card card" id="sdm16_probe_8cyc">
+    <section class="workload-card card" id="sdm16_120cyc">
       <div class="workload-head">
         <div>
           <span class="pill pill-core">Probe Workload</span>
           <span class="pill pill-opt">3,609 Equations</span>
-          <span class="pill pill-solver">~5.6k Iterations</span>
-          <h2><code>sdm16_probe_8cyc</code> — 16-bit Switched-Capacitor CIFB Sigma-Delta Modulator (8 Cycles)</h2>
+          <span class="pill pill-solver">~54.7k Iterations</span>
+          <h2><code>sdm16_120cyc</code> — 16-bit Switched-Capacitor CIFB Sigma-Delta Modulator (120 Cycles)</h2>
         </div>
-        <a class="btn-link btn-secondary" href="index.html#sdm16_probe_8cyc">View on Leaderboard &rarr;</a>
+        <a class="btn-link btn-secondary" href="index.html#sdm16_120cyc">View on Leaderboard &rarr;</a>
       </div>
       <p class="workload-desc">
         Second-order switched-capacitor cascade-of-integrators-with-feedback (CIFB) 16-bit sigma-delta modulator
-        (<code>sdm_16b_1v8_mim_cifb_split.spice</code>, 932 R, 822 C, 668 subckt/MOS instances, 3,609 equations, 30,011 nonzeros).
+        (<code>sdm_16b_1v8_mim_cifb_split.spice</code>, 932 R, 822 C, 668 subckt/MOS instances, 3,609 equations, 30,011 nonzeros)
+        simulated over 37.5 µs (120 clock cycles at 3.2 MHz, 54,739 Newton iterations).
         Features dense capacitor/switch coupling and high matrix fill-in (20,418 Sparse fill-ins), making it the most
         <strong>linear-solver-bound</strong> workload in the suite — highlighting KLU vs Sparse LU refactorization and triangular solve performance.
       </p>
       <figure class="waveform-figure">
-        <a href="img/sdm16_probe_8cyc.svg" target="_blank" rel="noopener">
-          <img src="img/sdm16_probe_8cyc.svg" alt="sdm16_probe_8cyc transient waveforms: vin_p, integrator outputs vout1_p/vout2_p, clk, pdm_bit, and supply current" loading="lazy" />
+        <a href="img/sdm16_120cyc.svg" target="_blank" rel="noopener">
+          <img src="img/sdm16_120cyc.svg" alt="sdm16_120cyc transient waveforms: sinusoidal vin_p, integrator outputs vout1_p/vout2_p, 120-cycle PDM bitstream, and supply current" loading="lazy" />
         </a>
         <figcaption>
-          <span>Golden transient waveform (stock <code>ngspice-47</code>): analog input, 1st/2nd switched-cap integrator outputs, sampling clock, PDM output bitstream, and supply current.</span>
-          <a class="inline-link" href="img/sdm16_probe_8cyc.svg" target="_blank" rel="noopener">Open full SVG</a>
+          <span>Golden transient waveform (stock <code>ngspice-47</code>): 37.5 µs sinusoidal input, 1st/2nd switched-cap integrator outputs, 120-cycle noise-shaped PDM output bitstream, and supply current.</span>
+          <a class="inline-link" href="img/sdm16_120cyc.svg" target="_blank" rel="noopener">Open full SVG</a>
         </figcaption>
       </figure>
       <div class="detail-grid">
@@ -360,17 +365,17 @@
           <h4>Simulation Parameters</h4>
           <div class="kv-list">
             <div class="kv-k">Source Design</div><div class="kv-v">aicdb/sdm-gen-gemini4 (sdm_16b_1v8_mim_cifb_split)</div>
-            <div class="kv-k">Transient Deck</div><div class="kv-v">tran 1.56250e-08 3.75000e-06 uic (3.75 µs @ 15.625 ns step)</div>
+            <div class="kv-k">Transient Deck</div><div class="kv-v">tran 1.56250e-08 3.75000e-05 uic (37.5 µs @ 15.625 ns step, 120 cycles)</div>
             <div class="kv-k">.options</div><div class="kv-v">reltol=2.5e-3 abstol=1e-11 vntol=1e-5 method=gear maxord=2 itl4=100</div>
             <div class="kv-k">Matrix Size</div><div class="kv-v">3,609 eqns · 30,011 orig NNZ · 20,418 Sparse fill</div>
-            <div class="kv-k">Work Volume</div><div class="kv-v">1,473 timepoints (1,168 acc / 305 rej) · 5,596 total iters</div>
+            <div class="kv-k">Work Volume</div><div class="kv-v">14,184 timepoints (11,329 acc / 2,855 rej) · 54,739 total iters</div>
           </div>
         </div>
         <div class="detail-box">
           <h4>Saved Signals &amp; Verification Criteria</h4>
           <div class="kv-list">
             <div class="kv-k">Saved Signals</div><div class="kv-v">v(vin_p), v(vin_n), v(clk), v(xdut.phi1), v(xdut.phi2), v(xdut.vout1_p/n), v(xdut.vout2_p/n), v(xdut.pdm_bit), v(dout_0), v(dout_valid), i(Vvdd) (13 vectors)</div>
-            <div class="kv-k">Accuracy Check</div><div class="kv-v">Worst relative RMS &le; 1e-3 across all 13 signals (optimized Zen 4 achieves 4.75e-9 KLU / 6.67e-10 Sparse)</div>
+            <div class="kv-k">Digital &amp; Analog Check</div><div class="kv-v">Bit-exact PDM output across all 120/120 clock cycles, PDM edge skew &lt; 500 ps (167.8 ps on Zen 4), and all analog signals rel_rms &le; 1e-3</div>
           </div>
         </div>
       </div>
@@ -406,5 +411,17 @@
       <span><a href="index.html">&larr; Back to Leaderboard</a></span>
     </div>
   </footer>
+  <script>
+    (function(){
+      var b = document.getElementById('theme');
+      if (!b) return;
+      b.addEventListener('click', function(){
+        var r = document.documentElement;
+        var d = r.dataset.theme ? r.dataset.theme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        r.dataset.theme = d ? 'light' : 'dark';
+        try { localStorage.setItem('ngspice-bench-theme', r.dataset.theme); } catch(e) {}
+      });
+    })();
+  </script>
 </body>
 </html>

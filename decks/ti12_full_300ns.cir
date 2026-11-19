@@ -1,4 +1,4 @@
-* GF180 Full-Chip Post-PEX 3-Ch Time-Interleaved 12-bit SAR ADC + 200MHz PLL + Digital Cal (30.0 ns)
+* GF180 Full-Chip Post-PEX 3-Ch Time-Interleaved 12-bit SAR ADC + 200MHz PLL + Digital Cal (300.0 ns)
 .include "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/design.ngspice"
 .param sw_stat_global=0
 .param sw_stat_mismatch=0
@@ -35,9 +35,9 @@ XTI vdd vss vip vin vcm_ext ibias vctrl_ext fref rst_n b0 b1 b2 phi_s vsh_p dout
 
 .save v(vip) v(vin) v(fref) v(phi_s) v(vsh_p) v(cal_lock) i(VVDD) v(dout_0) v(dout_1) v(dout_2) v(dout_3) v(dout_4) v(dout_5) v(dout_6) v(dout_7) v(dout_8) v(dout_9) v(dout_10) v(dout_11)
 .control
-tran 5.0000e-11 3.0000e-08 uic
+tran 5.0000e-11 3.0000e-07 uic
 rusage all
-write ti12_full_probe_30ns.raw v(vip) v(vin) v(fref) v(phi_s) v(vsh_p) v(cal_lock) i(VVDD) v(dout_0) v(dout_1) v(dout_2) v(dout_3) v(dout_4) v(dout_5) v(dout_6) v(dout_7) v(dout_8) v(dout_9) v(dout_10) v(dout_11)
+write ti12_full_300ns.raw v(vip) v(vin) v(fref) v(phi_s) v(vsh_p) v(cal_lock) i(VVDD) v(dout_0) v(dout_1) v(dout_2) v(dout_3) v(dout_4) v(dout_5) v(dout_6) v(dout_7) v(dout_8) v(dout_9) v(dout_10) v(dout_11)
 quit
 .endc
 .end

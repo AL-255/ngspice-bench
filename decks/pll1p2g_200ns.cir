@@ -1,4 +1,4 @@
-* GF180 Post-PEX 1.2 GHz All-Digital PLL Transient (20.0 ns)
+* GF180 Post-PEX 1.2 GHz All-Digital PLL Transient (200.0 ns)
 .include "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/design.ngspice"
 .param sw_stat_global=0
 .param sw_stat_mismatch=0
@@ -20,7 +20,7 @@ VVCTRL vctrl 0 DC 0.9
 VB0 b0 0 DC 1.8
 VB1 b1 0 DC 0
 VB2 b2 0 DC 1.8
-IKICK out outn PULSE(0 180u 10p 15p 15p 100p 4.0000e-08)
+IKICK out outn PULSE(0 180u 10p 15p 15p 100p 4.0000e-07)
 
 XPLL vdd vss fref fb_div vctrl b0 b1 b2 out outn pll_ad_pll_1v8_1p2g
 CL_OUT out 0 4f
@@ -28,9 +28,9 @@ CL_OUTN outn 0 4f
 
 .save v(out) v(outn) i(VVDD)
 .control
-tran 2.0000e-11 2.0000e-08 uic
+tran 2.0000e-11 2.0000e-07 uic
 rusage all
-write pll1p2g_probe_20ns.raw v(out) v(outn) i(VVDD)
+write pll1p2g_200ns.raw v(out) v(outn) i(VVDD)
 quit
 .endc
 .end
