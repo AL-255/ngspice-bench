@@ -1160,82 +1160,82 @@ Cpar28 vdd.t1 vss 1.22377e-14
 .subckt cdac_12b_mim_smono top_p top_n sub_p sub_n vdd vss vcm rst_sub ctl_g0_hi_p ctl_g0_hi_n ctl_g0_lo_p ctl_g0_lo_n ctl_g1_hi_p ctl_g1_hi_n ctl_g1_lo_p ctl_g1_lo_n ctl_g2_hi_p ctl_g2_hi_n ctl_g2_lo_p ctl_g2_lo_n ctl_g3_hi_p ctl_g3_hi_n ctl_g3_lo_p ctl_g3_lo_n ctl_g4_hi_p ctl_g4_hi_n ctl_g4_lo_p ctl_g4_lo_n ctl_g5_hi_p ctl_g5_hi_n ctl_g5_lo_p ctl_g5_lo_n ctl_g6_hi_p ctl_g6_hi_n ctl_g6_lo_p ctl_g6_lo_n ctl_g7_hi_p ctl_g7_hi_n ctl_g7_lo_p ctl_g7_lo_n ctl_g8_hi_p ctl_g8_hi_n ctl_g8_lo_p ctl_g8_lo_n ctl_g9_hi_p ctl_g9_hi_n ctl_g9_lo_p ctl_g9_lo_n ctl_g10_hi_p ctl_g10_hi_n ctl_g10_lo_p ctl_g10_lo_n ctl_g11_hi_p ctl_g11_hi_n ctl_g11_lo_p ctl_g11_lo_n ctl_g12_hi_p ctl_g12_hi_n ctl_g12_lo_p ctl_g12_lo_n ctl_g13_hi_p ctl_g13_hi_n ctl_g13_lo_p ctl_g13_lo_n
 X0 vss ctl_g7_lo_n a_22664_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X1 a_36104_36240# ctl_g4_lo_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
-X2 sub_n a_22664_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=29
-X4 top_n a_33484_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=5
-X5 top_n a_7944_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=32
-X6 sub_n a_18764_36240# cap_mim_2f0fF c_width=5u c_length=5.19u par=4
-X7 top_p a_33484_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u par=3
+X2 sub_n a_22664_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=29
+X4 top_n a_33484_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=5
+X5 top_n a_7944_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=32
+X6 sub_n a_18764_36240# cap_mim_2f0fF c_width=5u c_length=5.19u m=4
+X7 top_p a_33484_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u m=3
 X8 vdd ctl_g10_lo_n a_24344_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X9 top_p a_39464_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=11
-X10 top_p a_1224_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u par=8
+X9 top_p a_39464_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=11
+X10 top_p a_1224_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u m=8
 X11 a_27704_n2270# ctl_g12_lo_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X12 vss ctl_g1_lo_p a_39464_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
-X13 sub_p a_23404_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u par=4
-X14 top_n a_32744_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=32
-X15 sub_p a_18024_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u par=4
-X16 sub_p a_18024_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=28
-X17 sub_p a_11304_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=9
-X18 sub_p a_23404_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=4
-X19 sub_p a_22664_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u par=3
-X20 top_p a_8684_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=3
-X21 top_n a_8684_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=3
-X23 top_p a_32744_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=32
+X13 sub_p a_23404_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u m=4
+X14 top_n a_32744_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=32
+X15 sub_p a_18024_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u m=4
+X16 sub_p a_18024_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=28
+X17 sub_p a_11304_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=9
+X18 sub_p a_23404_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=4
+X19 sub_p a_22664_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u m=3
+X20 top_p a_8684_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=3
+X21 top_n a_8684_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=3
+X23 top_p a_32744_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=32
 X24 vcm a_19748_n2120# sub_p vdd pfet_03v3 ad=1.72p pd=4.86u as=1.72p ps=4.86u w=4u l=0.28u m=3
 X25 vdd ctl_g2_lo_p a_33484_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X26 sub_p a_14664_n2270# cap_mim_2f0fF c_width=5u c_length=5.17u
 X28 sub_p a_27704_n2270# cap_mim_2f0fF c_width=5u c_length=5.13u
-X29 top_p a_7944_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=32
-X30 sub_n a_18024_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=28
-X31 sub_n a_29384_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=12
+X29 top_p a_7944_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=32
+X30 sub_n a_18024_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=28
+X31 sub_n a_29384_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=12
 X32 a_18764_n2270# ctl_g9_hi_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
-X33 sub_p a_29384_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=12
+X33 sub_p a_29384_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=12
 X36 a_3644_n2270# ctl_g6_hi_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X38 vdd ctl_g11_hi_n a_14664_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X39 a_18024_n2270# ctl_g7_hi_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X40 a_7944_n2270# ctl_g0_hi_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X42 vss ctl_g9_lo_p a_23404_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X44 top_n a_37784_36240# cap_mim_2f0fF c_width=5u c_length=5.12u
-X47 top_n a_39464_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=11
+X47 top_n a_39464_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=11
 X48 a_14664_36240# ctl_g11_hi_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X49 vdd ctl_g12_lo_p a_27704_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X50 a_34424_n2270# ctl_g3_lo_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
-X52 top_p a_34424_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=2
-X53 top_p a_4584_n2270# cap_mim_2f0fF c_width=5u c_length=5.18u par=2
+X52 top_p a_34424_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=2
+X53 top_p a_4584_n2270# cap_mim_2f0fF c_width=5u c_length=5.18u m=2
 X54 sub_n a_27704_36240# cap_mim_2f0fF c_width=5u c_length=5.14u
 X55 vss ctl_g6_hi_p a_3644_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
-X56 sub_p a_29384_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u par=4
+X56 sub_p a_29384_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u m=4
 X57 vdd ctl_g12_hi_p a_12984_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X61 top_p a_38524_n2270# cap_mim_2f0fF c_width=5u c_length=5.04u
-X62 sub_n a_11304_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=9
+X62 sub_n a_11304_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=9
 X63 vss ctl_g11_lo_n a_26024_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X64 vdd ctl_g6_lo_n a_38524_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X66 top_p a_39464_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u par=5
+X66 top_p a_39464_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u m=5
 X67 a_29384_n2270# ctl_g8_lo_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X68 a_22664_n2270# ctl_g7_lo_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X71 vss ctl_g3_hi_n a_6264_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X72 vss ctl_g13_hi_p a_13724_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
-X73 sub_p a_11304_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u par=7
-X75 top_n a_34424_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=2
+X73 sub_p a_11304_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u m=7
+X75 top_n a_34424_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=2
 X76 vcm rst_sub sub_n vss nfet_03v3 ad=1.075p pd=3.36u as=1.075p ps=3.36u w=2.5u l=0.28u m=3
 X77 a_38524_36240# ctl_g6_lo_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
-X78 top_n a_6264_36240# cap_mim_2f0fF c_width=5u c_length=5.19u par=6
-X79 sub_p a_22664_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=29
+X78 top_n a_6264_36240# cap_mim_2f0fF c_width=5u c_length=5.19u m=6
+X79 sub_p a_22664_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=29
 X83 vdd ctl_g0_hi_n a_7944_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X84 top_n a_1224_36240# cap_mim_2f0fF c_width=5u c_length=5.19u par=8
+X84 top_n a_1224_36240# cap_mim_2f0fF c_width=5u c_length=5.19u m=8
 X88 sub_n a_28444_36240# cap_mim_2f0fF c_width=5u c_length=5.05u
 X91 vcm a_19748_36440# sub_n vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X95 top_p a_6264_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=2
-X96 top_p a_1224_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=8
-X97 top_n a_34424_36240# cap_mim_2f0fF c_width=5u c_length=5.19u par=6
+X95 top_p a_6264_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=2
+X96 top_p a_1224_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=8
+X97 top_n a_34424_36240# cap_mim_2f0fF c_width=5u c_length=5.19u m=6
 X98 a_37784_36240# ctl_g5_lo_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X100 top_n sub_n cap_mim_2f0fF c_width=5.68u c_length=19.6u
 X101 vdd ctl_g3_lo_p a_34424_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X102 sub_n a_11304_36240# cap_mim_2f0fF c_width=5u c_length=5.19u par=7
+X102 sub_n a_11304_36240# cap_mim_2f0fF c_width=5u c_length=5.19u m=7
 X103 sub_n a_12984_36240# cap_mim_2f0fF c_width=5u c_length=5.13u
 X105 sub_n rst_sub vcm vss nfet_03v3 ad=1.075p pd=3.36u as=1.075p ps=3.36u w=2.5u l=0.28u m=3
 X107 a_12984_n2270# ctl_g12_hi_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
-X108 top_n a_4584_36240# cap_mim_2f0fF c_width=5u c_length=5.17u par=2
-X109 top_p a_33484_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=5
+X108 top_n a_4584_36240# cap_mim_2f0fF c_width=5u c_length=5.17u m=2
+X109 top_p a_33484_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=5
 X111 vdd ctl_g7_hi_n a_18024_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X112 a_2904_n2270# ctl_g5_hi_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X113 vcm a_19748_36440# sub_n vdd pfet_03v3 ad=1.72p pd=4.86u as=1.72p ps=4.86u w=4u l=0.28u m=3
@@ -1243,10 +1243,10 @@ X114 vdd ctl_g1_hi_n a_1224_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u
 X118 sub_p a_28444_n2270# cap_mim_2f0fF c_width=5u c_length=5.05u
 X123 vdd ctl_g7_lo_p a_22664_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X124 a_36104_n2270# ctl_g4_lo_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
-X125 sub_p vcm cap_mim_2f0fF c_width=5u c_length=5u par=2
+X125 sub_p vcm cap_mim_2f0fF c_width=5u c_length=5u m=2
 X128 a_1224_36240# ctl_g1_hi_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X132 vss ctl_g4_hi_p a_4584_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
-X133 top_n a_8684_36240# cap_mim_2f0fF c_width=5u c_length=5.19u par=5
+X133 top_n a_8684_36240# cap_mim_2f0fF c_width=5u c_length=5.19u m=5
 X135 vdd ctl_g2_lo_n a_33484_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X138 a_18764_36240# ctl_g9_hi_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X141 a_19748_n2120# rst_sub vss vss nfet_03v3 ad=0.75p pd=3.5u as=0.75p ps=3.5u w=1u l=0.28u
@@ -1258,9 +1258,9 @@ X153 a_6264_n2270# ctl_g3_hi_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps
 X156 sub_p rst_sub vcm vss nfet_03v3 ad=1.075p pd=3.36u as=1.075p ps=3.36u w=2.5u l=0.28u m=3
 X159 vss ctl_g2_hi_n a_8684_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X164 vss ctl_g8_hi_n a_11304_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
-X165 sub_n a_23404_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=4
+X165 sub_n a_23404_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=4
 X166 vdd ctl_g12_lo_n a_27704_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X167 sub_n a_16344_36240# cap_mim_2f0fF c_width=5u c_length=5.17u par=3
+X167 sub_n a_16344_36240# cap_mim_2f0fF c_width=5u c_length=5.17u m=3
 X169 a_14664_n2270# ctl_g11_hi_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X172 vdd ctl_g12_hi_n a_12984_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X173 a_16344_n2270# ctl_g10_hi_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
@@ -1272,7 +1272,7 @@ X182 top_p a_36104_n2270# cap_mim_2f0fF c_width=5u c_length=5.16u
 X187 a_29384_36240# ctl_g8_lo_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X189 a_19748_36440# rst_sub vdd vdd pfet_03v3 ad=1.5p pd=5.5u as=1.5p ps=5.5u w=2u l=0.28u
 X191 vdd ctl_g11_lo_p a_26024_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X193 sub_p a_16344_n2270# cap_mim_2f0fF c_width=5u c_length=5.17u par=3
+X193 sub_p a_16344_n2270# cap_mim_2f0fF c_width=5u c_length=5.17u m=3
 X195 vss ctl_g10_hi_p a_16344_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X197 sub_p a_26024_n2270# cap_mim_2f0fF c_width=5u c_length=5.17u
 X198 vdd ctl_g3_hi_p a_6264_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
@@ -1280,7 +1280,7 @@ X203 a_38524_n2270# ctl_g6_lo_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5
 X204 a_3644_36240# ctl_g6_hi_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X206 a_18024_36240# ctl_g7_hi_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X209 vdd ctl_g3_lo_n a_34424_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X210 sub_n a_14664_36240# cap_mim_2f0fF c_width=5u c_length=5.18u par=3
+X210 sub_n a_14664_36240# cap_mim_2f0fF c_width=5u c_length=5.18u m=3
 X218 vss ctl_g9_lo_n a_23404_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X219 a_2904_36240# ctl_g5_hi_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X221 sub_p a_19748_n2120# vcm vdd pfet_03v3 ad=1.72p pd=4.86u as=1.72p ps=4.86u w=4u l=0.28u m=3
@@ -1299,7 +1299,7 @@ X247 top_p a_37784_n2270# cap_mim_2f0fF c_width=5u c_length=5.12u
 X249 a_22664_36240# ctl_g7_lo_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X252 vss ctl_g13_hi_n a_13724_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X253 vss ctl_g13_lo_p a_28444_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
-X256 sub_n a_18024_36240# cap_mim_2f0fF c_width=5u c_length=5.19u par=4
+X256 sub_n a_18024_36240# cap_mim_2f0fF c_width=5u c_length=5.19u m=4
 X260 a_39464_n2270# ctl_g1_lo_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X261 top_n a_37784_36240# cap_mim_2f0fF c_width=5u c_length=5.13u
 X263 a_19748_n2120# rst_sub vdd vdd pfet_03v3 ad=1.5p pd=5.5u as=1.5p ps=5.5u w=2u l=0.28u
@@ -1307,54 +1307,54 @@ X266 sub_p a_19748_n2120# vcm vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u
 X267 a_33484_n2270# ctl_g2_lo_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X268 vss ctl_g5_hi_p a_2904_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X274 a_12984_36240# ctl_g12_hi_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
-X275 top_n a_33484_36240# cap_mim_2f0fF c_width=5u c_length=5.19u par=3
+X275 top_n a_33484_36240# cap_mim_2f0fF c_width=5u c_length=5.19u m=3
 X276 vss ctl_g9_hi_p a_18764_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X279 a_32744_n2270# ctl_g0_lo_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X280 vdd ctl_g2_hi_p a_8684_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X284 a_14664_36240# ctl_g11_hi_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X286 vdd ctl_g8_hi_p a_11304_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X295 a_23404_n2270# ctl_g9_lo_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
-X296 top_n a_39464_36240# cap_mim_2f0fF c_width=5u c_length=5.19u par=5
+X296 top_n a_39464_36240# cap_mim_2f0fF c_width=5u c_length=5.19u m=5
 X300 a_27704_n2270# ctl_g12_lo_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X301 vdd ctl_g1_lo_p a_39464_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X302 vss ctl_g0_lo_p a_32744_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X305 vss ctl_g4_hi_n a_4584_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X306 vdd ctl_g11_lo_n a_26024_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X309 top_n a_1224_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=8
-X312 top_p a_6264_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u par=6
+X309 top_n a_1224_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=8
+X312 top_p a_6264_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u m=6
 X313 vdd ctl_g3_hi_n a_6264_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X318 a_38524_36240# ctl_g6_lo_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
-X320 sub_n a_22664_36240# cap_mim_2f0fF c_width=5u c_length=5.19u par=3
+X320 sub_n a_22664_36240# cap_mim_2f0fF c_width=5u c_length=5.19u m=3
 X324 a_6264_36240# ctl_g3_hi_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X325 a_13724_n2270# ctl_g13_hi_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X326 vss ctl_g8_lo_p a_29384_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
-X327 sub_p a_18764_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u par=4
+X327 sub_p a_18764_n2270# cap_mim_2f0fF c_width=5u c_length=5.2u m=4
 X330 a_3644_n2270# ctl_g6_hi_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X332 sub_n a_16344_36240# cap_mim_2f0fF c_width=5u c_length=5.18u
 X334 a_18024_n2270# ctl_g7_hi_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X337 sub_n a_19748_36440# vcm vdd pfet_03v3 ad=1.72p pd=4.86u as=1.72p ps=4.86u w=4u l=0.28u m=3
 X339 vdd ctl_g9_lo_p a_23404_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X346 sub_n a_24344_36240# cap_mim_2f0fF c_width=5u c_length=5.17u par=3
+X346 sub_n a_24344_36240# cap_mim_2f0fF c_width=5u c_length=5.17u m=3
 X349 a_16344_36240# ctl_g10_hi_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X350 a_34424_n2270# ctl_g3_lo_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X353 vdd ctl_g6_hi_p a_3644_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X354 sub_n vcm cap_mim_2f0fF c_width=5u c_length=5u par=2
+X354 sub_n vcm cap_mim_2f0fF c_width=5u c_length=5u m=2
 X361 a_1224_36240# ctl_g1_hi_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X365 a_22664_n2270# ctl_g7_lo_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X366 sub_p a_12984_n2270# cap_mim_2f0fF c_width=5u c_length=5.14u
 X367 vss ctl_g10_hi_n a_16344_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X369 vdd ctl_g13_hi_p a_13724_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X370 top_p a_36104_n2270# cap_mim_2f0fF c_width=5u c_length=5.17u par=3
-X371 sub_p a_24344_n2270# cap_mim_2f0fF c_width=5u c_length=5.17u par=3
+X370 top_p a_36104_n2270# cap_mim_2f0fF c_width=5u c_length=5.17u m=3
+X371 sub_p a_24344_n2270# cap_mim_2f0fF c_width=5u c_length=5.17u m=3
 X372 a_24344_n2270# ctl_g10_lo_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X373 vss ctl_g4_lo_p a_36104_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X378 a_19748_36440# rst_sub vss vss nfet_03v3 ad=0.75p pd=3.5u as=0.75p ps=3.5u w=1u l=0.28u
 X379 sub_p a_24344_n2270# cap_mim_2f0fF c_width=5u c_length=5.18u
 X380 a_4584_n2270# ctl_g4_hi_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
-X384 sub_p a_18764_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u par=4
+X384 sub_p a_18764_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u m=4
 X385 sub_n a_19748_36440# vcm vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X386 a_33484_36240# ctl_g2_lo_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
-X392 sub_n a_26024_36240# cap_mim_2f0fF c_width=5u c_length=5.18u par=3
+X392 sub_n a_26024_36240# cap_mim_2f0fF c_width=5u c_length=5.18u m=3
 X394 top_p sub_p cap_mim_2f0fF c_width=5.68u c_length=19.6u
 X399 vss ctl_g10_lo_p a_24344_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X401 vdd ctl_g2_hi_n a_8684_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
@@ -1362,15 +1362,15 @@ X402 sub_p a_12984_n2270# cap_mim_2f0fF c_width=5u c_length=5.13u
 X403 a_12984_n2270# ctl_g12_hi_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X405 a_28444_36240# ctl_g13_lo_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X406 vdd ctl_g8_hi_n a_11304_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X408 top_p a_4584_n2270# cap_mim_2f0fF c_width=5u c_length=5.17u par=2
+X408 top_p a_4584_n2270# cap_mim_2f0fF c_width=5u c_length=5.17u m=2
 X412 a_26024_36240# ctl_g11_lo_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X413 vss ctl_g5_lo_n a_37784_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
-X415 sub_p a_14664_n2270# cap_mim_2f0fF c_width=5u c_length=5.18u par=3
+X415 sub_p a_14664_n2270# cap_mim_2f0fF c_width=5u c_length=5.18u m=3
 X417 a_8684_36240# ctl_g2_hi_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X424 a_11304_36240# ctl_g8_hi_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X426 a_27704_36240# ctl_g12_lo_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X427 vdd ctl_g1_lo_n a_39464_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X430 sub_n a_18764_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=4
+X430 sub_n a_18764_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=4
 X431 vss ctl_g13_lo_n a_28444_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X432 vss ctl_g11_hi_p a_14664_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X434 vdd ctl_g4_hi_p a_4584_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
@@ -1380,15 +1380,15 @@ X444 sub_n a_14664_36240# cap_mim_2f0fF c_width=5u c_length=5.17u
 X447 vss ctl_g5_hi_n a_2904_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X448 a_3644_36240# ctl_g6_hi_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X453 a_18024_36240# ctl_g7_hi_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
-X455 sub_n a_23404_36240# cap_mim_2f0fF c_width=5u c_length=5.19u par=4
+X455 sub_n a_23404_36240# cap_mim_2f0fF c_width=5u c_length=5.19u m=4
 X458 a_6264_n2270# ctl_g3_hi_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X465 vss ctl_g9_hi_n a_18764_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X466 a_32744_36240# ctl_g0_lo_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
-X467 top_p a_34424_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u par=6
+X467 top_p a_34424_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u m=6
 X468 vdd ctl_g9_lo_n a_23404_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X471 vss ctl_g6_lo_p a_38524_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X473 a_34424_36240# ctl_g3_lo_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
-X475 sub_n a_29384_36240# cap_mim_2f0fF c_width=5u c_length=5.19u par=4
+X475 sub_n a_29384_36240# cap_mim_2f0fF c_width=5u c_length=5.19u m=4
 X476 vdd ctl_g6_hi_n a_3644_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X481 a_23404_36240# ctl_g9_lo_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X482 a_16344_n2270# ctl_g10_hi_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
@@ -1400,7 +1400,7 @@ X497 a_37784_n2270# ctl_g5_lo_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p p
 X500 vdd ctl_g13_hi_n a_13724_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X501 sub_p a_13724_n2270# cap_mim_2f0fF c_width=5u c_length=5.06u
 X508 vdd ctl_g10_hi_p a_16344_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X510 top_p a_8684_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u par=5
+X510 top_p a_8684_n2270# cap_mim_2f0fF c_width=5u c_length=5.19u m=5
 X511 vss ctl_g7_hi_p a_18024_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X512 vcm rst_sub sub_p vss nfet_03v3 ad=1.075p pd=3.36u as=1.075p ps=3.36u w=2.5u l=0.28u m=3
 X513 vss ctl_g1_hi_p a_1224_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
@@ -1421,7 +1421,7 @@ X553 vdd ctl_g4_hi_n a_4584_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u
 X554 a_7944_n2270# ctl_g0_hi_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X556 vdd ctl_g13_lo_p a_28444_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X557 top_n a_2904_36240# cap_mim_2f0fF c_width=5u c_length=5.12u
-X558 top_n a_4584_36240# cap_mim_2f0fF c_width=5u c_length=5.18u par=2
+X558 top_n a_4584_36240# cap_mim_2f0fF c_width=5u c_length=5.18u m=2
 X563 a_24344_36240# ctl_g10_lo_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X564 vss ctl_g4_lo_n a_36104_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X568 a_39464_n2270# ctl_g1_lo_p vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
@@ -1429,7 +1429,7 @@ X572 a_4584_36240# ctl_g4_hi_n vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps
 X574 vss ctl_g12_lo_p a_27704_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X580 a_6264_36240# ctl_g3_hi_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X581 vss ctl_g12_hi_p a_12984_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
-X584 top_n a_36104_36240# cap_mim_2f0fF c_width=5u c_length=5.17u par=3
+X584 top_n a_36104_36240# cap_mim_2f0fF c_width=5u c_length=5.17u m=3
 X585 vdd ctl_g5_hi_p a_2904_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
 X586 top_p a_3644_n2270# cap_mim_2f0fF c_width=5u c_length=5.05u
 X590 vss ctl_g10_lo_n a_24344_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
@@ -1449,11 +1449,11 @@ X634 vdd ctl_g8_lo_p a_29384_n2270# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86
 X635 vss ctl_g7_lo_p a_22664_n2270# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X636 a_36104_n2270# ctl_g4_lo_p vss vss nfet_03v3 ad=1.075p pd=3.36u as=1.875p ps=6.5u w=2.5u l=0.28u
 X639 vss ctl_g6_lo_n a_38524_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
-X640 top_n a_6264_36240# cap_mim_2f0fF c_width=5u c_length=5.2u par=2
+X640 top_n a_6264_36240# cap_mim_2f0fF c_width=5u c_length=5.2u m=2
 X644 a_28444_36240# ctl_g13_lo_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X650 a_26024_36240# ctl_g11_lo_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X651 vdd ctl_g5_lo_n a_37784_36240# vdd pfet_03v3 ad=3p pd=9.5u as=1.72p ps=4.86u w=4u l=0.28u
-X652 sub_p a_26024_n2270# cap_mim_2f0fF c_width=5u c_length=5.18u par=3
+X652 sub_p a_26024_n2270# cap_mim_2f0fF c_width=5u c_length=5.18u m=3
 X654 a_8684_36240# ctl_g2_hi_n vdd vdd pfet_03v3 ad=1.72p pd=4.86u as=3p ps=9.5u w=4u l=0.28u
 X656 vss ctl_g0_hi_n a_7944_36240# vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u
 X659 vcm rst_sub sub_n vss nfet_03v3 ad=1.875p pd=6.5u as=1.075p ps=3.36u w=2.5u l=0.28u

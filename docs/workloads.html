@@ -45,8 +45,8 @@
           <p>
             The 4 probe decks and 1 hero deck span distinct execution bottlenecks: BSIM4 device evaluation (<code>sar12</code>, <code>pll_ring_150m_4us</code>),
             large-matrix factorization &amp; netlist/PDK loading (<code>ti12_full</code> at 7,221 equations),
-            switched-capacitor sparse LU solve density (<code>sdm16</code> at 3,609 equations / 30k NNZ),
-            and long-horizon &gt;150k–208k-iteration mixed-signal switching stability (<code>pll_ring_150m_4us</code>, <code>sar12_hero_16cyc</code>).
+            switched-capacitor sparse LU solve density (<code>sdm16</code> at 5,345 equations / 44k NNZ),
+            and long-horizon &gt;150k–200k-iteration mixed-signal switching stability (<code>pll_ring_150m_4us</code>, <code>sar12_hero_16cyc</code>).
           </p>
         </div>
         <div>
@@ -86,24 +86,24 @@
               <td><span class="pill pill-pcore">Hero</span></td>
               <td class="num">1,559</td>
               <td class="num">14,092</td>
-              <td class="num">11,948</td>
+              <td class="num">12,459</td>
               <td><code>gear</code> · <code>6.6 µs</code></td>
-              <td class="num">54,581</td>
-              <td class="num">208,490</td>
+              <td class="num">53,305</td>
+              <td class="num">202,322</td>
               <td>BSIM4 Eval + KLU Refactor</td>
-              <td class="num">628.48 s</td>
+              <td class="num">626.75 s</td>
             </tr>
             <tr class="main-row" onclick="location.hash='sar12_probe_2cyc'">
               <td><a class="inline-link" href="#sar12_probe_2cyc"><code>sar12_probe_2cyc</code></a></td>
               <td><span class="pill pill-core">Probe</span></td>
               <td class="num">1,559</td>
               <td class="num">14,092</td>
-              <td class="num">12,516</td>
+              <td class="num">12,459</td>
               <td><code>gear</code> · <code>825 ns</code></td>
-              <td class="num">6,793</td>
-              <td class="num">27,301</td>
+              <td class="num">6,692</td>
+              <td class="num">25,457</td>
               <td>BSIM4 Eval + KLU Refactor</td>
-              <td class="num">79.66 s</td>
+              <td class="num">81.46 s</td>
             </tr>
             <tr class="main-row" onclick="location.hash='ti12_full_300ns'">
               <td><a class="inline-link" href="#ti12_full_300ns"><code>ti12_full_300ns</code></a></td>
@@ -132,14 +132,14 @@
             <tr class="main-row" onclick="location.hash='sdm16_120cyc'">
               <td><a class="inline-link" href="#sdm16_120cyc"><code>sdm16_120cyc</code></a></td>
               <td><span class="pill pill-core">Probe</span></td>
-              <td class="num">3,609</td>
-              <td class="num">30,011</td>
-              <td class="num">20,418</td>
+              <td class="num">5,345</td>
+              <td class="num">44,457</td>
+              <td class="num">30,530</td>
               <td><code>gear</code> · <code>37.5 µs</code></td>
-              <td class="num">14,211</td>
-              <td class="num">55,547</td>
+              <td class="num">13,622</td>
+              <td class="num">66,348</td>
               <td>KLU / Sparse LU Factor &amp; Solve</td>
-              <td class="num">75.52 s</td>
+              <td class="num">144.92 s</td>
             </tr>
           </tbody>
         </table>
@@ -152,24 +152,25 @@
         <div>
           <span class="pill pill-pcore">Hero Workload</span>
           <span class="pill pill-opt">1,559 Equations</span>
-          <span class="pill pill-solver">~208k Iterations</span>
+          <span class="pill pill-solver">~202k Iterations</span>
           <h2><code>sar12_hero_16cyc</code> — 12-bit Post-PEX Redundant SAR ADC (16 Conversion Cycles)</h2>
         </div>
         <a class="btn-link btn-secondary" href="index.html#sar12_hero_16cyc">View on Leaderboard &rarr;</a>
       </div>
       <p class="workload-desc">
-        Full-length hero transient benchmark designed to exceed 10 minutes on stock single-core <code>ngspice-47</code> (628.48 s Sparse 1c on Ryzen 9 7940HX).
-        Simulates 16 complete conversion cycles of a 1.8 V 12-bit majority-voting redundant successive-approximation ADC with MIM capacitor DAC,
+        Full-length hero transient benchmark exceeding 10 minutes on stock single-core <code>ngspice-47</code> (626.75 s Sparse 1c on Ryzen 9 7940HX).
+        Simulates 16 complete conversion cycles of a 1.8 V 12-bit majority-voting redundant successive-approximation ADC sampling a continuous
+        <code>151.5 kHz</code> differential sinewave (<code>&plusmn;0.78 V</code> single-ended / <code>&plusmn;1.56 V</code> diff) with MIM capacitor DAC,
         dynamic comparator, asynchronous SAR digital control logic, and extracted RC parasitics (<code>sar_12b_1v8_mvote_mim.spice</code>, 587 R, 1,232 C, 794 subckt/MOS instances).
-        Exercises both 3.3 V BSIM4v5 (including trap-assisted tunneling on <code>pfet_03v3</code>) and 5 V BSIM4v6 stdcell transistors across rapid comparator decisions and digital bit-cycling.
+        Reconstructed with the exact redundant capacitor weights, the 12-bit output tracks the sampled sinewave to <code>r = 0.9999997</code> (<code>0.87 mV</code> linearity RMS).
       </p>
       <figure class="waveform-figure">
-        <a href="img/sar12_hero_16cyc.svg?v=4" target="_blank" rel="noopener">
-          <img src="img/sar12_hero_16cyc.svg?v=4" alt="sar12_hero_16cyc transient waveforms: differential analog input vip/vin, decoded 15-bit SAR code, phi_s, eoc, and supply current" loading="lazy" />
+        <a href="img/sar12_hero_16cyc.svg?v=5" target="_blank" rel="noopener">
+          <img src="img/sar12_hero_16cyc.svg?v=5" alt="sar12_hero_16cyc transient waveforms: continuous 151.5 kHz sinewave input vip/vin, reconstructed 12-bit redundant SAR staircase overlaid on input, phi_s, eoc, and supply current" loading="lazy" />
         </a>
         <figcaption>
-          <span>Golden transient waveform (stock <code>ngspice-47</code>): differential analog input <code>v(vip)</code>/<code>v(vin)</code>, reconstructed 15-bit redundant SAR codes across all 16 conversion cycles, sampling/EOC strobes, and supply current.</span>
-          <a class="inline-link" href="img/sar12_hero_16cyc.svg?v=4" target="_blank" rel="noopener">Open full SVG</a>
+          <span>Golden transient waveform (stock <code>ngspice-47</code>): continuous <code>151.5 kHz</code> differential sinewave <code>v(vip)</code>/<code>v(vin)</code>, 12-bit redundant SAR output staircase tracking <code>v(vip)-v(vin)</code> (<code>r = 1.000000</code>), sampling/EOC strobes, and supply current.</span>
+          <a class="inline-link" href="img/sar12_hero_16cyc.svg?v=5" target="_blank" rel="noopener">Open full SVG</a>
         </figcaption>
       </figure>
       <div class="detail-grid">
@@ -177,18 +178,18 @@
           <h4>Simulation Parameters</h4>
           <div class="kv-list">
             <div class="kv-k">Source Design</div><div class="kv-v">aicdb/sar-gen-gemini4 (sar_12b_1v8_mvote_mim)</div>
-            <div class="kv-k">Transient Deck</div><div class="kv-v">tran 150p 6.60000e-06 (16 × 412.5 ns cycles)</div>
+            <div class="kv-k">Transient Deck</div><div class="kv-v">tran 150p 6.60000e-06 (16 × 412.5 ns cycles, continuous 151.5 kHz sinewave)</div>
             <div class="kv-k">.options</div><div class="kv-v">method=gear gmin=1e-12 reltol=1e-3 abstol=5e-12 vntol=2e-5 itl4=150 cshunt=1.5e-16</div>
-            <div class="kv-k">Matrix Size</div><div class="kv-v">1,559 eqns · 14,092 orig NNZ · 11,948 Sparse fill (5,994 KLU fill)</div>
-            <div class="kv-k">Work Volume</div><div class="kv-v">54,581 timepoints (49,078 acc / 5,503 rej) · 208,490 total iters</div>
+            <div class="kv-k">Matrix Size</div><div class="kv-v">1,559 eqns · 14,092 orig NNZ · 12,459 Sparse fill</div>
+            <div class="kv-k">Work Volume</div><div class="kv-v">53,305 timepoints (48,478 acc / 4,827 rej) · 202,322 total iters</div>
           </div>
         </div>
         <div class="detail-box">
           <h4>Saved Signals &amp; Verification Criteria</h4>
           <div class="kv-list">
-            <div class="kv-k">Saved Signals</div><div class="kv-v">v(phi_s), v(comp_clk), v(eoc), i(Vvdd), v(bit_0..bit_14) (19 vectors)</div>
-            <div class="kv-k">Digital Check</div><div class="kv-v">Bit-exact 15-bit redundant SAR codes across all 16 cycles: [27221, 32767, 32171, 756, 0, 2804, 32550, 32683, 5547, 0, 596, 32011, 32767, 29963, 230, 84]</div>
-            <div class="kv-k">Timing Check</div><div class="kv-v">End-of-conversion v(eoc) rising-edge skew &lt; 500 ps across all 16 cycles</div>
+            <div class="kv-k">Saved Signals</div><div class="kv-v">v(vip), v(vin), v(phi_s), v(comp_clk), v(eoc), i(Vvdd), v(bit_0..bit_14) (21 vectors)</div>
+            <div class="kv-k">Digital Check</div><div class="kv-v">Bit-exact 15-bit redundant SAR bit patterns across all 16 cycles (decoded 12-bit codes: 2096, 2800, 3391, 3777, 3900, 3740, 3322, 2711, 2000, 1296, 705, 319, 196, 356, 774, 1385)</div>
+            <div class="kv-k">Timing Check</div><div class="kv-v">End-of-conversion v(eoc) rising-edge skew &lt; 500 ps across all 16 cycles (75.1 ps KLU on Zen 4)</div>
             <div class="kv-k">Waveform Check</div><div class="kv-v">Post-reset (t &ge; 5 ns) relative RMS &lt; 0.05 &amp; t_end coverage &lt; 1e-6</div>
           </div>
         </div>
@@ -200,23 +201,23 @@
         <div>
           <span class="pill pill-core">Probe Workload</span>
           <span class="pill pill-opt">1,559 Equations</span>
-          <span class="pill pill-solver">~27k Iterations</span>
+          <span class="pill pill-solver">~25.5k Iterations</span>
           <h2><code>sar12_probe_2cyc</code> — 12-bit Post-PEX Redundant SAR ADC (2 Conversion Cycles)</h2>
         </div>
         <a class="btn-link btn-secondary" href="index.html#sar12_probe_2cyc">View on Leaderboard &rarr;</a>
       </div>
       <p class="workload-desc">
         Short 2-cycle version of the 12-bit post-PEX SAR ADC included in the 4-deck probe geomean.
-        Preserves the exact same circuit, DC operating point, comparator dynamics, and solver profile as <code>sar12_hero_16cyc</code> at ~1/8th the wall time,
+        Preserves the exact same circuit, continuous <code>151.5 kHz</code> sinewave stimulus, comparator dynamics, and solver profile as <code>sar12_hero_16cyc</code> at ~1/8th the wall time,
         making it ideal for rapid single-core profiling and regression sweeps.
       </p>
       <figure class="waveform-figure">
-        <a href="img/sar12_probe_2cyc.svg?v=4" target="_blank" rel="noopener">
-          <img src="img/sar12_probe_2cyc.svg?v=4" alt="sar12_probe_2cyc transient waveforms: differential analog input vip/vin, phi_s, comp_clk, eoc, MSB-to-LSB bit decisions, and supply current" loading="lazy" />
+        <a href="img/sar12_probe_2cyc.svg?v=5" target="_blank" rel="noopener">
+          <img src="img/sar12_probe_2cyc.svg?v=5" alt="sar12_probe_2cyc transient waveforms: continuous 151.5 kHz sinewave input vip/vin, phi_s, comp_clk, eoc, MSB-to-LSB bit decisions, and supply current" loading="lazy" />
         </a>
         <figcaption>
-          <span>Golden transient waveform (stock <code>ngspice-47</code>): 2 conversion cycles showing differential analog input <code>v(vip)</code>/<code>v(vin)</code>, asynchronous <code>v(comp_clk)</code> pulses, sequential MSB&rarr;LSB bit settling, and supply current.</span>
-          <a class="inline-link" href="img/sar12_probe_2cyc.svg?v=4" target="_blank" rel="noopener">Open full SVG</a>
+          <span>Golden transient waveform (stock <code>ngspice-47</code>): 2 conversion cycles showing continuous <code>151.5 kHz</code> differential sinewave <code>v(vip)</code>/<code>v(vin)</code>, asynchronous <code>v(comp_clk)</code> pulses, sequential MSB&rarr;LSB bit settling, and supply current.</span>
+          <a class="inline-link" href="img/sar12_probe_2cyc.svg?v=5" target="_blank" rel="noopener">Open full SVG</a>
         </figcaption>
       </figure>
       <div class="detail-grid">
@@ -224,18 +225,18 @@
           <h4>Simulation Parameters</h4>
           <div class="kv-list">
             <div class="kv-k">Source Design</div><div class="kv-v">aicdb/sar-gen-gemini4 (sar_12b_1v8_mvote_mim)</div>
-            <div class="kv-k">Transient Deck</div><div class="kv-v">tran 150p 8.25000e-07 (2 × 412.5 ns cycles)</div>
+            <div class="kv-k">Transient Deck</div><div class="kv-v">tran 150p 8.25000e-07 (2 × 412.5 ns cycles, continuous 151.5 kHz sinewave)</div>
             <div class="kv-k">.options</div><div class="kv-v">method=gear gmin=1e-12 reltol=1e-3 abstol=5e-12 vntol=2e-5 itl4=150 cshunt=1.5e-16</div>
-            <div class="kv-k">Matrix Size</div><div class="kv-v">1,559 eqns · 14,092 orig NNZ · 12,516 Sparse fill</div>
-            <div class="kv-k">Work Volume</div><div class="kv-v">6,793 timepoints (6,132 acc / 661 rej) · 27,301 total iters</div>
+            <div class="kv-k">Matrix Size</div><div class="kv-v">1,559 eqns · 14,092 orig NNZ · 12,459 Sparse fill</div>
+            <div class="kv-k">Work Volume</div><div class="kv-v">6,692 timepoints (6,072 acc / 620 rej) · 25,457 total iters</div>
           </div>
         </div>
         <div class="detail-box">
           <h4>Saved Signals &amp; Verification Criteria</h4>
           <div class="kv-list">
-            <div class="kv-k">Saved Signals</div><div class="kv-v">v(phi_s), v(comp_clk), v(eoc), i(Vvdd), v(bit_0..bit_14) (19 vectors)</div>
-            <div class="kv-k">Digital Check</div><div class="kv-v">Bit-exact 15-bit redundant SAR codes on both cycles: [27221, 32767]</div>
-            <div class="kv-k">Timing Check</div><div class="kv-v">v(eoc) rising-edge skew &lt; 500 ps &amp; post-reset rel_rms &lt; 0.05</div>
+            <div class="kv-k">Saved Signals</div><div class="kv-v">v(vip), v(vin), v(phi_s), v(comp_clk), v(eoc), i(Vvdd), v(bit_0..bit_14) (21 vectors)</div>
+            <div class="kv-k">Digital Check</div><div class="kv-v">Bit-exact 15-bit redundant SAR codes on both cycles (decoded 12-bit: 2096.1, 2799.8)</div>
+            <div class="kv-k">Timing Check</div><div class="kv-v">v(eoc) rising-edge skew &lt; 500 ps (45.1 ps KLU on Zen 4) &amp; post-reset rel_rms &lt; 0.05</div>
           </div>
         </div>
       </div>
@@ -258,12 +259,12 @@
         Stresses L2/L3 cache footprint during BSIM4 device evaluation, truncation-error checks across thousands of MOSFETs, and PDK/netlist expansion.
       </p>
       <figure class="waveform-figure">
-        <a href="img/ti12_full_300ns.svg?v=4" target="_blank" rel="noopener">
-          <img src="img/ti12_full_300ns.svg?v=4" alt="ti12_full_300ns transient waveforms: vip, vin, vsh_p, fref, phi_s, and supply current" loading="lazy" />
+        <a href="img/ti12_full_300ns.svg?v=5" target="_blank" rel="noopener">
+          <img src="img/ti12_full_300ns.svg?v=5" alt="ti12_full_300ns transient waveforms: vip, vin, vsh_p, fref, phi_s, and supply current" loading="lazy" />
         </a>
         <figcaption>
           <span>Golden transient waveform (stock <code>ngspice-47</code>): 300 ns differential analog input, track/hold node <code>v(vsh_p)</code>, reference clock <code>v(fref)</code>, and post-UIC supply current.</span>
-          <a class="inline-link" href="img/ti12_full_300ns.svg?v=4" target="_blank" rel="noopener">Open full SVG</a>
+          <a class="inline-link" href="img/ti12_full_300ns.svg?v=5" target="_blank" rel="noopener">Open full SVG</a>
         </figcaption>
       </figure>
       <div class="detail-grid">
@@ -308,12 +309,12 @@
         Over 153,944 Newton iterations, ~90% of stock wall time (<code>209.8 s / 232.1 s</code>) is spent in BSIM4 device evaluation.
       </p>
       <figure class="waveform-figure">
-        <a href="img/pll_ring_150m_4us.svg?v=4" target="_blank" rel="noopener">
-          <img src="img/pll_ring_150m_4us.svg?v=4" alt="pll_ring_150m_4us transient waveforms: 6-bit SAR AFC code 0 to 31, control voltage v(vc) and afc_done, instantaneous VCO frequency, and zoomed locked output clock" loading="lazy" />
+        <a href="img/pll_ring_150m_4us.svg?v=5" target="_blank" rel="noopener">
+          <img src="img/pll_ring_150m_4us.svg?v=5" alt="pll_ring_150m_4us transient waveforms: 6-bit SAR AFC code 0 to 31, control voltage v(vc) and afc_done, instantaneous VCO frequency, and zoomed locked output clock" loading="lazy" />
         </a>
         <figcaption>
           <span>Golden transient waveform (stock <code>ngspice-47</code>): 4.0 µs startup from code <code>0</code> &rarr; half full-scale code <code>31</code>, <code>v(vc)</code> charge-pump lock after <code>afc_done</code>, instantaneous <code>f<sub>out</sub>(t)</code> acquisition, and zoomed 3.90–4.00 µs locked VCO/divider/reference clocks.</span>
-          <a class="inline-link" href="img/pll_ring_150m_4us.svg?v=4" target="_blank" rel="noopener">Open full SVG</a>
+          <a class="inline-link" href="img/pll_ring_150m_4us.svg?v=5" target="_blank" rel="noopener">Open full SVG</a>
         </figcaption>
       </figure>
       <div class="detail-grid">
@@ -341,45 +342,48 @@
       <div class="workload-head">
         <div>
           <span class="pill pill-core">Probe Workload</span>
-          <span class="pill pill-opt">3,609 Equations</span>
-          <span class="pill pill-solver">~55.5k Iterations</span>
+          <span class="pill pill-opt">5,345 Equations</span>
+          <span class="pill pill-solver">~66.3k Iterations</span>
           <h2><code>sdm16_120cyc</code> — 16-bit Switched-Capacitor CIFB Sigma-Delta Modulator (120 Cycles)</h2>
         </div>
         <a class="btn-link btn-secondary" href="index.html#sdm16_120cyc">View on Leaderboard &rarr;</a>
       </div>
       <p class="workload-desc">
         Second-order switched-capacitor cascade-of-integrators-with-feedback (CIFB) 16-bit sigma-delta modulator
-        (<code>sdm_16b_1v8_mim_cifb_split.spice</code>, 932 R, 822 C, 668 subckt/MOS instances, 3,609 equations, 30,011 nonzeros)
-        biased at nominal op-amp currents (<code>10.625 µA / 8.75 µA / 1.625 µA</code>) and driven with an unsaturated in-band
-        <code>&plusmn;0.15 V</code> differential sine at <code>26.67 kHz</code> over 37.5 µs (120 clock cycles at 3.2 MHz, 55,547 Newton iterations).
-        Features dense capacitor/switch coupling and high matrix fill-in (20,418 Sparse fill-ins), making it the most
+        (<code>sdm_16b_1v8_mim_cifb_split.spice</code>, 5,345 equations, 44,457 nonzeros) with true cross-coupled NOR2 non-overlapping
+        <code>phi1</code>/<code>phi2</code> clocks, <code>d=1</code> comparator/DFF loop timing, and high-Z op-amp-buffered SC-CMFB
+        (100% pure BSIM4 + passives) driven with an in-band <code>&plusmn;0.40 V</code> single-ended (<code>&plusmn;0.80 V</code> diff) sine at
+        <code>26.67 kHz</code> over 37.5 µs (120 clock cycles at 3.2 MHz, 66,348 Newton iterations).
+        Passing the 1-bit PDM bitstream through an ideal <code>&plusmn;1.8 V</code> DAC + Sinc<sup>3</sup> LPF recovers the input sinewave to
+        <strong><code>r = 0.9993</code></strong> (<code>30.8 mV</code> RMS error on <code>1.60 V<sub>pp</sub></code>).
+        Dense switched-capacitor coupling and high fill-in (30,530 Sparse fill-ins) make it the most
         <strong>linear-solver-bound</strong> workload in the suite — highlighting KLU vs Sparse LU refactorization and triangular solve performance.
       </p>
       <figure class="waveform-figure">
-        <a href="img/sdm16_120cyc.svg?v=4" target="_blank" rel="noopener">
-          <img src="img/sdm16_120cyc.svg?v=4" alt="sdm16_120cyc transient waveforms: unsaturated 0.15V sine input, integrator outputs vout1_p/vout2_p, latched dac_p PDM bitstream, and supply current" loading="lazy" />
+        <a href="img/sdm16_120cyc.svg?v=5" target="_blank" rel="noopener">
+          <img src="img/sdm16_120cyc.svg?v=5" alt="sdm16_120cyc transient waveforms: differential sine input overlaid with ideal-DAC Sinc3 recovered PDM, integrator outputs vout1_p/vout2_p with SC-CMFB, latched dac_p PDM bitstream, and supply current" loading="lazy" />
         </a>
         <figcaption>
-          <span>Golden transient waveform (stock <code>ngspice-47</code>): 37.5 µs unsaturated <code>&plusmn;0.15 V @ 26.7 kHz</code> sinusoidal input, 1st/2nd switched-cap integrator outputs (well inside supply rails), 115 post-reset latched <code>dac_p</code> PDM bitstream cycles, and supply current.</span>
-          <a class="inline-link" href="img/sdm16_120cyc.svg?v=4" target="_blank" rel="noopener">Open full SVG</a>
+          <span>Golden transient waveform (stock <code>ngspice-47</code>): 37.5 µs <code>&plusmn;0.80 V</code> diff sinewave overlaid with ideal-DAC + Sinc<sup>3</sup> recovered PDM (<code>r = 0.9993, RMS = 30.8 mV</code>), unsaturated 1st/2nd SC-CMFB integrator outputs, 115 post-reset latched <code>dac_p</code> PDM cycles, and supply current.</span>
+          <a class="inline-link" href="img/sdm16_120cyc.svg?v=5" target="_blank" rel="noopener">Open full SVG</a>
         </figcaption>
       </figure>
       <div class="detail-grid">
         <div class="detail-box">
           <h4>Simulation Parameters</h4>
           <div class="kv-list">
-            <div class="kv-k">Source Design</div><div class="kv-v">aicdb/sdm-gen-gemini4 (sdm_16b_1v8_mim_cifb_split)</div>
-            <div class="kv-k">Transient Deck</div><div class="kv-v">tran 1.56250e-08 3.75000e-05 uic (37.5 µs @ 15.625 ns step, 120 cycles, &plusmn;0.15 V @ 26.67 kHz)</div>
+            <div class="kv-k">Source Design</div><div class="kv-v">aicdb/sdm-gen-gemini4 (sdm_16b_1v8_mim_cifb_split + NOC + SC-CMFB)</div>
+            <div class="kv-k">Transient Deck</div><div class="kv-v">tran 1.56250e-08 3.75000e-05 (37.5 µs @ 15.625 ns step, 120 cycles, &plusmn;0.80 V diff @ 26.67 kHz)</div>
             <div class="kv-k">.options</div><div class="kv-v">reltol=2.5e-3 abstol=1e-11 vntol=1e-5 method=gear maxord=2 itl4=100</div>
-            <div class="kv-k">Matrix Size</div><div class="kv-v">3,609 eqns · 30,011 orig NNZ · 20,418 Sparse fill</div>
-            <div class="kv-k">Work Volume</div><div class="kv-v">14,211 timepoints (11,245 acc / 2,966 rej) · 55,547 total iters</div>
+            <div class="kv-k">Matrix Size</div><div class="kv-v">5,345 eqns · 44,457 orig NNZ · 30,530 Sparse fill</div>
+            <div class="kv-k">Work Volume</div><div class="kv-v">13,622 timepoints (10,901 acc / 2,721 rej) · 66,348 total iters</div>
           </div>
         </div>
         <div class="detail-box">
           <h4>Saved Signals &amp; Verification Criteria</h4>
           <div class="kv-list">
             <div class="kv-k">Saved Signals</div><div class="kv-v">v(vin_p/n), v(clk), v(xdut.phi1/2), v(xdut.dac_p/n), v(xdut.vout1_p/n), v(xdut.vout2_p/n), v(xdut.pdm_bit), v(dout_0), v(dout_valid), i(Vvdd) (15 vectors)</div>
-            <div class="kv-k">Digital &amp; Analog Check</div><div class="kv-v">Bit-exact latched <code>dac_p</code> PDM output across all 115/115 post-reset cycles, edge skew &lt; 500 ps (0.1 ps KLU / 0.4 ps Sparse on Zen 4), and analog signals rel_rms &le; 0.01 (5.98e-4 KLU on Zen 4)</div>
+            <div class="kv-k">Digital &amp; Analog Check</div><div class="kv-v">Bit-exact latched <code>dac_p</code> PDM output across all 115/115 post-reset cycles, ideal-DAC + Sinc<sup>3</sup> recovery <code>r &ge; 0.99</code> (<code>0.9993</code>), edge skew &lt; 500 ps (306.6 ps KLU / 215.9 ps Sparse on Zen 4), and analog voltage rel_rms &le; 0.01 (3.30e-3 KLU on Zen 4)</div>
           </div>
         </div>
       </div>

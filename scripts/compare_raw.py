@@ -32,8 +32,14 @@ def parse_raw(path: Path) -> Dict[str, np.ndarray]:
     return {vars_[i].lower(): arr[:, i] for i in range(nvars)}
 
 
+SAR12_REDUNDANT_WEIGHTS = [
+    2048.009, 1024.035, 511.978, 512.022, 255.98, 127.95,
+    63.999, 63.973, 31.987, 15.994, 7.998, 7.996, 3.999, 1.999, 1.0,
+]
+
+
 def decode_sar12_codes(d: Dict[str, np.ndarray], vdd: float = 1.8, t_per: float = 412.5e-9) -> List[int]:
-    """Extract 15-bit redundant SAR codes at the end of each conversion cycle."""
+    """Extract 15-bit redundant SAR bit patterns at the end of each conversion cycle."""
     if "v(bit_0)" not in d or "v(bit_14)" not in d:
         return []
     t = d["time"]
@@ -49,6 +55,23 @@ def decode_sar12_codes(d: Dict[str, np.ndarray], vdd: float = 1.8, t_per: float 
                 code |= 1 << (14 - b)
         codes.append(code)
     return codes
+
+
+def decode_sar12_weighted(
+    d: Dict[str, np.ndarray], vdd: float = 1.8, t_per: float = 412.5e-9, fs_diff: float = 1.725
+) -> Dict[str, Any]:
+    """Decode 15-bit redundant SAR outputs into calibrated 12-bit codes and differential voltages."""
+    raw_bits = decode_sar12_codes(d, vdd=vdd, t_per=t_per)
+    w_sum = sum(SAR12_REDUNDANT_WEIGHTS)
+    codes_12b: List[float] = []
+    v_rec: List[float] = []
+    for code in raw_bits:
+        w_val = sum(
+            w for b, w in enumerate(SAR12_REDUNDANT_WEIGHTS) if (code >> (14 - b)) & 1
+        )
+        codes_12b.append(round(w_val * 4095.0 / w_sum, 1))
+        v_rec.append((2.0 * w_val / w_sum - 1.0) * fs_diff)
+    return {"codes_15b": raw_bits, "codes_12b": codes_12b, "v_rec": np.asarray(v_rec, dtype=float)}
 
 
 def decode_sdm_bits(d: Dict[str, np.ndarray], vdd: float = 1.8) -> List[int]:
@@ -68,6 +91,45 @@ def decode_sdm_bits(d: Dict[str, np.ndarray], vdd: float = 1.8) -> List[int]:
         idx = int(np.argmin(np.abs(t - t_sample)))
         bits.append(1 if float(d[sig][idx]) > vth else 0)
     return bits
+
+
+def reconstruct_sdm_ideal_dac(d: Dict[str, np.ndarray], vdd: float = 1.8) -> Dict[str, Any]:
+    """Recover the analog input from the 1-bit PDM bitstream via an ideal ±VDD DAC + zero-phase Sinc3 LPF."""
+    bits = decode_sdm_bits(d, vdd=vdd)
+    if len(bits) < 30 or "v(vin_p)" not in d or "v(vin_n)" not in d:
+        return {}
+    t = d["time"]
+    ts = 312.5e-9
+    times = np.array([(k + 0.85) * ts for k in range(5, 5 + len(bits))], dtype=float)
+    dac_v = np.array([vdd if b else -vdd for b in bits], dtype=float)
+    box = np.ones(9, dtype=float) / 9.0
+    h = np.convolve(np.convolve(box, box), box)  # 25-tap zero-phase Sinc3 FIR, unity DC gain
+    rec = np.convolve(dac_v, h, mode="same")
+    vin_diff = np.interp(times, t, d["v(vin_p)"] - d["v(vin_n)"])
+    pad = 13
+    best_corr = -1.0
+    best_lag = 0
+    best_rms_mv = float("inf")
+    for lag in range(5):
+        a_r = rec[pad + lag : len(rec) - pad]
+        a_v = vin_diff[pad : len(rec) - pad - lag]
+        if len(a_r) < 10:
+            continue
+        c = float(np.corrcoef(a_r, a_v)[0, 1])
+        if c > best_corr:
+            best_corr = c
+            best_lag = lag
+            best_rms_mv = float(np.sqrt(np.mean((a_r - a_v) ** 2)) * 1e3)
+    # Time-aligned valid interior window for plotting
+    t_valid = times[pad : len(rec) - pad - best_lag]
+    v_valid = rec[pad + best_lag : len(rec) - pad]
+    return {
+        "t_rec": t_valid,
+        "v_rec": v_valid,
+        "corr": round(best_corr, 5),
+        "lag_cyc": best_lag,
+        "rms_err_mv": round(best_rms_mv, 2),
+    }
 
 
 def decode_pll_metrics(d: Dict[str, np.ndarray], vdd: float = 1.8) -> Dict[str, Any]:
@@ -150,6 +212,7 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
     cand_sdm = decode_sdm_bits(cand)
     sdm_match = (ref_sdm == cand_sdm) if ref_sdm else True
     sdm_pdm_max_dt_ps = 0.0
+    sdm_dac_corr = None
 
     ref_pll = decode_pll_metrics(ref)
     cand_pll = decode_pll_metrics(cand)
@@ -202,26 +265,31 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
             sdm_pdm_max_dt_ps = float("inf")
         elif pr:
             sdm_pdm_max_dt_ps = max(abs(a - b) * 1e12 for a, b in zip(pr, pc))
-        digital_nodes = {
+        switching_nodes = {
             "v(xdut.pdm_bit)", "v(xdut.dac_p)", "v(xdut.dac_n)",
             "v(xdut.phi1)", "v(xdut.phi2)", "v(dout_0)", "v(dout_valid)",
+            "v(clk)", "i(vvdd)",
         }
         analog_worst = max(
-            (v["rel_rms"] for k, v in per_vec.items() if k not in digital_nodes),
+            (v["rel_rms"] for k, v in per_vec.items() if k not in switching_nodes),
             default=0.0,
         )
         worst_rel_rms = analog_worst
         worst_vec = max(
-            ((v["rel_rms"], k) for k, v in per_vec.items() if k not in digital_nodes),
+            ((v["rel_rms"], k) for k, v in per_vec.items() if k not in switching_nodes),
             default=(0.0, ""),
         )[1]
+        sdm_dac = reconstruct_sdm_ideal_dac(cand)
+        sdm_dac_corr = sdm_dac.get("corr", 0.0) if sdm_dac else 0.0
         passed = (
             (t_cov < 1e-6)
             and sdm_match
             and (sdm_pdm_max_dt_ps < 500.0)
             and (analog_worst <= 0.01)
+            and (sdm_dac_corr >= 0.99)
         )
     else:
+        sdm_dac_corr = None
         passed = (t_cov < 1e-6) and (worst_rel_rms <= tol_rms) and codes_match
 
     return {
@@ -239,6 +307,7 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
         "sdm_bits_count": len(ref_sdm),
         "sdm_bits_match": sdm_match,
         "sdm_pdm_max_dt_ps": sdm_pdm_max_dt_ps,
+        "sdm_dac_corr": sdm_dac_corr if ref_sdm else None,
         "pll_code_ref": ref_pll.get("code_final") if ref_pll else None,
         "pll_code_cand": cand_pll.get("code_final") if cand_pll else None,
         "pll_code_match": pll_code_match,

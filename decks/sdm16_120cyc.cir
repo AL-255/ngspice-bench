@@ -26,14 +26,14 @@ Vrst rst_int 0 PWL(0 1.8 1.10938e-06 1.8 1.11138e-06 0)
 Ibias_s1 vdd ib_s1 10.625u
 Ibias_s2 vdd ib_s2 8.750u
 Ibias_vcm vdd ib_vcm 1.625u
-Vinp vin_p 0 SIN(0.9 0.15000 26666.667 1.10938e-06)
-Vinn vin_n 0 SIN(0.9 -0.15000 26666.667 1.10938e-06)
+Vinp vin_p 0 SIN(0.9 0.40000 26666.667 1.10938e-06)
+Vinn vin_n 0 SIN(0.9 -0.40000 26666.667 1.10938e-06)
 
 Xdut vin_p vin_n vcm clk rst_int ib_s1 ib_s2 ib_vcm dout_0 dout_1 dout_2 dout_3 dout_4 dout_5 dout_6 dout_7 dout_8 dout_9 dout_10 dout_11 dout_12 dout_13 dout_14 dout_15 dout_valid vdd vss sdm_adc_sdm_16b_1v8_mim_cifb_split
 
 .save v(vin_p) v(vin_n) v(clk) v(xdut.phi1) v(xdut.phi2) v(xdut.dac_p) v(xdut.dac_n) v(xdut.vout1_p) v(xdut.vout1_n) v(xdut.vout2_p) v(xdut.vout2_n) v(xdut.pdm_bit) v(dout_0) v(dout_valid) i(Vvdd)
 .control
-tran 1.56250e-08 3.75000e-05 uic
+tran 1.56250e-08 3.75000e-05
 rusage all
 write sdm16_120cyc.raw v(vin_p) v(vin_n) v(clk) v(xdut.phi1) v(xdut.phi2) v(xdut.dac_p) v(xdut.dac_n) v(xdut.vout1_p) v(xdut.vout1_n) v(xdut.vout2_p) v(xdut.vout2_n) v(xdut.pdm_bit) v(dout_0) v(dout_valid) i(Vvdd)
 quit

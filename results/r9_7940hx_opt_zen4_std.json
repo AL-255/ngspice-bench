@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "submission_id": "r9_7940hx_opt_zen4_std",
-  "timestamp_utc": "2026-11-19T21:18:01Z",
+  "timestamp_utc": "2026-11-19T22:20:47Z",
   "mode": "single_core",
   "all_ok": true,
   "host": {
@@ -61,152 +61,30 @@
       "solver": "klu",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 17.8732,
+      "wall_s": 30.8049,
       "rusage": {
-        "total_elapsed_s": 17.853,
-        "total_analysis_s": 17.7352,
-        "tran_analysis_s": 17.7168,
-        "tran_load_s": 5.75124,
-        "tran_factor_s": 8.68796,
-        "tran_solve_s": 2.88456,
-        "tran_trunc_s": 0.194866,
-        "reorder_s": 0.00145895,
-        "tot_iter": 55558,
-        "tran_iter": 55558,
-        "tran_pts": 14197,
-        "accepted_pts": 11229,
-        "rejected_pts": 2968,
-        "eqns": 3609
+        "total_elapsed_s": 30.78,
+        "total_analysis_s": 30.6307,
+        "tran_analysis_s": 30.5287,
+        "tran_load_s": 9.25639,
+        "tran_factor_s": 15.5769,
+        "tran_solve_s": 5.16762,
+        "tran_trunc_s": 0.275613,
+        "reorder_s": 0.00433557,
+        "tot_iter": 66486,
+        "tran_iter": 66413,
+        "tran_pts": 13566,
+        "accepted_pts": 10870,
+        "rejected_pts": 2696,
+        "eqns": 5345
       },
       "accuracy": {
         "pass": true,
         "exact_grid": false,
-        "npts_ref": 11244,
-        "npts_cand": 11228,
+        "npts_ref": 10901,
+        "npts_cand": 10870,
         "t_end_rel_diff": 0.0,
-        "worst_rel_rms": 0.0005979707037862517,
-        "worst_vec": "v(xdut.vout1_n)",
-        "sar_codes_ref": [],
-        "sar_codes_cand": [],
-        "sar_codes_match": true,
-        "eoc_max_dt_ps": 0.0,
-        "sdm_bits_count": 115,
-        "sdm_bits_match": true,
-        "sdm_pdm_max_dt_ps": 0.13330197948073497,
-        "pll_code_ref": null,
-        "pll_code_cand": null,
-        "pll_code_match": true,
-        "pll_fout_mhz": null,
-        "pll_vc_final_v": null,
-        "pll_vc_err_mv": null,
-        "per_vec": {
-          "v(vin_p)": {
-            "max_abs": 1.1572633085155104e-07,
-            "rms": 5.4202325542974535e-09,
-            "rel_rms": 5.162126447595785e-09
-          },
-          "v(vin_n)": {
-            "max_abs": 1.1572633074052874e-07,
-            "rms": 5.4202325542117534e-09,
-            "rel_rms": 5.1621265271627915e-09
-          },
-          "v(clk)": {
-            "max_abs": 1.0749372450892337e-11,
-            "rms": 4.2427035627563873e-13,
-            "rel_rms": 2.3570575348646595e-13
-          },
-          "v(xdut.phi1)": {
-            "max_abs": 0.0549683215334148,
-            "rms": 0.0011549470603859965,
-            "rel_rms": 0.0006399500262568063
-          },
-          "v(xdut.phi2)": {
-            "max_abs": 0.08965477462518634,
-            "rms": 0.0016229722155668052,
-            "rel_rms": 0.0009001833313378574
-          },
-          "v(xdut.dac_p)": {
-            "max_abs": 0.002435150405644078,
-            "rms": 2.838928413049179e-05,
-            "rel_rms": 1.5727173533475476e-05
-          },
-          "v(xdut.dac_n)": {
-            "max_abs": 0.39734739098297966,
-            "rms": 0.005221304177819413,
-            "rel_rms": 0.002892370496059839
-          },
-          "v(xdut.vout1_p)": {
-            "max_abs": 0.008923772815686903,
-            "rms": 0.00028907439562714276,
-            "rel_rms": 0.00015990534656783184
-          },
-          "v(xdut.vout1_n)": {
-            "max_abs": 0.03181268900768075,
-            "rms": 0.00110640400096514,
-            "rel_rms": 0.0005979707037862517
-          },
-          "v(xdut.vout2_p)": {
-            "max_abs": 0.0033814715905475523,
-            "rms": 0.0003266944831093191,
-            "rel_rms": 0.0001775786670464473
-          },
-          "v(xdut.vout2_n)": {
-            "max_abs": 0.013431799743060122,
-            "rms": 0.0010076982565380918,
-            "rel_rms": 0.0005417951978560334
-          },
-          "v(xdut.pdm_bit)": {
-            "max_abs": 0.5408015915837181,
-            "rms": 0.006832485382710677,
-            "rel_rms": 0.0037568327952290357
-          },
-          "v(dout_0)": {
-            "max_abs": 0.5941394250098859,
-            "rms": 0.008783897153015991,
-            "rel_rms": 0.004851537341346077
-          },
-          "v(dout_valid)": {
-            "max_abs": 0.0549683215334148,
-            "rms": 0.0011549470603859965,
-            "rel_rms": 0.0006399500262568063
-          },
-          "i(vvdd)": {
-            "max_abs": 0.0007641966021819985,
-            "rms": 1.070948473062482e-05,
-            "rel_rms": 4.407790802055261e-05
-          }
-        }
-      }
-    },
-    {
-      "deck": "sdm16_120cyc",
-      "solver": "sparse",
-      "num_threads": 1,
-      "rc": 0,
-      "wall_s": 35.6868,
-      "rusage": {
-        "total_elapsed_s": 35.668,
-        "total_analysis_s": 35.5511,
-        "tran_analysis_s": 35.5367,
-        "tran_load_s": 7.55851,
-        "tran_factor_s": 20.4534,
-        "tran_solve_s": 7.04637,
-        "tran_trunc_s": 0.198851,
-        "reorder_s": 0.0745904,
-        "tot_iter": 55509,
-        "tran_iter": 55509,
-        "tran_pts": 14182,
-        "accepted_pts": 11238,
-        "rejected_pts": 2944,
-        "eqns": 3609
-      },
-      "accuracy": {
-        "pass": true,
-        "exact_grid": false,
-        "npts_ref": 11244,
-        "npts_cand": 11237,
-        "t_end_rel_diff": 0.0,
-        "worst_rel_rms": 0.007964966772611454,
+        "worst_rel_rms": 0.0032979721978895604,
         "worst_vec": "v(xdut.vout2_n)",
         "sar_codes_ref": [],
         "sar_codes_cand": [],
@@ -214,90 +92,60 @@
         "eoc_max_dt_ps": 0.0,
         "sdm_bits_count": 115,
         "sdm_bits_match": true,
-        "sdm_pdm_max_dt_ps": 0.4484093658722616,
+        "sdm_pdm_max_dt_ps": 306.6111349189771,
+        "sdm_dac_corr": 0.99932,
         "pll_code_ref": null,
         "pll_code_cand": null,
         "pll_code_match": true,
         "pll_fout_mhz": null,
         "pll_vc_final_v": null,
-        "pll_vc_err_mv": null,
-        "per_vec": {
-          "v(vin_p)": {
-            "max_abs": 1.1953807232956137e-07,
-            "rms": 1.4034283153289686e-08,
-            "rel_rms": 1.3365984487363915e-08
-          },
-          "v(vin_n)": {
-            "max_abs": 1.1953807232956137e-07,
-            "rms": 1.4034283151410489e-08,
-            "rel_rms": 1.3365984691803617e-08
-          },
-          "v(clk)": {
-            "max_abs": 1.0749372450892337e-11,
-            "rms": 4.1749344414313706e-13,
-            "rel_rms": 2.319408023017428e-13
-          },
-          "v(xdut.phi1)": {
-            "max_abs": 0.05482731231802074,
-            "rms": 0.0007837244252327286,
-            "rel_rms": 0.00043425753760363973
-          },
-          "v(xdut.phi2)": {
-            "max_abs": 0.08958533560212345,
-            "rms": 0.0012602773219433157,
-            "rel_rms": 0.0006990142081269595
-          },
-          "v(xdut.dac_p)": {
-            "max_abs": 0.006550772730127448,
-            "rms": 7.978150818062032e-05,
-            "rel_rms": 4.4197578852344e-05
-          },
-          "v(xdut.dac_n)": {
-            "max_abs": 0.45170774316239903,
-            "rms": 0.0053084303338811305,
-            "rel_rms": 0.0029406345149037404
-          },
-          "v(xdut.vout1_p)": {
-            "max_abs": 0.03648159600516121,
-            "rms": 0.0026189642841421426,
-            "rel_rms": 0.0014487149254293929
-          },
-          "v(xdut.vout1_n)": {
-            "max_abs": 0.051244906124382594,
-            "rms": 0.004256151181991903,
-            "rel_rms": 0.0023002933065103524
-          },
-          "v(xdut.vout2_p)": {
-            "max_abs": 0.04343898335202935,
-            "rms": 0.004285075552424521,
-            "rel_rms": 0.0023292037182588076
-          },
-          "v(xdut.vout2_n)": {
-            "max_abs": 0.11657360122247654,
-            "rms": 0.014814238224896836,
-            "rel_rms": 0.007964966772611454
-          },
-          "v(xdut.pdm_bit)": {
-            "max_abs": 1.8031825436691242,
-            "rms": 0.1208156345986282,
-            "rel_rms": 0.06643031236994218
-          },
-          "v(dout_0)": {
-            "max_abs": 1.7149556388843918,
-            "rms": 0.022624292894070593,
-            "rel_rms": 0.012495888770674722
-          },
-          "v(dout_valid)": {
-            "max_abs": 0.05482731231802074,
-            "rms": 0.0007837244252327286,
-            "rel_rms": 0.00043425753760363973
-          },
-          "i(vvdd)": {
-            "max_abs": 0.0007709112913020892,
-            "rms": 1.1330875267004738e-05,
-            "rel_rms": 4.663541621037921e-05
-          }
-        }
+        "pll_vc_err_mv": null
+      }
+    },
+    {
+      "deck": "sdm16_120cyc",
+      "solver": "sparse",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 69.5674,
+      "rusage": {
+        "total_elapsed_s": 69.546,
+        "total_analysis_s": 69.4021,
+        "tran_analysis_s": 68.9519,
+        "tran_load_s": 12.8337,
+        "tran_factor_s": 41.4528,
+        "tran_solve_s": 14.0865,
+        "tran_trunc_s": 0.306825,
+        "reorder_s": 0.310393,
+        "tot_iter": 66278,
+        "tran_iter": 66208,
+        "tran_pts": 13534,
+        "accepted_pts": 10838,
+        "rejected_pts": 2696,
+        "eqns": 5345
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": false,
+        "npts_ref": 10901,
+        "npts_cand": 10838,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 0.004645825656196218,
+        "worst_vec": "v(xdut.vout2_p)",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 115,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 215.85616823804182,
+        "sdm_dac_corr": 0.99932,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
       }
     },
     {
@@ -607,41 +455,51 @@
       "solver": "klu",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 9.1732,
+      "wall_s": 9.6863,
       "rusage": {
-        "total_elapsed_s": 9.131,
-        "total_analysis_s": 8.86482,
-        "tran_analysis_s": 8.49007,
-        "tran_load_s": 5.72141,
-        "tran_factor_s": 1.97864,
-        "tran_solve_s": 0.541838,
-        "tran_trunc_s": 0.176734,
-        "reorder_s": 0.00316495,
-        "tot_iter": 25957,
-        "tran_iter": 25708,
-        "tran_pts": 6786,
-        "accepted_pts": 6126,
-        "rejected_pts": 660,
+        "total_elapsed_s": 9.644,
+        "total_analysis_s": 9.34379,
+        "tran_analysis_s": 8.94803,
+        "tran_load_s": 6.1078,
+        "tran_factor_s": 2.00725,
+        "tran_solve_s": 0.556565,
+        "tran_trunc_s": 0.19882,
+        "reorder_s": 0.00320313,
+        "tot_iter": 25709,
+        "tran_iter": 25460,
+        "tran_pts": 6691,
+        "accepted_pts": 6073,
+        "rejected_pts": 618,
         "eqns": 1559
       },
       "accuracy": {
         "pass": true,
         "exact_grid": false,
-        "npts_ref": 6132,
-        "npts_cand": 6126,
+        "npts_ref": 6072,
+        "npts_cand": 6073,
         "t_end_rel_diff": 0.0,
-        "worst_rel_rms": 0.009267947717370363,
-        "worst_vec": "v(bit_7)",
+        "worst_rel_rms": 0.02256406044115911,
+        "worst_vec": "v(bit_0)",
         "sar_codes_ref": [
-          31243,
-          1524
+          17579,
+          22903
         ],
         "sar_codes_cand": [
-          31243,
-          1524
+          17579,
+          22903
         ],
         "sar_codes_match": true,
-        "eoc_max_dt_ps": 24.492285700625214
+        "eoc_max_dt_ps": 45.13851236916676,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
       }
     },
     {
@@ -649,41 +507,51 @@
       "solver": "sparse",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 20.146,
+      "wall_s": 21.2861,
       "rusage": {
-        "total_elapsed_s": 20.11,
-        "total_analysis_s": 19.8373,
-        "tran_analysis_s": 17.0109,
-        "tran_load_s": 6.91067,
-        "tran_factor_s": 8.38793,
-        "tran_solve_s": 1.43663,
-        "tran_trunc_s": 0.196808,
-        "reorder_s": 0.0601882,
-        "tot_iter": 27416,
-        "tran_iter": 25583,
-        "tran_pts": 6783,
-        "accepted_pts": 6128,
-        "rejected_pts": 655,
+        "total_elapsed_s": 21.244,
+        "total_analysis_s": 20.948,
+        "tran_analysis_s": 17.93,
+        "tran_load_s": 7.35267,
+        "tran_factor_s": 8.80697,
+        "tran_solve_s": 1.4589,
+        "tran_trunc_s": 0.226278,
+        "reorder_s": 0.0448245,
+        "tot_iter": 27280,
+        "tran_iter": 25410,
+        "tran_pts": 6697,
+        "accepted_pts": 6073,
+        "rejected_pts": 624,
         "eqns": 1559
       },
       "accuracy": {
         "pass": true,
         "exact_grid": false,
-        "npts_ref": 6132,
-        "npts_cand": 6128,
+        "npts_ref": 6072,
+        "npts_cand": 6073,
         "t_end_rel_diff": 0.0,
-        "worst_rel_rms": 0.03641716811325476,
-        "worst_vec": "v(comp_clk)",
+        "worst_rel_rms": 0.016616285365874645,
+        "worst_vec": "v(bit_0)",
         "sar_codes_ref": [
-          31243,
-          1524
+          17579,
+          22903
         ],
         "sar_codes_cand": [
-          31243,
-          1524
+          17579,
+          22903
         ],
         "sar_codes_match": true,
-        "eoc_max_dt_ps": 139.27381532824907
+        "eoc_max_dt_ps": 27.662261819230753,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
       }
     },
     {
@@ -691,69 +559,79 @@
       "solver": "klu",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 69.3998,
+      "wall_s": 71.8973,
       "rusage": {
-        "total_elapsed_s": 69.343,
-        "total_analysis_s": 69.0673,
-        "tran_analysis_s": 68.6948,
-        "tran_load_s": 46.4351,
-        "tran_factor_s": 15.8603,
-        "tran_solve_s": 4.35162,
-        "tran_trunc_s": 1.46825,
-        "reorder_s": 0.00313176,
-        "tot_iter": 206514,
-        "tran_iter": 206265,
-        "tran_pts": 54579,
-        "accepted_pts": 49073,
-        "rejected_pts": 5506,
+        "total_elapsed_s": 71.832,
+        "total_analysis_s": 71.5315,
+        "tran_analysis_s": 71.1318,
+        "tran_load_s": 48.4044,
+        "tran_factor_s": 16.183,
+        "tran_solve_s": 4.40144,
+        "tran_trunc_s": 1.52512,
+        "reorder_s": 0.00327692,
+        "tot_iter": 202681,
+        "tran_iter": 202432,
+        "tran_pts": 53340,
+        "accepted_pts": 48488,
+        "rejected_pts": 4852,
         "eqns": 1559
       },
       "accuracy": {
         "pass": true,
         "exact_grid": false,
-        "npts_ref": 49078,
-        "npts_cand": 49073,
+        "npts_ref": 48478,
+        "npts_cand": 48488,
         "t_end_rel_diff": 0.0,
-        "worst_rel_rms": 0.010187794671482224,
-        "worst_vec": "v(bit_7)",
+        "worst_rel_rms": 0.008452169711536879,
+        "worst_vec": "v(bit_0)",
         "sar_codes_ref": [
-          27221,
-          32767,
-          32171,
-          756,
-          0,
-          2804,
-          32550,
-          32683,
-          5547,
-          0,
-          596,
-          32011,
-          32767,
-          29963,
-          230,
-          84
+          17579,
+          22903,
+          27578,
+          31412,
+          32072,
+          31321,
+          27300,
+          22442,
+          15189,
+          9865,
+          5190,
+          1364,
+          696,
+          1447,
+          5476,
+          10326
         ],
         "sar_codes_cand": [
-          27221,
-          32767,
-          32171,
-          756,
-          0,
-          2804,
-          32550,
-          32683,
-          5547,
-          0,
-          596,
-          32011,
-          32767,
-          29963,
-          230,
-          84
+          17579,
+          22903,
+          27578,
+          31412,
+          32072,
+          31321,
+          27300,
+          22442,
+          15189,
+          9865,
+          5190,
+          1364,
+          696,
+          1447,
+          5476,
+          10326
         ],
         "sar_codes_match": true,
-        "eoc_max_dt_ps": 110.73764355090294
+        "eoc_max_dt_ps": 75.05966434367149,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
       }
     },
     {
@@ -761,69 +639,79 @@
       "solver": "sparse",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 143.9231,
+      "wall_s": 149.7441,
       "rusage": {
-        "total_elapsed_s": 143.866,
-        "total_analysis_s": 143.596,
-        "tran_analysis_s": 141.073,
-        "tran_load_s": 58.4795,
-        "tran_factor_s": 68.6373,
-        "tran_solve_s": 11.4907,
-        "tran_trunc_s": 1.78477,
-        "reorder_s": 0.0442219,
-        "tot_iter": 207923,
-        "tran_iter": 206276,
-        "tran_pts": 54592,
-        "accepted_pts": 49079,
-        "rejected_pts": 5513,
+        "total_elapsed_s": 149.681,
+        "total_analysis_s": 149.401,
+        "tran_analysis_s": 146.363,
+        "tran_load_s": 59.7574,
+        "tran_factor_s": 71.9977,
+        "tran_solve_s": 12.0381,
+        "tran_trunc_s": 1.88309,
+        "reorder_s": 0.0450995,
+        "tot_iter": 204248,
+        "tran_iter": 202378,
+        "tran_pts": 53333,
+        "accepted_pts": 48485,
+        "rejected_pts": 4848,
         "eqns": 1559
       },
       "accuracy": {
         "pass": true,
         "exact_grid": false,
-        "npts_ref": 49078,
-        "npts_cand": 49079,
+        "npts_ref": 48478,
+        "npts_cand": 48485,
         "t_end_rel_diff": 0.0,
-        "worst_rel_rms": 0.004977880730227279,
-        "worst_vec": "v(bit_14)",
+        "worst_rel_rms": 0.01042725877639599,
+        "worst_vec": "v(bit_0)",
         "sar_codes_ref": [
-          27221,
-          32767,
-          32171,
-          756,
-          0,
-          2804,
-          32550,
-          32683,
-          5547,
-          0,
-          596,
-          32011,
-          32767,
-          29963,
-          230,
-          84
+          17579,
+          22903,
+          27578,
+          31412,
+          32072,
+          31321,
+          27300,
+          22442,
+          15189,
+          9865,
+          5190,
+          1364,
+          696,
+          1447,
+          5476,
+          10326
         ],
         "sar_codes_cand": [
-          27221,
-          32767,
-          32171,
-          756,
-          0,
-          2804,
-          32550,
-          32683,
-          5547,
-          0,
-          596,
-          32011,
-          32767,
-          29963,
-          230,
-          84
+          17579,
+          22903,
+          27578,
+          31412,
+          32072,
+          31321,
+          27300,
+          22442,
+          15189,
+          9865,
+          5190,
+          1364,
+          696,
+          1447,
+          5476,
+          10326
         ],
         "sar_codes_match": true,
-        "eoc_max_dt_ps": 99.16218347621545
+        "eoc_max_dt_ps": 81.86004158429711,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
       }
     }
   ]

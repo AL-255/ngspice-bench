@@ -2109,38 +2109,65 @@ C193 vdd vss 0.14499p
 
 * Compact GF180 CMOS synchronous phase/DAC controller for sdm2bin_16b_1v8
 .subckt sdm2bin_16b_1v8 clk rst_n pdm_in phi1 phi2 dac_p dac_n dout_0 dout_1 dout_2 dout_3 dout_4 dout_5 dout_6 dout_7 dout_8 dout_9 dout_10 dout_11 dout_12 dout_13 dout_14 dout_15 dout_valid vdd vss
-* 1. Non-overlapping phase clock drivers: phi2 = ~clk, phi1 = buf(clk)
-XMinv_clk_p phi2 clk vdd vdd pfet_03v3 w=2.0u l=0.28u nf=1 m=1 ad=0.72p as=0.72p pd=2.72u ps=2.72u
-XMinv_clk_n phi2 clk vss vss nfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
-XMinv_phi1_p phi1 phi2 vdd vdd pfet_03v3 w=2.0u l=0.28u nf=1 m=1 ad=0.72p as=0.72p pd=2.72u ps=2.72u
-XMinv_phi1_n phi1 phi2 vss vss nfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
+* 1. True cross-coupled NOR2 non-overlapping phase clock generator (phi1 & phi2 guaranteed non-overlapping)
+* clk_b = ~clk
+XMnoc_cb_p clk_b clk vdd vdd pfet_03v3 w=1.5u l=0.28u nf=1 m=1 ad=0.54p as=0.54p pd=2.22u ps=2.22u
+XMnoc_cb_n clk_b clk vss vss nfet_03v3 w=0.75u l=0.28u nf=1 m=1 ad=0.27p as=0.27p pd=1.47u ps=1.47u
+* Branch 1 (phi1 = high when clk=1): n1 = NOR(clk_b, phi2_fb) -> d1a -> phi1 -> phi1_fb
+XMnoc_n1_p1 n1_m clk_b vdd vdd pfet_03v3 w=1.5u l=0.28u nf=1 m=1 ad=0.54p as=0.54p pd=2.22u ps=2.22u
+XMnoc_n1_p2 n1 phi2_fb n1_m vdd pfet_03v3 w=1.5u l=0.28u nf=1 m=1 ad=0.54p as=0.54p pd=2.22u ps=2.22u
+XMnoc_n1_n1 n1 clk_b vss vss nfet_03v3 w=0.75u l=0.28u nf=1 m=1 ad=0.27p as=0.27p pd=1.47u ps=1.47u
+XMnoc_n1_n2 n1 phi2_fb vss vss nfet_03v3 w=0.75u l=0.28u nf=1 m=1 ad=0.27p as=0.27p pd=1.47u ps=1.47u
+XMnoc_d1a_p d1a n1 vdd vdd pfet_03v3 w=0.6u l=0.8u nf=1 m=1 ad=0.22p as=0.22p pd=1.32u ps=1.32u
+XMnoc_d1a_n d1a n1 vss vss nfet_03v3 w=0.42u l=0.8u nf=1 m=1 ad=0.15p as=0.15p pd=1.14u ps=1.14u
+Cnoc_d1a d1a vss 80f
+XMnoc_p1_p phi1 d1a vdd vdd pfet_03v3 w=3.0u l=0.28u nf=1 m=1 ad=1.08p as=1.08p pd=3.72u ps=3.72u
+XMnoc_p1_n phi1 d1a vss vss nfet_03v3 w=1.5u l=0.28u nf=1 m=1 ad=0.54p as=0.54p pd=2.22u ps=2.22u
+XMnoc_f1a_p f1a phi1 vdd vdd pfet_03v3 w=0.6u l=0.6u nf=1 m=1 ad=0.22p as=0.22p pd=1.32u ps=1.32u
+XMnoc_f1a_n f1a phi1 vss vss nfet_03v3 w=0.42u l=0.6u nf=1 m=1 ad=0.15p as=0.15p pd=1.14u ps=1.14u
+XMnoc_f1b_p phi1_fb f1a vdd vdd pfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
+XMnoc_f1b_n phi1_fb f1a vss vss nfet_03v3 w=0.5u l=0.28u nf=1 m=1 ad=0.18p as=0.18p pd=1.22u ps=1.22u
+* Branch 2 (phi2 = high when clk=0): n2 = NOR(clk, phi1_fb) -> d2a -> phi2 -> phi2_fb
+XMnoc_n2_p1 n2_m clk vdd vdd pfet_03v3 w=1.5u l=0.28u nf=1 m=1 ad=0.54p as=0.54p pd=2.22u ps=2.22u
+XMnoc_n2_p2 n2 phi1_fb n2_m vdd pfet_03v3 w=1.5u l=0.28u nf=1 m=1 ad=0.54p as=0.54p pd=2.22u ps=2.22u
+XMnoc_n2_n1 n2 clk vss vss nfet_03v3 w=0.75u l=0.28u nf=1 m=1 ad=0.27p as=0.27p pd=1.47u ps=1.47u
+XMnoc_n2_n2 n2 phi1_fb vss vss nfet_03v3 w=0.75u l=0.28u nf=1 m=1 ad=0.27p as=0.27p pd=1.47u ps=1.47u
+XMnoc_d2a_p d2a n2 vdd vdd pfet_03v3 w=0.6u l=0.8u nf=1 m=1 ad=0.22p as=0.22p pd=1.32u ps=1.32u
+XMnoc_d2a_n d2a n2 vss vss nfet_03v3 w=0.42u l=0.8u nf=1 m=1 ad=0.15p as=0.15p pd=1.14u ps=1.14u
+Cnoc_d2a d2a vss 80f
+XMnoc_p2_p phi2 d2a vdd vdd pfet_03v3 w=3.0u l=0.28u nf=1 m=1 ad=1.08p as=1.08p pd=3.72u ps=3.72u
+XMnoc_p2_n phi2 d2a vss vss nfet_03v3 w=1.5u l=0.28u nf=1 m=1 ad=0.54p as=0.54p pd=2.22u ps=2.22u
+XMnoc_f2a_p f2a phi2 vdd vdd pfet_03v3 w=0.6u l=0.6u nf=1 m=1 ad=0.22p as=0.22p pd=1.32u ps=1.32u
+XMnoc_f2a_n f2a phi2 vss vss nfet_03v3 w=0.42u l=0.6u nf=1 m=1 ad=0.15p as=0.15p pd=1.14u ps=1.14u
+XMnoc_f2b_p phi2_fb f2a vdd vdd pfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
+XMnoc_f2b_n phi2_fb f2a vss vss nfet_03v3 w=0.5u l=0.28u nf=1 m=1 ad=0.18p as=0.18p pd=1.22u ps=1.22u
 * 2. Master-Slave positive-edge CMOS DFF (pdm_q <= pdm_in on posedge clk, async active-low rst_n)
-* Master sampling TG (transparent when clk=0 / phi2=1)
-XMtg_m_n qm_in phi2 pdm_in vss nfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
-XMtg_m_p qm_in phi1 pdm_in vdd pfet_03v3 w=2.0u l=0.28u nf=1 m=1 ad=0.72p as=0.72p pd=2.72u ps=2.72u
+* Master sampling TG (transparent when clk=0 / phi1=1)
+XMtg_m_n qm_in clk pdm_in vss nfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
+XMtg_m_p qm_in clk_b pdm_in vdd pfet_03v3 w=2.0u l=0.28u nf=1 m=1 ad=0.72p as=0.72p pd=2.72u ps=2.72u
 * Master NAND2 with rst_n -> qm_b
 XMm_p1 qm_b qm_in vdd vdd pfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
 XMm_p2 qm_b rst_n vdd vdd pfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
 XMm_n1 qm_b qm_in qm_mid vss nfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
 XMm_n2 qm_mid rst_n vss vss nfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
-* Master inverter qm_b -> qm and hold keeper TG (active when clk=1 / phi1=1)
+* Master inverter qm_b -> qm and hold keeper TG (active when clk=1 / phi2=1)
 XMm_inv_p qm qm_b vdd vdd pfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
 XMm_inv_n qm qm_b vss vss nfet_03v3 w=0.5u l=0.28u nf=1 m=1 ad=0.18p as=0.18p pd=1.22u ps=1.22u
-XMtg_mh_n qm_in phi1 qm vss nfet_03v3 w=0.42u l=0.50u nf=1 m=1 ad=0.15p as=0.15p pd=1.14u ps=1.14u
-XMtg_mh_p qm_in phi2 qm vdd pfet_03v3 w=0.84u l=0.50u nf=1 m=1 ad=0.30p as=0.30p pd=1.56u ps=1.56u
-* Slave transfer TG (transparent when clk=1 / phi1=1)
-XMtg_s_n qs_in phi1 qm vss nfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
-XMtg_s_p qs_in phi2 qm vdd pfet_03v3 w=2.0u l=0.28u nf=1 m=1 ad=0.72p as=0.72p pd=2.72u ps=2.72u
+XMtg_mh_n qm_in clk_b qm vss nfet_03v3 w=0.42u l=0.50u nf=1 m=1 ad=0.15p as=0.15p pd=1.14u ps=1.14u
+XMtg_mh_p qm_in clk qm vdd pfet_03v3 w=0.84u l=0.50u nf=1 m=1 ad=0.30p as=0.30p pd=1.56u ps=1.56u
+* Slave transfer TG (transparent when clk=1 / phi2=1)
+XMtg_s_n qs_in clk_b qm vss nfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
+XMtg_s_p qs_in clk qm vdd pfet_03v3 w=2.0u l=0.28u nf=1 m=1 ad=0.72p as=0.72p pd=2.72u ps=2.72u
 * Slave NAND2 with rst_n -> pdm_qb
 XMs_p1 pdm_qb qs_in vdd vdd pfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
 XMs_p2 pdm_qb rst_n vdd vdd pfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
 XMs_n1 pdm_qb qs_in qs_mid vss nfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
 XMs_n2 qs_mid rst_n vss vss nfet_03v3 w=1.0u l=0.28u nf=1 m=1 ad=0.36p as=0.36p pd=1.72u ps=1.72u
-* Slave inverter pdm_qb -> pdm_q and hold keeper TG (active when clk=0 / phi2=1)
+* Slave inverter pdm_qb -> pdm_q and hold keeper TG (active when clk=0 / phi1=1)
 XMs_inv_p pdm_q pdm_qb vdd vdd pfet_03v3 w=1.5u l=0.28u nf=1 m=1 ad=0.54p as=0.54p pd=2.22u ps=2.22u
 XMs_inv_n pdm_q pdm_qb vss vss nfet_03v3 w=0.75u l=0.28u nf=1 m=1 ad=0.27p as=0.27p pd=1.47u ps=1.47u
-XMtg_sh_n qs_in phi2 pdm_q vss nfet_03v3 w=0.42u l=0.50u nf=1 m=1 ad=0.15p as=0.15p pd=1.14u ps=1.14u
-XMtg_sh_p qs_in phi1 pdm_q vdd pfet_03v3 w=0.84u l=0.50u nf=1 m=1 ad=0.30p as=0.30p pd=1.56u ps=1.56u
+XMtg_sh_n qs_in clk pdm_q vss nfet_03v3 w=0.42u l=0.50u nf=1 m=1 ad=0.15p as=0.15p pd=1.14u ps=1.14u
+XMtg_sh_p qs_in clk_b pdm_q vdd pfet_03v3 w=0.84u l=0.50u nf=1 m=1 ad=0.30p as=0.30p pd=1.56u ps=1.56u
 * 3. Phase-2 gated 1-bit DAC outputs: dac_p = phi2 & pdm_q, dac_n = phi2 & pdm_qb
 XMdp_p1 dac_pb phi2 vdd vdd pfet_03v3 w=1.5u l=0.28u nf=1 m=1 ad=0.54p as=0.54p pd=2.22u ps=2.22u
 XMdp_p2 dac_pb pdm_q vdd vdd pfet_03v3 w=1.5u l=0.28u nf=1 m=1 ad=0.54p as=0.54p pd=2.22u ps=2.22u
@@ -2475,7 +2502,33 @@ Xopa1_n vdd vss vcm_buf int1_n vout1_n ib_s1 opa_200f_pmos_miller_1v8_10u_100u_w
 Xopa2_p vdd vss vcm_buf int2_p vout2_p ib_s2 opa_200f_pmos_miller_1v8_10u_100u_subth
 Xopa2_n vdd vss vcm_buf int2_n vout2_n ib_s2 opa_200f_pmos_miller_1v8_10u_100u_subth
 Xopa_vcm vdd vss vcm vcm_buf vcm_buf ib_vcm opa_2p_nmos_5t_1v8_1u_10u_subth
-Xcmp vout2_p vout2_n phi2 phi1 pdm_bit cmp_outn vdd vdd vss sa_dt_lv_1v8_mi
+* High-Z Op-Amp-Buffered SC-CMFB for Stage 1 & Stage 2 (ZERO DC load on Xopa1/Xopa2, 100% pure BSIM4+passives)
+Rcm1_p vout1_p cm1_mid 2Meg
+Rcm1_n vout1_n cm1_mid 2Meg
+Xopa_cm1 vdd vss cm1_mid cm1_buf cm1_buf ib_cmfb opa_2p_nmos_5t_1v8_1u_10u_subth
+Xsw_cm1_pre vcm_buf cm1_top phi1 vdd vss sw_cmos_dummy__1p8v__10u_100u
+Xsw_cm1_fb cm1_buf cm1_top phi2 vdd vss sw_cmos_dummy__1p8v__10u_100u
+Ccm1_p cm1_top cm1_bp 350f
+Ccm1_n cm1_top cm1_bn 350f
+Xsw_cm1_bp1 vcm_buf cm1_bp phi1 vdd vss sw_cmos_dummy__1p8v__10u_100u
+Xsw_cm1_bn1 vcm_buf cm1_bn phi1 vdd vss sw_cmos_dummy__1p8v__10u_100u
+Xsw_cm1_bp2 cm1_bp int1_p phi2 vdd vss sw_cmos_dummy__1p8v__10u_100u
+Xsw_cm1_bn2 cm1_bn int1_n phi2 vdd vss sw_cmos_dummy__1p8v__10u_100u
+Rcm2_p vout2_p cm2_mid 2Meg
+Rcm2_n vout2_n cm2_mid 2Meg
+Xopa_cm2 vdd vss cm2_mid cm2_buf cm2_buf ib_cmfb opa_2p_nmos_5t_1v8_1u_10u_subth
+Xsw_cm2_pre vcm_buf cm2_top phi1 vdd vss sw_cmos_dummy__1p8v__10u_100u
+Xsw_cm2_fb cm2_buf cm2_top phi2 vdd vss sw_cmos_dummy__1p8v__10u_100u
+Ccm2_p cm2_top cm2_bp 220f
+Ccm2_n cm2_top cm2_bn 220f
+Xsw_cm2_bp1 vcm_buf cm2_bp phi1 vdd vss sw_cmos_dummy__1p8v__10u_100u
+Xsw_cm2_bn1 vcm_buf cm2_bn phi1 vdd vss sw_cmos_dummy__1p8v__10u_100u
+Xsw_cm2_bp2 cm2_bp int2_p phi2 vdd vss sw_cmos_dummy__1p8v__10u_100u
+Xsw_cm2_bn2 cm2_bn int2_n phi2 vdd vss sw_cmos_dummy__1p8v__10u_100u
+Ibias_cmfb vdd ib_cmfb 20u
+Rvcm_tie vcm vcm_buf 10
+
+Xcmp vout2_p vout2_n phi1 phi2 pdm_bit cmp_outn vdd vdd vss sa_dt_lv_1v8_mi
 Xdig clk rst_n pdm_bit phi1 phi2 dac_p dac_n dout_0 dout_1 dout_2 dout_3 dout_4 dout_5 dout_6 dout_7 dout_8 dout_9 dout_10 dout_11 dout_12 dout_13 dout_14 dout_15 dout_valid vdd vss sdm2bin_16b_1v8
 * Placed Option-B MIM decoupling capacitors (VCM and VDD stabilization)
 Xdecap_vcm vcm_buf vss mim_decap_7x7

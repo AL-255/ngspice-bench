@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "submission_id": "r9_7940hx_stock_ngspice47",
-  "timestamp_utc": "2026-11-19T21:18:01Z",
+  "timestamp_utc": "2026-11-19T22:20:47Z",
   "mode": "single_core",
   "all_ok": true,
   "host": {
@@ -61,121 +61,45 @@
       "solver": "klu",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 50.7342,
+      "wall_s": 86.7352,
       "rusage": {
-        "total_elapsed_s": 50.716,
-        "total_analysis_s": 50.4839,
-        "tran_analysis_s": 50.4647,
-        "tran_load_s": 34.1146,
-        "tran_factor_s": 10.3507,
-        "tran_solve_s": 2.63671,
-        "tran_trunc_s": 1.69904,
-        "reorder_s": 0.00147222,
-        "tot_iter": 55576,
-        "tran_iter": 55576,
-        "tran_pts": 14211,
-        "accepted_pts": 11245,
-        "rejected_pts": 2966,
-        "eqns": 3609
+        "total_elapsed_s": 86.712,
+        "total_analysis_s": 86.3867,
+        "tran_analysis_s": 86.2943,
+        "tran_load_s": 58.0858,
+        "tran_factor_s": 18.2348,
+        "tran_solve_s": 4.60219,
+        "tran_trunc_s": 2.37961,
+        "reorder_s": 0.00415679,
+        "tot_iter": 66368,
+        "tran_iter": 66314,
+        "tran_pts": 13581,
+        "accepted_pts": 10883,
+        "rejected_pts": 2698,
+        "eqns": 5345
       },
       "accuracy": {
         "pass": true,
         "exact_grid": false,
-        "npts_ref": 11244,
-        "npts_cand": 11244,
+        "npts_ref": 10901,
+        "npts_cand": 10883,
         "t_end_rel_diff": 0.0,
-        "worst_rel_rms": 1.2849116339991007e-06,
-        "worst_vec": "v(xdut.vout1_p)",
+        "worst_rel_rms": 0.005315677511898228,
+        "worst_vec": "v(xdut.vout2_p)",
         "sar_codes_ref": [],
         "sar_codes_cand": [],
         "sar_codes_match": true,
         "eoc_max_dt_ps": 0.0,
         "sdm_bits_count": 115,
         "sdm_bits_match": true,
-        "sdm_pdm_max_dt_ps": 4.924649555336502e-05,
+        "sdm_pdm_max_dt_ps": 224.8864032735248,
+        "sdm_dac_corr": 0.99932,
         "pll_code_ref": null,
         "pll_code_cand": null,
         "pll_code_match": true,
         "pll_fout_mhz": null,
         "pll_vc_final_v": null,
-        "pll_vc_err_mv": null,
-        "per_vec": {
-          "v(vin_p)": {
-            "max_abs": 2.972724288952122e-10,
-            "rms": 1.1054244501343672e-11,
-            "rel_rms": 1.0527852324958546e-11
-          },
-          "v(vin_n)": {
-            "max_abs": 2.972724288952122e-10,
-            "rms": 1.1054243906868611e-11,
-            "rel_rms": 1.0527851921230465e-11
-          },
-          "v(clk)": {
-            "max_abs": 4.370527787922045e-15,
-            "rms": 5.848478543340131e-17,
-            "rel_rms": 3.2491547463000726e-17
-          },
-          "v(xdut.phi1)": {
-            "max_abs": 5.721879289710685e-06,
-            "rms": 6.723123326388961e-08,
-            "rel_rms": 3.7252468938380863e-08
-          },
-          "v(xdut.phi2)": {
-            "max_abs": 1.4755693444890028e-07,
-            "rms": 4.289478519751136e-09,
-            "rel_rms": 2.379163997125629e-09
-          },
-          "v(xdut.dac_p)": {
-            "max_abs": 4.076117776641297e-08,
-            "rms": 8.040389931001991e-10,
-            "rel_rms": 4.454237279828397e-10
-          },
-          "v(xdut.dac_n)": {
-            "max_abs": 7.908251031807367e-08,
-            "rms": 1.01410821387057e-09,
-            "rel_rms": 5.617708866822175e-10
-          },
-          "v(xdut.vout1_p)": {
-            "max_abs": 9.997800057592876e-05,
-            "rms": 2.322843244487837e-06,
-            "rel_rms": 1.2849116339991007e-06
-          },
-          "v(xdut.vout1_n)": {
-            "max_abs": 4.141663732137868e-05,
-            "rms": 9.5733406020553e-07,
-            "rel_rms": 5.174038789088647e-07
-          },
-          "v(xdut.vout2_p)": {
-            "max_abs": 1.0321290480730383e-05,
-            "rms": 5.039305338720177e-07,
-            "rel_rms": 2.739174277976805e-07
-          },
-          "v(xdut.vout2_n)": {
-            "max_abs": 8.47866869054803e-05,
-            "rms": 1.952327810698578e-06,
-            "rel_rms": 1.049681117948117e-06
-          },
-          "v(xdut.pdm_bit)": {
-            "max_abs": 5.1487094587354676e-05,
-            "rms": 1.337762386166704e-06,
-            "rel_rms": 7.355668286232088e-07
-          },
-          "v(dout_0)": {
-            "max_abs": 7.402653483534749e-07,
-            "rms": 8.464586694324258e-09,
-            "rel_rms": 4.675175233862455e-09
-          },
-          "v(dout_valid)": {
-            "max_abs": 5.721879289710685e-06,
-            "rms": 6.723123326388961e-08,
-            "rel_rms": 3.7252468938380863e-08
-          },
-          "i(vvdd)": {
-            "max_abs": 1.1004778668248592e-08,
-            "rms": 3.456039489197225e-10,
-            "rel_rms": 1.4224306262337353e-09
-          }
-        }
+        "pll_vc_err_mv": null
       }
     },
     {
@@ -183,28 +107,28 @@
       "solver": "sparse",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 75.5214,
+      "wall_s": 144.9154,
       "rusage": {
-        "total_elapsed_s": 75.504,
-        "total_analysis_s": 75.2821,
-        "tran_analysis_s": 75.2673,
-        "tran_load_s": 41.6384,
-        "tran_factor_s": 22.6486,
-        "tran_solve_s": 7.30713,
-        "tran_trunc_s": 1.69518,
-        "reorder_s": 0.0719584,
-        "tot_iter": 55547,
-        "tran_iter": 55547,
-        "tran_pts": 14211,
-        "accepted_pts": 11245,
-        "rejected_pts": 2966,
-        "eqns": 3609
+        "total_elapsed_s": 144.891,
+        "total_analysis_s": 144.562,
+        "tran_analysis_s": 143.405,
+        "tran_load_s": 77.6447,
+        "tran_factor_s": 44.2218,
+        "tran_solve_s": 14.1418,
+        "tran_trunc_s": 2.5241,
+        "reorder_s": 0.299185,
+        "tot_iter": 66792,
+        "tran_iter": 66348,
+        "tran_pts": 13622,
+        "accepted_pts": 10901,
+        "rejected_pts": 2721,
+        "eqns": 5345
       },
       "accuracy": {
         "pass": true,
         "exact_grid": true,
-        "npts_ref": 11244,
-        "npts_cand": 11244,
+        "npts_ref": 10901,
+        "npts_cand": 10901,
         "t_end_rel_diff": 0.0,
         "worst_rel_rms": 0.0,
         "worst_vec": "v(xdut.vout2_p)",
@@ -215,89 +139,13 @@
         "sdm_bits_count": 115,
         "sdm_bits_match": true,
         "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": 0.99932,
         "pll_code_ref": null,
         "pll_code_cand": null,
         "pll_code_match": true,
         "pll_fout_mhz": null,
         "pll_vc_final_v": null,
-        "pll_vc_err_mv": null,
-        "per_vec": {
-          "v(vin_p)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(vin_n)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(clk)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(xdut.phi1)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(xdut.phi2)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(xdut.dac_p)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(xdut.dac_n)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(xdut.vout1_p)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(xdut.vout1_n)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(xdut.vout2_p)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(xdut.vout2_n)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(xdut.pdm_bit)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(dout_0)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "v(dout_valid)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          },
-          "i(vvdd)": {
-            "max_abs": 0.0,
-            "rms": 0.0,
-            "rel_rms": 0.0
-          }
-        }
+        "pll_vc_err_mv": null
       }
     },
     {
@@ -607,41 +455,51 @@
       "solver": "klu",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 64.5584,
+      "wall_s": 67.9544,
       "rusage": {
-        "total_elapsed_s": 64.522,
-        "total_analysis_s": 64.1027,
-        "tran_analysis_s": 63.6439,
-        "tran_load_s": 56.7584,
-        "tran_factor_s": 2.59423,
-        "tran_solve_s": 0.534006,
-        "tran_trunc_s": 1.86431,
-        "reorder_s": 0.00250997,
-        "tot_iter": 25940,
-        "tran_iter": 25692,
-        "tran_pts": 6787,
-        "accepted_pts": 6127,
-        "rejected_pts": 660,
+        "total_elapsed_s": 67.915,
+        "total_analysis_s": 67.4883,
+        "tran_analysis_s": 66.9925,
+        "tran_load_s": 59.3693,
+        "tran_factor_s": 2.72498,
+        "tran_solve_s": 0.56234,
+        "tran_trunc_s": 2.0749,
+        "reorder_s": 0.00346091,
+        "tot_iter": 25685,
+        "tran_iter": 25437,
+        "tran_pts": 6689,
+        "accepted_pts": 6073,
+        "rejected_pts": 616,
         "eqns": 1559
       },
       "accuracy": {
         "pass": true,
         "exact_grid": false,
-        "npts_ref": 6132,
-        "npts_cand": 6127,
+        "npts_ref": 6072,
+        "npts_cand": 6073,
         "t_end_rel_diff": 0.0,
-        "worst_rel_rms": 0.00928683554464811,
-        "worst_vec": "v(bit_7)",
+        "worst_rel_rms": 0.022570966165450086,
+        "worst_vec": "v(bit_0)",
         "sar_codes_ref": [
-          31243,
-          1524
+          17579,
+          22903
         ],
         "sar_codes_cand": [
-          31243,
-          1524
+          17579,
+          22903
         ],
         "sar_codes_match": true,
-        "eoc_max_dt_ps": 32.664400423824105
+        "eoc_max_dt_ps": 45.14025734645302,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
       }
     },
     {
@@ -649,41 +507,131 @@
       "solver": "sparse",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 79.6609,
+      "wall_s": 81.4602,
       "rusage": {
-        "total_elapsed_s": 79.622,
-        "total_analysis_s": 79.209,
-        "tran_analysis_s": 75.5222,
-        "tran_load_s": 58.8845,
-        "tran_factor_s": 11.0149,
-        "tran_solve_s": 1.84534,
-        "tran_trunc_s": 1.89924,
-        "reorder_s": 0.062171,
-        "tot_iter": 27301,
-        "tran_iter": 25679,
-        "tran_pts": 6793,
-        "accepted_pts": 6132,
-        "rejected_pts": 661,
+        "total_elapsed_s": 81.419,
+        "total_analysis_s": 80.9825,
+        "tran_analysis_s": 77.4432,
+        "tran_load_s": 60.2158,
+        "tran_factor_s": 10.8088,
+        "tran_solve_s": 1.87971,
+        "tran_trunc_s": 2.00284,
+        "reorder_s": 0.0577331,
+        "tot_iter": 26963,
+        "tran_iter": 25457,
+        "tran_pts": 6692,
+        "accepted_pts": 6072,
+        "rejected_pts": 620,
         "eqns": 1559
       },
       "accuracy": {
         "pass": true,
         "exact_grid": true,
-        "npts_ref": 6132,
-        "npts_cand": 6132,
+        "npts_ref": 6072,
+        "npts_cand": 6072,
         "t_end_rel_diff": 0.0,
         "worst_rel_rms": 0.0,
         "worst_vec": "",
         "sar_codes_ref": [
-          31243,
-          1524
+          17579,
+          22903
         ],
         "sar_codes_cand": [
-          31243,
-          1524
+          17579,
+          22903
         ],
         "sar_codes_match": true,
-        "eoc_max_dt_ps": 0.0
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
+      }
+    },
+    {
+      "deck": "sar12_hero_16cyc",
+      "solver": "sparse",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 626.7474,
+      "rusage": {
+        "total_elapsed_s": 626.688,
+        "total_analysis_s": 626.249,
+        "tran_analysis_s": 622.508,
+        "tran_load_s": 484.93,
+        "tran_factor_s": 86.7275,
+        "tran_solve_s": 15.1117,
+        "tran_trunc_s": 15.6628,
+        "reorder_s": 0.0553806,
+        "tot_iter": 203828,
+        "tran_iter": 202322,
+        "tran_pts": 53305,
+        "accepted_pts": 48478,
+        "rejected_pts": 4827,
+        "eqns": 1559
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": true,
+        "npts_ref": 48478,
+        "npts_cand": 48478,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 0.0,
+        "worst_vec": "",
+        "sar_codes_ref": [
+          17579,
+          22903,
+          27578,
+          31412,
+          32072,
+          31321,
+          27300,
+          22442,
+          15189,
+          9865,
+          5190,
+          1364,
+          696,
+          1447,
+          5476,
+          10326
+        ],
+        "sar_codes_cand": [
+          17579,
+          22903,
+          27578,
+          31412,
+          32072,
+          31321,
+          27300,
+          22442,
+          15189,
+          9865,
+          5190,
+          1364,
+          696,
+          1447,
+          5476,
+          10326
+        ],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
       }
     }
   ]

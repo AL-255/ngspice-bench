@@ -25,19 +25,19 @@ DECK_META = {
         "title": "12-bit SAR ADC (16 Cycles, Hero)",
         "category": "hero",
         "eqns": 1559,
-        "iters_approx": 208490,
+        "iters_approx": 202322,
         "pdk": "GF180MCU D",
         "source": "aicdb/sar-gen-gemini4",
-        "description": "12-bit redundant post-PEX SAR ADC running 16 full conversion cycles (>10 min on stock ngspice-47 Sparse 1c). Verified bit-exact on all 16 output codes.",
+        "description": "12-bit redundant post-PEX SAR ADC sampling a continuous 151.5 kHz sinewave over 16 full conversion cycles (>10 min on stock ngspice-47 Sparse 1c). Verified bit-exact on all 16 output codes (r=0.9999997).",
     },
     "sar12_probe_2cyc": {
         "title": "12-bit SAR ADC (2 Cycles)",
         "category": "probe",
         "eqns": 1559,
-        "iters_approx": 27301,
+        "iters_approx": 25457,
         "pdk": "GF180MCU D",
         "source": "aicdb/sar-gen-gemini4",
-        "description": "2-cycle probe of the 12-bit post-PEX redundant SAR ADC.",
+        "description": "2-cycle probe of the 12-bit post-PEX redundant SAR ADC on a continuous 151.5 kHz sinewave.",
     },
     "ti12_full_300ns": {
         "title": "Full-Chip 3-ch TI 12b SAR + PLL (300 ns)",
@@ -60,21 +60,21 @@ DECK_META = {
     "sdm16_120cyc": {
         "title": "16-bit Switched-Cap SDM (120 Cycles)",
         "category": "probe",
-        "eqns": 3609,
-        "iters_approx": 55547,
+        "eqns": 5345,
+        "iters_approx": 66348,
         "pdk": "GF180MCU D",
         "source": "aicdb/sdm-gen-gemini4",
-        "description": "Post-PEX 16-bit switched-capacitor CIFB sigma-delta modulator over 37.5 µs (120 clock cycles, unsaturated ±0.15 V in-band sine, verified bit-exact on all 115 post-reset latched PDM bits).",
+        "description": "Post-PEX 16-bit switched-capacitor CIFB sigma-delta modulator with non-overlapping clocks and SC-CMFB over 37.5 µs (120 clock cycles, ±0.80 V diff in-band sine, bit-exact on all 115 PDM bits, ideal-DAC + Sinc3 recovery r=0.9993).",
     },
 }
 
 # Reference baseline (stock ngspice-47 Sparse 1-core pinned to cpu0 on AMD Ryzen 9 7940HX)
 REFERENCE_BASELINE_WALL_S = {
-    "sar12_hero_16cyc": 628.48,
-    "sar12_probe_2cyc": 79.66,
+    "sar12_hero_16cyc": 626.75,
+    "sar12_probe_2cyc": 81.46,
     "ti12_full_300ns": 464.51,
     "pll_ring_150m_4us": 232.14,
-    "sdm16_120cyc": 75.52,
+    "sdm16_120cyc": 144.92,
 }
 
 

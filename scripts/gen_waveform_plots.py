@@ -17,7 +17,14 @@ GOLDEN_DIR = REPO_ROOT / "golden"
 OUT_DIR = REPO_ROOT / "docs" / "img"
 
 sys.path.insert(0, str(SCRIPT_DIR))
-from compare_raw import decode_pll_metrics, decode_sar12_codes, decode_sdm_bits, parse_raw  # noqa: E402
+from compare_raw import (  # noqa: E402
+    decode_pll_metrics,
+    decode_sar12_codes,
+    decode_sar12_weighted,
+    decode_sdm_bits,
+    parse_raw,
+    reconstruct_sdm_ideal_dac,
+)
 
 # Palette from aicdb/hub-gemini4 (style.css + blocks.js COLORWAY)
 COLORS = {
@@ -111,9 +118,9 @@ def render_svg(
     W = 920
     margin_l = 66
     margin_r = 22
-    header_h = 46
-    panel_h = 120
-    panel_gap = 38
+    header_h = 66
+    panel_h = 122
+    panel_gap = 40
     footer_h = 34
     plot_w = W - margin_l - margin_r
     H = header_h + len(panels) * panel_h + (len(panels) - 1) * panel_gap + footer_h
@@ -127,15 +134,15 @@ def render_svg(
         "  .panel-bg { fill: #ffffff; stroke: #f0dccd; stroke-width: 1; }",
         "  .grid { stroke: #f3e4d8; stroke-width: 1; }",
         "  .refline { stroke: #c4372f; stroke-width: 1.1; stroke-dasharray: 5 4; opacity: 0.7; }",
-        "  .title { fill: #2b1a17; font: 700 13.5px Inter,system-ui,-apple-system,'Segoe UI',sans-serif; }",
-        "  .sub { fill: #7a5c52; font: 11px ui-monospace,SFMono-Regular,Menlo,monospace; }",
-        "  .ptitle { fill: #2b1a17; font: 600 11.5px Inter,system-ui,-apple-system,'Segoe UI',sans-serif; }",
-        "  .tick { fill: #7a5c52; font: 10.5px ui-monospace,SFMono-Regular,Menlo,monospace; }",
-        "  .legend { fill: #2b1a17; font: 11px ui-monospace,SFMono-Regular,Menlo,monospace; }",
+        "  .title { fill: #2b1a17; font-weight: 700; font-size: 13.5px; font-family: Inter,system-ui,-apple-system,'Segoe UI',sans-serif; }",
+        "  .sub { fill: #7a5c52; font-size: 11px; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }",
+        "  .ptitle { fill: #2b1a17; font-weight: 600; font-size: 11.5px; font-family: Inter,system-ui,-apple-system,'Segoe UI',sans-serif; }",
+        "  .tick { fill: #7a5c52; font-size: 10.5px; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }",
+        "  .legend { fill: #2b1a17; font-size: 11px; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }",
         "</style>",
         f'<rect class="bg" x="0" y="0" width="{W}" height="{H}" rx="8"/>',
         f'<text class="title" x="{margin_l}" y="22">{e(title)}</text>',
-        f'<text class="sub" x="{W - margin_r}" y="22" text-anchor="end">{e(subtitle)}</text>',
+        f'<text class="sub" x="{margin_l}" y="39">{e(subtitle)}</text>',
     ]
 
     for pidx, panel in enumerate(panels):
@@ -223,8 +230,9 @@ def render_svg(
                 pts = [f"{xs[k]:.1f},{ys[k]:.1f}" for k in range(len(xs))]
             sw = tr.get("width", 1.5)
             op = tr.get("opacity", 0.95)
+            dash = f' stroke-dasharray="{tr["dash"]}"' if tr.get("dash") else ""
             lines.append(
-                f'<polyline fill="none" stroke="{tr["color"]}" stroke-width="{sw}" stroke-opacity="{op}" '
+                f'<polyline fill="none" stroke="{tr["color"]}" stroke-width="{sw}" stroke-opacity="{op}"{dash} '
                 f'stroke-linejoin="round" points="{" ".join(pts)}"/>'
             )
         lines.append("</g>")
@@ -242,24 +250,33 @@ def _mask_window(t: np.ndarray, y: np.ndarray, t_min: float, t_max: Optional[flo
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 1. sar12_hero_16cyc (with differential analog input v(vip)/v(vin)!)
+    # 1. sar12_hero_16cyc (continuous 1-cycle sinewave input + 12-bit redundant SAR output overlay!)
     d = parse_raw(GOLDEN_DIR / "sar12_hero_16cyc_baseline.raw.gz")
     t = d["time"]
-    codes = decode_sar12_codes(d)
+    sar_w = decode_sar12_weighted(d)
+    codes = sar_w["codes_15b"]
     t_per = 412.5e-9
-    code_t = np.array([(c + 0.98) * t_per for c in range(len(codes))], dtype=float)
-    code_y = np.array(codes, dtype=float)
-    vip_t, vip_v = parse_deck_pwl(DECKS_DIR / "sar12_hero_16cyc.cir", "Vvip", float(t[-1]))
-    vin_t, vin_v = parse_deck_pwl(DECKS_DIR / "sar12_hero_16cyc.cir", "Vvin", float(t[-1]))
+    # Align staircase to sampling instant (falling edge of phi_s ~ 28ns into each cycle)
+    code_t = np.array([c * t_per + 28e-9 for c in range(len(codes))], dtype=float)
+    v_rec = sar_w["v_rec"]
+    if "v(vip)" in d and "v(vin)" in d:
+        vip_t, vip_v, vin_t, vin_v = t, d["v(vip)"], t, d["v(vin)"]
+        vdiff_t, vdiff_v = t, d["v(vip)"] - d["v(vin)"]
+    else:
+        vip_t, vip_v = parse_deck_pwl(DECKS_DIR / "sar12_hero_16cyc.cir", "Vvip", float(t[-1]))
+        vin_t, vin_v = parse_deck_pwl(DECKS_DIR / "sar12_hero_16cyc.cir", "Vvin", float(t[-1]))
+        vdiff_t, vdiff_v = vip_t, vip_v - vin_v
+    vin_at_s = np.interp(code_t, vdiff_t, vdiff_v)
+    sar_corr = float(np.corrcoef(vin_at_s, v_rec)[0, 1]) if len(v_rec) > 2 else 1.0
     render_svg(
-        title="sar12_hero_16cyc — 12-bit Redundant SAR ADC (16 Conversion Cycles, Golden Stock ngspice-47)",
-        subtitle=f"0 to 6.60 µs · {len(t):,} pts · {len(codes)}/16 codes",
+        title="sar12_hero_16cyc — 12-bit Redundant SAR ADC (16 Conversion Cycles, 151.5 kHz Sinewave)",
+        subtitle=f"0 to 6.60 µs · {len(t):,} pts · {len(codes)}/16 codes · r={sar_corr:.6f}",
         t_scale=1e6,
         t_unit="µs",
         t_max_raw=float(t[-1]),
         panels=[
             {
-                "title": "Differential Analog Input Signal v(vip) & v(vin) (V)",
+                "title": "Differential Analog Input Sinewave v(vip) & v(vin) (V, 151.5 kHz)",
                 "ylim": (0.0, 1.85),
                 "traces": [
                     {"t": vip_t, "y": vip_v, "label": "v(vip)", "color": COLORS["blue"], "width": 1.8},
@@ -267,10 +284,11 @@ def main() -> None:
                 ],
             },
             {
-                "title": "Decoded 15-bit Redundant SAR Output Code (Sampled at EOC)",
-                "ylim": (-1500, 34500),
+                "title": f"12-bit Redundant SAR Output vs Input (V, r={sar_corr:.6f})",
+                "ylim": (-1.8, 1.8),
                 "traces": [
-                    {"t": code_t, "y": code_y, "label": "SAR code (0..32767)", "color": COLORS["green"], "step": True, "width": 2.1},
+                    {"t": vdiff_t, "y": vdiff_v, "label": "v(vip)-v(vin)", "color": COLORS["blue"], "width": 1.5, "dash": "5 3", "opacity": 0.85},
+                    {"t": code_t, "y": v_rec, "label": "SAR 12b decoded", "color": COLORS["green"], "step": True, "width": 2.1},
                 ],
             },
             {
@@ -292,21 +310,25 @@ def main() -> None:
         out_path=OUT_DIR / "sar12_hero_16cyc.svg",
     )
 
-    # 2. sar12_probe_2cyc (with differential analog input v(vip)/v(vin)!)
+    # 2. sar12_probe_2cyc (continuous sinewave input + async bit cycling!)
     d = parse_raw(GOLDEN_DIR / "sar12_probe_2cyc_baseline.raw.gz")
     t = d["time"]
-    codes2 = decode_sar12_codes(d)
-    vip_t, vip_v = parse_deck_pwl(DECKS_DIR / "sar12_probe_2cyc.cir", "Vvip", float(t[-1]))
-    vin_t, vin_v = parse_deck_pwl(DECKS_DIR / "sar12_probe_2cyc.cir", "Vvin", float(t[-1]))
+    sar2_w = decode_sar12_weighted(d)
+    codes2_12b = sar2_w["codes_12b"]
+    if "v(vip)" in d and "v(vin)" in d:
+        vip_t, vip_v, vin_t, vin_v = t, d["v(vip)"], t, d["v(vin)"]
+    else:
+        vip_t, vip_v = parse_deck_pwl(DECKS_DIR / "sar12_probe_2cyc.cir", "Vvip", float(t[-1]))
+        vin_t, vin_v = parse_deck_pwl(DECKS_DIR / "sar12_probe_2cyc.cir", "Vvin", float(t[-1]))
     render_svg(
         title="sar12_probe_2cyc — 12-bit Redundant SAR ADC (2 Cycles, Asynchronous Bit Cycling)",
-        subtitle=f"0 to 825 ns · {len(t):,} pts · codes {codes2}",
+        subtitle=f"0 to 825 ns · {len(t):,} pts · 12b codes {codes2_12b}",
         t_scale=1e9,
         t_unit="ns",
         t_max_raw=float(t[-1]),
         panels=[
             {
-                "title": "Differential Analog Input Signal v(vip) & v(vin) (V)",
+                "title": "Differential Analog Input Sinewave v(vip) & v(vin) (V, 151.5 kHz)",
                 "ylim": (0.0, 1.85),
                 "traces": [
                     {"t": vip_t, "y": vip_v, "label": "v(vip)", "color": COLORS["blue"], "width": 1.8},
@@ -442,47 +464,54 @@ def main() -> None:
             out_path=OUT_DIR / "pll_ring_150m_4us.svg",
         )
 
-    # 5. sdm16_120cyc
+    # 5. sdm16_120cyc (with ideal-DAC + Sinc3 PDM recovery overlay!)
     sdm_raw = GOLDEN_DIR / "sdm16_120cyc_baseline.raw.gz"
     if sdm_raw.exists():
         d = parse_raw(sdm_raw)
         t = d["time"]
         bits = decode_sdm_bits(d)
+        dac_rec = reconstruct_sdm_ideal_dac(d)
         si_t, si_i = _mask_window(t, -d["i(vvdd)"] * 1e3, 20e-9)
         pdm_sig = "v(xdut.dac_p)" if "v(xdut.dac_p)" in d else "v(xdut.pdm_bit)"
         pdm_lbl = "v(dac_p) latched PDM" if "v(xdut.dac_p)" in d else "v(pdm_bit)"
+        vin_diff = d["v(vin_p)"] - d["v(vin_n)"]
+        corr_str = f"r={dac_rec['corr']:.4f}, RMS={dac_rec['rms_err_mv']:.1f} mV" if dac_rec else ""
+        p1_traces = [
+            {"t": t, "y": vin_diff, "label": "vin_p - vin_n", "color": COLORS["blue"], "width": 1.6, "dash": "5 3"},
+        ]
+        if dac_rec:
+            p1_traces.append(
+                {"t": dac_rec["t_rec"], "y": dac_rec["v_rec"], "label": f"Ideal-DAC + Sinc3 (r={dac_rec['corr']:.4f})", "color": COLORS["green"], "width": 2.1}
+            )
         render_svg(
-            title="sdm16_120cyc — 16-bit Switched-Cap CIFB Sigma-Delta Modulator (120 Cycles, In-Band Sine)",
-            subtitle=f"0 to 37.5 µs · {len(t):,} pts · {len(bits)} post-reset PDM bits",
+            title="sdm16_120cyc — 16-bit Switched-Cap CIFB Sigma-Delta Modulator (120 Cycles, Ideal-DAC Verified)",
+            subtitle=f"0 to 37.5 µs · {len(t):,} pts · {len(bits)} PDM bits · {corr_str}",
             t_scale=1e6,
             t_unit="µs",
             t_max_raw=float(t[-1]),
             panels=[
                 {
-                    "title": "Differential In-Band Sinusoidal Input v(vin_p) & v(vin_n) (±0.15 V @ 26.7 kHz)",
-                    "ylim": (0.65, 1.15),
-                    "traces": [
-                        {"t": t, "y": d["v(vin_p)"], "label": "v(vin_p)", "color": COLORS["blue"], "width": 1.8},
-                        {"t": t, "y": d["v(vin_n)"], "label": "v(vin_n)", "color": COLORS["purple"], "width": 1.6, "opacity": 0.9},
-                    ],
+                    "title": "Input vs Ideal-DAC + Sinc3 Recovered PDM (V, 26.7 kHz)",
+                    "ylim": (-1.05, 1.05),
+                    "traces": p1_traces,
                 },
                 {
-                    "title": "1st & 2nd Switched-Cap Integrator Outputs (V)",
-                    "ylim": (-0.15, 2.0),
+                    "title": "1st & 2nd Switched-Cap Integrator Outputs with SC-CMFB (V)",
+                    "ylim": (0.0, 1.95),
                     "traces": [
                         {"t": t, "y": d["v(xdut.vout1_p)"], "label": "v(vout1_p)", "color": COLORS["blue"], "width": 1.35},
                         {"t": t, "y": d["v(xdut.vout2_p)"], "label": "v(vout2_p)", "color": COLORS["green"], "width": 1.35},
                     ],
                 },
                 {
-                    "title": "Noise-Shaped PDM Output Bitstream (V, 120 Clock Cycles)",
+                    "title": "Noise-Shaped 1-bit PDM Output Bitstream (V, 120 Clock Cycles)",
                     "ylim": (-0.15, 2.0),
                     "traces": [
                         {"t": t, "y": d[pdm_sig], "label": pdm_lbl, "color": COLORS["orange"], "width": 1.2},
                     ],
                 },
                 {
-                    "title": "Supply Current -i(Vvdd) (mA, t >= 20 ns post-UIC startup)",
+                    "title": "Supply Current -i(Vvdd) (mA)",
                     "traces": [
                         {"t": si_t, "y": si_i, "label": "-i(Vvdd) [mA]", "color": COLORS["red"], "width": 1.15},
                     ],
