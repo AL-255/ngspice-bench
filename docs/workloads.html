@@ -15,7 +15,7 @@
         <div class="eyebrow">GF180MCU Post-PEX Transient Suite &middot; Benchmark Specifications</div>
         <h1><span class="brand-mark">ngspice</span>-bench <span class="badge-mode">Workloads</span></h1>
         <p class="subtitle">
-          Detailed specifications of all 5 post-layout-extraction (post-PEX) mixed-signal circuits, solver &amp; matrix dimensions,
+          Detailed specifications of all 6 post-layout-extraction (post-PEX) mixed-signal circuits &amp; suites, solver &amp; matrix dimensions,
           integration tolerances, saved waveforms, and golden numerical verification rules.
         </p>
       </div>
@@ -43,9 +43,10 @@
         <div>
           <h3>Balanced Stress Across SPICE Subsystems</h3>
           <p>
-            The 4 probe decks and 1 hero deck span distinct execution bottlenecks: BSIM4 device evaluation (<code>sar12</code>, <code>pll_ring_150m_4us</code>),
+            The 5 probe decks and 1 hero deck span distinct execution bottlenecks: BSIM4 device evaluation (<code>sar12</code>, <code>pll_ring_150m_4us</code>),
             large-matrix factorization &amp; netlist/PDK loading (<code>ti12_full</code> at 7,221 equations),
             switched-capacitor sparse LU solve density (<code>sdm16</code> at 5,345 equations / 44k NNZ),
+            high-count small scattered <code>OP + AC + Tran</code> frontend/teardown throughput (<code>opa1k_pvt16</code> at 16,000 tasks),
             and long-horizon &gt;150k–200k-iteration mixed-signal switching stability (<code>pll_ring_150m_4us</code>, <code>sar12_hero_16cyc</code>).
           </p>
         </div>
@@ -140,6 +141,18 @@
               <td class="num">66,348</td>
               <td>KLU / Sparse LU Factor &amp; Solve</td>
               <td class="num">144.92 s</td>
+            </tr>
+            <tr class="main-row" onclick="location.hash='opa1k_pvt16'">
+              <td><a class="inline-link" href="#opa1k_pvt16"><code>opa1k_pvt16</code></a></td>
+              <td><span class="pill pill-core">Probe</span></td>
+              <td class="num">~40–220</td>
+              <td class="num">~200–1.5k</td>
+              <td class="num">small</td>
+              <td><code>OP+AC+Tran</code> · <code>16k tasks</code></td>
+              <td class="num">16,000</td>
+              <td class="num">16k circuits</td>
+              <td>Small Scattered Frontend / PDK / Setup</td>
+              <td class="num">626.47 s</td>
             </tr>
           </tbody>
         </table>
@@ -384,6 +397,58 @@
           <div class="kv-list">
             <div class="kv-k">Saved Signals</div><div class="kv-v">v(vin_p/n), v(clk), v(xdut.phi1/2), v(xdut.dac_p/n), v(xdut.vout1_p/n), v(xdut.vout2_p/n), v(xdut.pdm_bit), v(dout_0), v(dout_valid), i(Vvdd) (15 vectors)</div>
             <div class="kv-k">Digital &amp; Analog Check</div><div class="kv-v">Bit-exact latched <code>dac_p</code> PDM output across all 115/115 post-reset cycles, ideal-DAC + Sinc<sup>3</sup> recovery <code>r &ge; 0.99</code> (<code>0.9993</code>), edge skew &lt; 500 ps (306.6 ps KLU / 215.9 ps Sparse on Zen 4), and analog voltage rel_rms &le; 0.01 (3.30e-3 KLU on Zen 4)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="workload-card card" id="opa1k_pvt16">
+      <div class="workload-head">
+        <div>
+          <span class="pill pill-core">Probe Workload</span>
+          <span class="pill pill-opt">1,000 Post-PEX Designs &times; 16 PVT</span>
+          <span class="pill pill-solver">16,000 Scattered Tasks</span>
+          <h2><code>opa1k_pvt16</code> — 1,000 Post-PEX Op-Amps &times; 16 PVT Corners (16,000 Small Scattered Tasks)</h2>
+        </div>
+        <a class="btn-link btn-secondary" href="index.html#opa1k_pvt16">View on Leaderboard &rarr;</a>
+      </div>
+      <p class="workload-desc">
+        High-count small-circuit scattered-task benchmark tuned to ~10 minutes on stock single-core <code>ngspice-47</code> (626.47 s Sparse 1c on Ryzen 9 7940HX).
+        Bundles <strong>1,000 distinct GF180 post-PEX operational amplifiers</strong> from <code>aicdb/opa-gen-gemini4</code> evenly across all
+        <strong>12 topologies</strong> (<code>cherry_hooper</code>, <code>current_reuse</code>, <code>folded_cascode_nmos/pmos</code>, <code>nmos/pmos_5t</code>,
+        <code>nmos/pmos_miller</code>, <code>rail_to_rail</code>, <code>symmetrical_ota</code>, <code>telescopic_nmos/pmos</code>), both supplies
+        (<code>1.8 V</code> &amp; <code>3.3 V</code>), both loads (<code>200 fF</code> &amp; <code>2 pF</code>), and bias currents spanning <code>50 nA</code> to <code>500 µA</code>.
+        In a single <code>ngspice -b</code> run, all 1,000 designs are swept across <strong>16 PVT operating corners</strong>
+        (<code>T &isin; {-40, 27, 85, 125}&deg;C</code> &times; <code>VDD &plusmn;5%</code> &times; <code>I<sub>bias</sub> &plusmn;10%</code>), executing
+        <code>source</code> &rarr; <code>op</code> &rarr; <code>ac dec 20 1 1e9</code> &rarr; per-design <code>10 mV</code> closed-loop step <code>tran</code> &rarr; <code>destroy</code>/<code>remcirc</code>
+        for all 16,000 tasks. Directly stresses PDK parsing (<code>.uselib</code> vs ASCII <code>.lib</code>), subcircuit expansion, BSIM4 model binning/setup,
+        and small-matrix <code>OP + AC + Tran</code> solver/teardown overhead — a regime where Sparse 1.3 outperforms KLU on tiny ~40–220 equation matrices.
+      </p>
+      <figure class="waveform-figure">
+        <a href="img/opa1k_pvt16.svg?v=5" target="_blank" rel="noopener">
+          <img src="img/opa1k_pvt16.svg?v=5" alt="opa1k_pvt16 across 1,000 post-PEX op-amps and 16 PVT corners: DC supply current, DC output bias, AC closed-loop gain and peaking, and 10 mV step settling" loading="lazy" />
+        </a>
+        <figcaption>
+          <span>Golden 16,000-task summary (stock <code>ngspice-47</code>): DC supply current (5+ decades) &amp; output bias across 16 PVT corners, closed-loop AC DC-gain/peaking, and <code>10 mV</code> step settling across all 1,000 post-PEX op-amps.</span>
+          <a class="inline-link" href="img/opa1k_pvt16.svg?v=5" target="_blank" rel="noopener">Open full SVG</a>
+        </figcaption>
+      </figure>
+      <div class="detail-grid">
+        <div class="detail-box">
+          <h4>Simulation Parameters</h4>
+          <div class="kv-list">
+            <div class="kv-k">Source Designs</div><div class="kv-v">aicdb/opa-gen-gemini4 (1,000 GF180 post-PEX op-amps across 12 topologies)</div>
+            <div class="kv-k">PVT Grid</div><div class="kv-v">16 corners: T &isin; {-40, 27, 85, 125}&deg;C &times; VDD &isin; {0.95, 1.05}&times; &times; I_bias &isin; {0.90, 1.10}&times;</div>
+            <div class="kv-k">Per-Task Analyses</div><div class="kv-v">source + alter + op + ac dec 20 1 1e9 (181 pts) + 10 mV closed-loop step tran (100 steps) + remcirc</div>
+            <div class="kv-k">.options</div><div class="kv-v">gmin=1e-12 rshunt=1e12 reltol=1e-3 abstol=1e-12 vntol=1e-5 method=gear</div>
+            <div class="kv-k">Work Volume</div><div class="kv-v">16,000 independent small-matrix circuit loads/analyses (~40–220 eqns each)</div>
+          </div>
+        </div>
+        <div class="detail-box">
+          <h4>Saved Metrics &amp; Verification Criteria</h4>
+          <div class="kv-list">
+            <div class="kv-k">Saved Summary Vectors</div><div class="kv-v">idx_v, vout_dc, idd_dc, ac_dc, ac_pk, tr_v0, tr_v1, tr_pk across all 16,000 tasks (binary .raw)</div>
+            <div class="kv-k">Accuracy Check</div><div class="kv-v">All 16,000/16,000 tasks finite and worst relative RMS &le; 1e-3 across all 7 metric vectors (2.36e-6 Sparse / 5.31e-5 KLU on Zen 4)</div>
           </div>
         </div>
       </div>

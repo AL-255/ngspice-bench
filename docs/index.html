@@ -57,12 +57,13 @@
       <div class="control-group">
         <label for="workload-select">Workload</label>
         <select id="workload-select">
-          <option value="probe_geomean">Probe Suite Geomean (4 Decks)</option>
+          <option value="probe_geomean">Probe Suite Geomean (5 Decks)</option>
           <option value="sar12_hero_16cyc">Hero: 12-bit SAR ADC (16 Cycles, 1,559 eqns)</option>
+          <option value="opa1k_pvt16">Probe: 16,000 Scattered Op-Amp PVT Tasks (1k Designs × 16 PVT)</option>
           <option value="sar12_probe_2cyc">Probe: 12-bit SAR ADC (2 Cycles, 1,559 eqns)</option>
           <option value="ti12_full_300ns">Probe: 3-ch TI 12b SAR + PLL (300 ns, 7,221 eqns)</option>
           <option value="pll_ring_150m_4us">Probe: 150 MHz Wide-Tuning Ring PLL Startup (4 µs, 1,015 eqns)</option>
-          <option value="sdm16_120cyc">Probe: 16-bit Switched-Cap SDM (120 Cycles, 3,609 eqns)</option>
+          <option value="sdm16_120cyc">Probe: 16-bit Switched-Cap SDM (120 Cycles, 5,345 eqns)</option>
         </select>
       </div>
       <div class="control-group">
@@ -148,7 +149,7 @@
           <h3>Open-Source Circuits &amp; PDK</h3>
           <p>
             Models use the official open-source GlobalFoundries 180nm MCU PDK (<code>wafer-space/gf180mcu</code> git submodule).
-            Circuits are real post-PEX mixed-signal netlists from <code>aicdb</code> (12b SAR ADC, 3-ch TI 12b SAR+PLL, 1.2 GHz AD-PLL, 16b switched-cap SDM).
+            Circuits are real post-PEX mixed-signal netlists from <code>aicdb</code> (12b SAR ADC, 3-ch TI 12b SAR+PLL, 150 MHz ring PLL, 16b switched-cap SDM, and a 1,000-design × 16-PVT op-amp bundle).
           </p>
         </div>
       </div>
@@ -162,6 +163,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

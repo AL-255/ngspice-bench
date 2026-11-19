@@ -35,6 +35,7 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from compare_raw import compare_waveforms  # noqa: E402
 
 PROBE_DECKS = [
+    "opa1k_pvt16",
     "sdm16_120cyc",
     "pll_ring_150m_4us",
     "ti12_full_300ns",
@@ -356,7 +357,26 @@ def run_one(
     text = text.replace("../pdk/", str((REPO_ROOT / "pdk").resolve()) + "/")
     text = text.replace("../circuits/", str((REPO_ROOT / "circuits").resolve()) + "/")
 
-    if nglib_path is not None:
+    is_opa_bundle = (deck_name == "opa1k_pvt16")
+    if is_opa_bundle:
+        pdk_dir = (REPO_ROOT / "pdk/gf180mcu/gf180mcuD/libs.tech/ngspice").resolve()
+        if nglib_path is not None:
+            inc_lines = [f'.uselib "{nglib_path.resolve()}"']
+        else:
+            inc_lines = [
+                f'.include "{pdk_dir}/design.ngspice"',
+                ".param sw_stat_global=0",
+                ".param sw_stat_mismatch=0",
+                f'.lib "{pdk_dir}/sm141064.ngspice" typical',
+                f'.lib "{pdk_dir}/sm141064.ngspice" res_typical',
+                f'.lib "{pdk_dir}/sm141064.ngspice" mimcap_typical',
+                f'.lib "{pdk_dir}/sm141064.ngspice" cap_mim',
+                f'.lib "{pdk_dir}/sm141064.ngspice" moscap_typical',
+            ]
+        if solver == "klu":
+            inc_lines.append(".option klu")
+        (work_dir / "pdk_opa.inc").write_text("\n".join(inc_lines) + "\n")
+    elif nglib_path is not None:
         # Replace all GF180 PDK .include/.lib lines with a single .uselib directive
         pdk_abs_pat = re.compile(
             r'^\s*\.(include|lib)\s+"?' + re.escape(str((REPO_ROOT / "pdk").resolve())) + r'/[^"\n]+"?.*$',
@@ -380,7 +400,8 @@ def run_one(
     raw_out = work_dir / f"{deck_name}_{solver}_1t.raw"
     log_out = work_dir / f"{deck_name}_{solver}_1t.log"
     cir_out = work_dir / f"{deck_name}_{solver}_1t.cir"
-    text = re.sub(r"^tran ", "\n".join(inject) + "\ntran ", text, count=1, flags=re.M)
+    if not is_opa_bundle:
+        text = re.sub(r"^tran ", "\n".join(inject) + "\ntran ", text, count=1, flags=re.M)
     text = re.sub(r"^write \S+", f"write {raw_out}", text, count=1, flags=re.M)
     cir_out.write_text(text)
 

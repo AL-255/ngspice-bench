@@ -195,8 +195,9 @@ def render_svg(
                 lines.append(f'<line class="grid" x1="{gx:.1f}" y1="{y0}" x2="{gx:.1f}" y2="{y0 + panel_h}"/>')
             if show_xticks:
                 tval = x0_val + frac * x_span
+                tick_lbl = f"{fmt_num(tval)} {t_unit}".strip()
                 lines.append(
-                    f'<text class="tick" x="{gx:.1f}" y="{y0 + panel_h + 15}" text-anchor="middle">{fmt_num(tval)} {t_unit}</text>'
+                    f'<text class="tick" x="{gx:.1f}" y="{y0 + panel_h + 15}" text-anchor="middle">{tick_lbl}</text>'
                 )
 
         if panel.get("hline") is not None:
@@ -518,6 +519,80 @@ def main() -> None:
                 },
             ],
             out_path=OUT_DIR / "sdm16_120cyc.svg",
+        )
+
+    # 6. opa1k_pvt16 (1,000 distinct GF180 post-PEX op-amps x 16 PVT corners = 16,000 scattered tasks!)
+    opa_raw = GOLDEN_DIR / "opa1k_pvt16_baseline.raw.gz"
+    if opa_raw.exists():
+        d = parse_raw(opa_raw)
+        n_des = 1000
+        n_cor = len(d["idx_v"]) // n_des
+        idx_x = np.arange(n_des, dtype=float)
+        # Reshape (16 corners, 1000 designs); corner 4 is (27C, 0.95*VDD, 0.9*Ib), corner 5 is (27C, 0.95, 1.1), etc.
+        # Compute nominal-T (27C, corners 4..7) mean plus full 16-corner min/max envelopes across all 1,000 designs!
+        idd_mat = np.maximum(d["idd_dc"].reshape(n_cor, n_des), 1e-12) * 1e6  # uA
+        vout_mat = d["vout_dc"].reshape(n_cor, n_des)
+        acdc_mat = d["ac_dc"].reshape(n_cor, n_des)
+        acpk_mat = d["ac_pk"].reshape(n_cor, n_des)
+        dv_mat = (d["tr_v1"] - d["tr_v0"]).reshape(n_cor, n_des) * 1e3  # mV
+        pk_mat = (d["tr_pk"] - d["tr_v0"]).reshape(n_cor, n_des) * 1e3  # mV
+
+        idd_med = np.log10(np.median(idd_mat, axis=0))
+        idd_min = np.log10(np.min(idd_mat, axis=0))
+        idd_max = np.log10(np.max(idd_mat, axis=0))
+        vout_med = np.median(vout_mat, axis=0)
+        vout_min = np.min(vout_mat, axis=0)
+        vout_max = np.max(vout_mat, axis=0)
+        acdc_med = np.median(acdc_mat, axis=0)
+        acpk_med = np.clip(np.median(acpk_mat, axis=0), 0.5, 3.0)
+        dv_med = np.clip(np.median(dv_mat, axis=0), 0.0, 20.0)
+        pk_med = np.clip(np.median(pk_mat, axis=0), 0.0, 25.0)
+
+        render_svg(
+            title="opa1k_pvt16 — 1,000 Post-PEX Op-Amps × 16 PVT Corners (16,000 Scattered OP+AC+Tran Tasks)",
+            subtitle=f"Design Index 0..999 (12 Topologies) · {n_cor * n_des:,} tasks · T=[-40,27,85,125]°C · ±5% VDD · ±10% Ibias",
+            t_scale=1.0,
+            t_unit="",
+            t_max_raw=float(n_des - 1),
+            panels=[
+                {
+                    "title": "DC Supply Current log10(I_DD / µA) Across 1,000 Designs (16-Corner PVT Envelope)",
+                    "ylim": (-2.5, 3.2),
+                    "traces": [
+                        {"t": idx_x, "y": idd_max, "label": "max PVT", "color": COLORS["orange"], "width": 1.0, "opacity": 0.65},
+                        {"t": idx_x, "y": idd_min, "label": "min PVT", "color": COLORS["purple"], "width": 1.0, "opacity": 0.65},
+                        {"t": idx_x, "y": idd_med, "label": "median log10(I_DD/µA)", "color": COLORS["blue"], "width": 1.35},
+                    ],
+                },
+                {
+                    "title": "DC Output Bias Point v(out) Across 1,000 Designs (1.8 V & 3.3 V, 16-Corner PVT)",
+                    "ylim": (0.2, 2.6),
+                    "traces": [
+                        {"t": idx_x, "y": vout_max, "label": "+5% VDD", "color": COLORS["orange"], "width": 1.0, "opacity": 0.65},
+                        {"t": idx_x, "y": vout_min, "label": "-5% VDD", "color": COLORS["purple"], "width": 1.0, "opacity": 0.65},
+                        {"t": idx_x, "y": vout_med, "label": "median v(out) [V]", "color": COLORS["green"], "width": 1.3},
+                    ],
+                },
+                {
+                    "title": "Closed-Loop AC DC-Gain |H_cl(1 Hz)| & Peak |H_cl(f)| (Median Across 16 PVT Corners)",
+                    "ylim": (0.85, 2.65),
+                    "hline": 1.0,
+                    "traces": [
+                        {"t": idx_x, "y": acpk_med, "label": "max|H_cl(f)| peaking", "color": COLORS["red"], "width": 1.15, "opacity": 0.85},
+                        {"t": idx_x, "y": acdc_med, "label": "|H_cl(1 Hz)| DC gain", "color": COLORS["blue"], "width": 1.4},
+                    ],
+                },
+                {
+                    "title": "Closed-Loop 10 mV Step Settling & Peak Overshoot (mV, Dashed = 10 mV Target)",
+                    "ylim": (4.0, 22.0),
+                    "hline": 10.0,
+                    "traces": [
+                        {"t": idx_x, "y": pk_med, "label": "step peak (mV)", "color": COLORS["orange"], "width": 1.15, "opacity": 0.85},
+                        {"t": idx_x, "y": dv_med, "label": "settled step (mV)", "color": COLORS["green"], "width": 1.35},
+                    ],
+                },
+            ],
+            out_path=OUT_DIR / "opa1k_pvt16.svg",
         )
 
 

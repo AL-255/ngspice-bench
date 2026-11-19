@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "submission_id": "r9_7940hx_opt_zen4_uselib",
-  "timestamp_utc": "2026-11-19T22:20:47Z",
+  "timestamp_utc": "2026-11-19T23:13:00Z",
   "mode": "single_core",
   "all_ok": true,
   "host": {
@@ -56,6 +56,43 @@
     "notes": "Same build as opt/zen4-transient, loading precompiled GF180 typical PDK blob via .uselib (top-level netlists uncached)"
   },
   "runs": [
+    {
+      "deck": "opa1k_pvt16",
+      "solver": "klu",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 366.7773,
+      "rusage": {
+        "total_elapsed_s": 366.7773,
+        "tasks": 16000,
+        "designs": 1000,
+        "corners": 16
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": true,
+        "npts_ref": 16000,
+        "npts_cand": 16000,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 5.311637252141133e-05,
+        "worst_vec": "ac_pk",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null,
+        "opa_tasks_count": 16000
+      }
+    },
     {
       "deck": "sdm16_120cyc",
       "solver": "klu",

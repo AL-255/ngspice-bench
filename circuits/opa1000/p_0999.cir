@@ -1,0 +1,120 @@
+* opa1000[0999]: 2p/telescopic_pmos_3v3_i500u_weak (telescopic_pmos, VDD=3.3V, CL=2.0pF, Iref=100.0uA)
+.include "pdk_opa.inc"
+.temp 27
+.option gmin=1e-12 rshunt=1e12 reltol=1e-3 abstol=1e-12 vntol=1e-5 method=gear
+* Post-PEX R+C extracted netlist for telescopic_pmos_3v3_i500u_weak
+.subckt opamp_dut vdd vss inp inn out ib
+XMpar0 a_5177_12127.t118 a_4617_11919.t0 out.t0 vdd.t2 pfet_03v3 w=3.22u l=0.45u ad=1.1077e-12 pd=4.5520e-06 as=1.0046e-12 ps=4.1660e-06 nf=1 m=160 par=160
+XMpar1 a_4497_12127.t160 inp.t0 a_7038_24160.t0 vdd.t38 pfet_03v3 w=2.01u l=0.29u ad=8.7520e-13 pd=2.9149e-06 as=8.9701e-13 ps=3.0047e-06 nf=1 m=118 par=118
+XMpar2 a_5177_12127.t0 inn.t0 a_7038_24160.t0 vdd.t38 pfet_03v3 w=2.01u l=0.29u ad=8.7520e-13 pd=2.9149e-06 as=8.9701e-13 ps=3.0047e-06 nf=1 m=118 par=118
+XMpar3 a_4497_12127.t0 a_4617_11919.t0 a_4617_11919.t1 vdd.t2 pfet_03v3 w=3.22u l=0.45u ad=1.1592e-12 pd=4.7450e-06 as=1.0046e-12 ps=4.1660e-06 nf=1 m=160 par=160
+XMpar4 a_9165_1205.t7 a_4617_11919.t162 out.t40 vss.t0 nfet_03v3 w=1.99u l=0.45u ad=6.6333e-13 pd=2.9883e-06 as=6.6333e-13 ps=2.9883e-06 nf=1 m=72 par=72
+XMpar5 a_9165_1205.t0 a_4617_11919.t536 vss.t1 vss.t0 nfet_03v3 w=1.92u l=0.63u ad=5.3760e-13 pd=2.4800e-06 as=5.3760e-13 ps=2.4800e-06 nf=1 m=30 par=30
+XMpar6 a_2222_4654.t1 a_2222_4654.t0 vdd.t1 vdd.t0 pfet_03v3 w=10u l=0.68u ad=2.8000e-12 pd=1.0560e-05 as=2.8000e-12 ps=1.0560e-05 nf=1 m=16 par=16
+XMpar7 a_7038_24160.t118 a_2222_4654.t0 vdd.t1 vdd.t0 pfet_03v3 w=10u l=0.68u ad=2.8000e-12 pd=1.0560e-05 as=2.9000e-12 ps=1.0893e-05 nf=1 m=64 par=64
+XMpar8 a_4617_11919.t163 a_4617_11919.t162 a_8283_1205.t8 vss.t0 nfet_03v3 w=1.99u l=0.45u ad=6.6333e-13 pd=2.9883e-06 as=7.1640e-13 ps=3.2075e-06 nf=1 m=72 par=72
+XMpar9 a_8283_1205.t0 a_4617_11919.t536 vss.t1 vss.t0 nfet_03v3 w=1.92u l=0.63u ad=6.6048e-13 pd=2.9920e-06 as=5.3760e-13 ps=2.4800e-06 nf=1 m=30 par=30
+XMpar10 a_2222_4654.t32 ib.t0 vss.t125 vss.t124 nfet_03v3 w=3.37u l=0.68u ad=9.4360e-13 pd=3.9300e-06 as=1.0784e-12 ps=4.4312e-06 nf=1 m=16 par=16
+XMpar11 ib.t1 ib.t0 vss.t125 vss.t124 nfet_03v3 w=3.37u l=0.68u ad=9.4360e-13 pd=3.9300e-06 as=1.0784e-12 ps=4.4312e-06 nf=1 m=16 par=16
+X832 out.t232 vss.t70 cap_mim_2f0fF c_width=9u c_length=9u
+Rpar0 a_2222_4654.t0 a_2222_4654.t1 17.9299
+Rpar1 a_2222_4654.t0 a_2222_4654.t32 250.3370
+Rpar2 a_2222_4654.t1 a_2222_4654.t32 84.9297
+Rpar3 a_4497_12127.t0 a_4497_12127.t160 81.1958
+Rpar4 a_4617_11919.t0 a_4617_11919.t1 4.0072
+Rpar5 a_4617_11919.t0 a_4617_11919.t163 548.5179
+Rpar6 a_4617_11919.t0 a_4617_11919.t536 697.5357
+Rpar7 a_4617_11919.t1 a_4617_11919.t162 496.0207
+Rpar8 a_4617_11919.t1 a_4617_11919.t163 108.9541
+Rpar9 a_4617_11919.t1 a_4617_11919.t536 138.5540
+Rpar10 a_4617_11919.t162 a_4617_11919.t163 5.2221
+Rpar11 a_4617_11919.t162 a_4617_11919.t536 345.3826
+Rpar12 a_4617_11919.t163 a_4617_11919.t536 75.8655
+Rpar13 a_5177_12127.t0 a_5177_12127.t118 64.0201
+Rpar14 a_7038_24160.t0 a_7038_24160.t118 36.1406
+Rpar15 a_8283_1205.t0 a_8283_1205.t8 58.7046
+Rpar16 a_9165_1205.t0 a_9165_1205.t7 38.0387
+Rpar17 ib ib.t0 12.4511
+Rpar18 ib ib.t1 2.9296
+Rpar19 ib.t0 ib.t1 16.2526
+Rpar20 inn inn.t0 1.9839
+Rpar21 inp inp.t0 1.9839
+Rpar22 out out.t0 2.6339
+Rpar23 out out.t40 906.8357
+Rpar24 out out.t232 2147.5660
+Rpar25 out.t0 out.t40 113.5038
+Rpar26 out.t0 out.t232 268.7993
+Rpar27 out.t40 out.t232 70.1196
+Rpar28 vdd vdd.t0 145.8952
+Rpar29 vdd vdd.t1 6111.5358
+Rpar30 vdd vdd.t2 186.3009
+Rpar31 vdd vdd.t38 94.5911
+Rpar32 vdd.t0 vdd.t1 4.0301
+Rpar33 vdd.t0 vdd.t2 135.3540
+Rpar34 vdd.t0 vdd.t38 14.0289
+Rpar35 vdd.t1 vdd.t2 5669.9661
+Rpar36 vdd.t1 vdd.t38 587.6688
+Rpar37 vdd.t2 vdd.t38 87.7567
+Rpar38 vss vss.t0 38.3361
+Rpar39 vss vss.t1 2113.8975
+Rpar40 vss vss.t124 807.9769
+Rpar41 vss vss.t125 100.0068
+Rpar42 vss vss.t70 119.2020
+Rpar43 vss.t0 vss.t1 9.6210
+Rpar44 vss.t0 vss.t124 193.0337
+Rpar45 vss.t0 vss.t125 34.6999
+Rpar46 vss.t0 vss.t70 75.2584
+Rpar47 vss.t1 vss.t125 658.0159
+Rpar48 vss.t1 vss.t70 7284.8205
+Rpar49 vss.t124 vss.t125 10.8632
+Rpar50 vss.t124 vss.t70 3052.5334
+Rpar51 vss.t125 vss.t70 379.3476
+Cpar0 a_2222_4654.t0 vss 9.47589e-14
+Cpar1 a_2222_4654.t1 vss 2.98695e-14
+Cpar2 a_2222_4654.t32 vss 1.50097e-14
+Cpar3 a_4497_12127.t0 vss 1.93170e-13
+Cpar4 a_4497_12127.t160 vss 9.46932e-14
+Cpar5 a_4617_11919.t0 vss 1.82102e-13
+Cpar6 a_4617_11919.t1 vss 1.48003e-13
+Cpar7 a_4617_11919.t162 vss 6.73872e-14
+Cpar8 a_4617_11919.t163 vss 5.88815e-14
+Cpar9 a_4617_11919.t536 vss 4.01540e-14
+Cpar10 a_5177_12127.t0 vss 1.01114e-13
+Cpar11 a_5177_12127.t118 vss 2.14750e-13
+Cpar12 a_7038_24160.t0 vss 1.42118e-13
+Cpar13 a_7038_24160.t118 vss 1.24192e-13
+Cpar14 a_8283_1205.t0 vss 2.53373e-14
+Cpar15 a_8283_1205.t8 vss 5.28280e-14
+Cpar16 a_9165_1205.t0 vss 2.93696e-14
+Cpar17 a_9165_1205.t7 vss 6.56792e-14
+Cpar18 ib out 2.01970e-16
+Cpar19 ib vss 3.78030e-14
+Cpar20 ib.t0 vss 4.73057e-15
+Cpar21 ib.t1 vss 2.48808e-15
+Cpar22 inn inp 1.48190e-16
+Cpar23 inn vdd 4.14968e-14
+Cpar24 inn vss 1.16959e-14
+Cpar25 inn.t0 vss 5.65880e-14
+Cpar26 inp vdd 4.16882e-14
+Cpar27 inp vss 1.17447e-14
+Cpar28 inp.t0 vss 5.67987e-14
+Cpar29 out vdd 5.76726e-14
+Cpar30 out vss 4.78276e-14
+Cpar31 out.t0 vss 1.79748e-13
+Cpar32 out.t232 vss 4.38219e-14
+Cpar33 out.t40 vss 7.53656e-14
+Cpar34 vdd vss 9.76396e-13
+Cpar35 vdd.t0 vss 1.02674e-13
+Cpar36 vdd.t1 vss 3.85091e-14
+Cpar37 vdd.t2 vss 2.84182e-13
+Cpar38 vdd.t38 vss 1.15642e-13
+.ends opamp_dut
+
+Vdd vdd 0 3.300000
+Vss vss 0 0
+Ibias vdd ib 1.000000e-04
+Vinp inp 0 DC 1.480000 AC 1 PWL(0 1.480000 3.000000e-09 1.480000 3.300000e-09 1.490000)
+Rfb out inn 1m
+Cload out 0 2.000000e-12
+Xdut vdd vss inp inn out ib opamp_dut
+.end

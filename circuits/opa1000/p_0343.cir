@@ -1,0 +1,63 @@
+* opa1000[0343]: 200f/nmos_5t_1v8_i2u_subth (nmos_5t, VDD=1.8V, CL=0.2pF, Iref=0.65uA)
+.include "pdk_opa.inc"
+.temp 27
+.option gmin=1e-12 rshunt=1e12 reltol=1e-3 abstol=1e-12 vntol=1e-5 method=gear
+* Post-PEX R+C extracted netlist for nmos_5t_1v8_i2u_subth
+.subckt opamp_dut vdd vss inp inn out ib
+XMpar0 a_1426_3067.t0 inp.t0 a_1462_6981.t0 vss.t0 nfet_03v3 w=1.95u l=1.52u ad=6.7080e-13 pd=3.0280e-06 as=6.0840e-13 ps=2.7690e-06 nf=1 m=20 par=20
+XMpar1 a_1426_3067.t0 inn.t0 out.t6 vss.t0 nfet_03v3 w=1.95u l=1.52u ad=6.7080e-13 pd=3.0280e-06 as=6.0840e-13 ps=2.7690e-06 nf=1 m=20 par=20
+XMpar2 out.t0 a_1462_6981.t20 vdd.t1 vdd.t0 pfet_03v3 w=1.81u l=2.72u ad=5.8954e-13 pd=2.7200e-06 as=5.0680e-13 ps=2.3700e-06 nf=1 m=14 par=14
+XMpar3 a_1426_3067.t40 ib.t0 vss.t27 vss.t0 nfet_03v3 w=1.86u l=2.08u ad=5.2080e-13 pd=2.4200e-06 as=6.6960e-13 ps=3.0450e-06 nf=1 m=8 par=8
+XMpar4 a_1462_6981.t21 a_1462_6981.t20 vdd.t1 vdd.t0 pfet_03v3 w=1.81u l=2.72u ad=5.8954e-13 pd=2.7200e-06 as=5.8954e-13 ps=2.7200e-06 nf=1 m=14 par=14
+XMpar5 ib.t1 ib.t0 vss.t27 vss.t0 nfet_03v3 w=1.86u l=2.08u ad=5.2080e-13 pd=2.4200e-06 as=5.2080e-13 ps=2.4200e-06 nf=1 m=2 par=2
+Rpar0 a_1426_3067.t0 a_1426_3067.t40 27.3732
+Rpar1 a_1462_6981.t0 a_1462_6981.t20 100.0595
+Rpar2 a_1462_6981.t0 a_1462_6981.t21 36.3652
+Rpar3 a_1462_6981.t20 a_1462_6981.t21 5.3597
+Rpar4 ib ib.t0 20.2296
+Rpar5 ib ib.t1 12.7351
+Rpar6 ib.t0 ib.t1 72.7197
+Rpar7 inn inn.t0 1.8962
+Rpar8 inp inp.t0 1.8962
+Rpar9 out out.t0 4.0088
+Rpar10 out out.t6 308.8469
+Rpar11 out.t0 out.t6 32.8779
+Rpar12 vdd vdd.t0 20.6455
+Rpar13 vdd vdd.t1 387.2560
+Rpar14 vdd.t0 vdd.t1 10.1223
+Rpar15 vss vss.t0 33.3843
+Rpar16 vss vss.t27 572.4782
+Rpar17 vss.t0 vss.t27 4.1698
+Cpar0 a_1426_3067.t0 vss 2.47187e-14
+Cpar1 a_1426_3067.t40 vss 5.47061e-15
+Cpar2 a_1462_6981.t0 vss 1.56691e-14
+Cpar3 a_1462_6981.t20 vss 5.96039e-14
+Cpar4 a_1462_6981.t21 vss 1.47060e-14
+Cpar5 ib inn 1.40100e-17
+Cpar6 ib inp 2.71600e-17
+Cpar7 ib vss 1.79938e-14
+Cpar8 ib.t0 vss 3.05479e-15
+Cpar9 ib.t1 vss 1.85610e-16
+Cpar10 inn inp 1.22400e-16
+Cpar11 inn out 5.38024e-15
+Cpar12 inn vss 1.72215e-14
+Cpar13 inn.t0 vss 7.95152e-15
+Cpar14 inp vss 1.71610e-14
+Cpar15 inp.t0 vss 8.00094e-15
+Cpar16 out vdd 1.43792e-14
+Cpar17 out vss 1.35354e-14
+Cpar18 out.t0 vss 1.61743e-14
+Cpar19 out.t6 vss 2.10057e-14
+Cpar20 vdd vss 1.21889e-13
+Cpar21 vdd.t0 vss 6.20857e-14
+Cpar22 vdd.t1 vss 6.99707e-15
+.ends opamp_dut
+
+Vdd vdd 0 1.800000
+Vss vss 0 0
+Ibias vdd ib 6.500000e-07
+Vinp inp 0 DC 0.895000 AC 1 PWL(0 0.895000 1.000785e-08 0.895000 1.100864e-08 0.905000)
+Rfb out inn 1m
+Cload out 0 2.000000e-13
+Xdut vdd vss inp inn out ib opamp_dut
+.end

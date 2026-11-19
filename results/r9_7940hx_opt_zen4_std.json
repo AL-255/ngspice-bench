@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "submission_id": "r9_7940hx_opt_zen4_std",
-  "timestamp_utc": "2026-11-19T22:20:47Z",
+  "timestamp_utc": "2026-11-19T23:13:00Z",
   "mode": "single_core",
   "all_ok": true,
   "host": {
@@ -56,6 +56,80 @@
     "notes": "Stages 1-8: portable general opts + Zen 4 AVX-512 BSIM4v5/v6 SoA kernels + inline hardware exp/log + two-level stationary block cache with first-order Taylor charge sync"
   },
   "runs": [
+    {
+      "deck": "opa1k_pvt16",
+      "solver": "klu",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 497.3876,
+      "rusage": {
+        "total_elapsed_s": 497.3876,
+        "tasks": 16000,
+        "designs": 1000,
+        "corners": 16
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": true,
+        "npts_ref": 16000,
+        "npts_cand": 16000,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 5.311637252141133e-05,
+        "worst_vec": "ac_pk",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null,
+        "opa_tasks_count": 16000
+      }
+    },
+    {
+      "deck": "opa1k_pvt16",
+      "solver": "sparse",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 483.2665,
+      "rusage": {
+        "total_elapsed_s": 483.2665,
+        "tasks": 16000,
+        "designs": 1000,
+        "corners": 16
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": true,
+        "npts_ref": 16000,
+        "npts_cand": 16000,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 2.3618765535508346e-06,
+        "worst_vec": "ac_dc",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null,
+        "opa_tasks_count": 16000
+      }
+    },
     {
       "deck": "sdm16_120cyc",
       "solver": "klu",

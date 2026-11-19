@@ -171,6 +171,77 @@ def _rising_edges(d: Dict[str, np.ndarray], sig: str, vth: float = 0.9) -> List[
 def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) -> Dict[str, Any]:
     ref = parse_raw(ref_path)
     cand = parse_raw(cand_path)
+
+    # Multi-point scattered design bundle (e.g., opa1k_pvt16 indexed by idx_v instead of time)
+    if "time" not in ref and "idx_v" in ref:
+        n_ref = int(len(ref["idx_v"]))
+        n_cand = int(len(cand.get("idx_v", [])))
+        if n_ref != n_cand or n_ref == 0:
+            return {
+                "pass": False,
+                "error": f"Point count mismatch: {n_cand} vs {n_ref}",
+                "exact_grid": False,
+                "npts_ref": n_ref,
+                "npts_cand": n_cand,
+                "worst_rel_rms": float("inf"),
+                "worst_vec": "idx_v",
+                "opa_tasks_count": n_ref,
+            }
+        per_vec: Dict[str, Dict[str, float]] = {}
+        worst_rel_rms = 0.0
+        worst_vec = ""
+        for k in ref:
+            if k == "idx_v" or k not in cand:
+                continue
+            vr = ref[k]
+            vc = cand[k]
+            if not np.all(np.isfinite(vc)):
+                return {
+                    "pass": False,
+                    "error": f"Non-finite values in {k}",
+                    "exact_grid": True,
+                    "npts_ref": n_ref,
+                    "npts_cand": n_cand,
+                    "worst_rel_rms": float("inf"),
+                    "worst_vec": k,
+                    "opa_tasks_count": n_ref,
+                }
+            diff = np.abs(vc - vr)
+            max_abs = float(np.max(diff))
+            rms = float(np.sqrt(np.mean(diff * diff)))
+            scale = max(float(np.max(np.abs(vr))), 1e-9)
+            rel_rms = rms / scale
+            per_vec[k] = {"max_abs": max_abs, "rms": rms, "rel_rms": rel_rms}
+            if rel_rms > worst_rel_rms:
+                worst_rel_rms = rel_rms
+                worst_vec = k
+        passed = worst_rel_rms <= tol_rms
+        return {
+            "pass": passed,
+            "exact_grid": True,
+            "npts_ref": n_ref,
+            "npts_cand": n_cand,
+            "t_end_rel_diff": 0.0,
+            "worst_rel_rms": worst_rel_rms,
+            "worst_vec": worst_vec,
+            "sar_codes_ref": [],
+            "sar_codes_cand": [],
+            "sar_codes_match": True,
+            "eoc_max_dt_ps": 0.0,
+            "sdm_bits_count": 0,
+            "sdm_bits_match": True,
+            "sdm_pdm_max_dt_ps": 0.0,
+            "sdm_dac_corr": None,
+            "pll_code_ref": None,
+            "pll_code_cand": None,
+            "pll_code_match": True,
+            "pll_fout_mhz": None,
+            "pll_vc_final_v": None,
+            "pll_vc_err_mv": None,
+            "opa_tasks_count": n_ref,
+            "per_vec": per_vec,
+        }
+
     t_ref = ref["time"]
     t_cand = cand["time"]
     t_min = max(float(t_ref[0]), float(t_cand[0]))

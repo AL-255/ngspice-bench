@@ -13,6 +13,7 @@ RESULTS_DIR = REPO_ROOT / "results"
 OUT_PATH = REPO_ROOT / "docs" / "data" / "leaderboard.json"
 
 PROBE_DECKS = [
+    "opa1k_pvt16",
     "sdm16_120cyc",
     "pll_ring_150m_4us",
     "ti12_full_300ns",
@@ -21,6 +22,15 @@ PROBE_DECKS = [
 HERO_DECK = "sar12_hero_16cyc"
 
 DECK_META = {
+    "opa1k_pvt16": {
+        "title": "16,000 Scattered Op-Amp PVT Tasks (1k × 16)",
+        "category": "probe",
+        "eqns": 120,
+        "iters_approx": 16000,
+        "pdk": "GF180MCU D",
+        "source": "aicdb/opa-gen-gemini4",
+        "description": "1,000 distinct post-PEX GF180 op-amp designs (12 topologies, 1.8V/3.3V, 200fF/2pF, 50nA-500uA) x 16 PVT corners = 16,000 small scattered OP + AC + 10mV step Tran tasks in one single run (~10 min on stock ngspice-47 Sparse 1c).",
+    },
     "sar12_hero_16cyc": {
         "title": "12-bit SAR ADC (16 Cycles, Hero)",
         "category": "hero",
@@ -70,6 +80,7 @@ DECK_META = {
 
 # Reference baseline (stock ngspice-47 Sparse 1-core pinned to cpu0 on AMD Ryzen 9 7940HX)
 REFERENCE_BASELINE_WALL_S = {
+    "opa1k_pvt16": 626.47,
     "sar12_hero_16cyc": 626.75,
     "sar12_probe_2cyc": 81.46,
     "ti12_full_300ns": 464.51,
@@ -162,6 +173,7 @@ def build() -> None:
                     "pll_code_match": ac.get("pll_code_match"),
                     "pll_fout_mhz": ac.get("pll_fout_mhz"),
                     "pll_vc_final_v": ac.get("pll_vc_final_v"),
+                    "opa_tasks_count": ac.get("opa_tasks_count", 0),
                 }
 
             entries.append({

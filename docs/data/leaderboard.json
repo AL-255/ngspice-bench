@@ -1,9 +1,10 @@
 {
-  "generated_utc": "2026-11-19T22:20:47Z",
+  "generated_utc": "2026-11-19T23:13:00Z",
   "mode": "single_core",
   "reference_baseline": {
     "description": "Stock ngspice-47 (Sparse 1-core) on AMD Ryzen 9 7940HX (Zen 4)",
     "wall_s": {
+      "opa1k_pvt16": 626.47,
       "sar12_hero_16cyc": 626.75,
       "sar12_probe_2cyc": 81.46,
       "ti12_full_300ns": 464.51,
@@ -12,6 +13,7 @@
     }
   },
   "probe_decks": [
+    "opa1k_pvt16",
     "sdm16_120cyc",
     "pll_ring_150m_4us",
     "ti12_full_300ns",
@@ -19,6 +21,15 @@
   ],
   "hero_deck": "sar12_hero_16cyc",
   "deck_meta": {
+    "opa1k_pvt16": {
+      "title": "16,000 Scattered Op-Amp PVT Tasks (1k \u00d7 16)",
+      "category": "probe",
+      "eqns": 120,
+      "iters_approx": 16000,
+      "pdk": "GF180MCU D",
+      "source": "aicdb/opa-gen-gemini4",
+      "description": "1,000 distinct post-PEX GF180 op-amp designs (12 topologies, 1.8V/3.3V, 200fF/2pF, 50nA-500uA) x 16 PVT corners = 16,000 small scattered OP + AC + 10mV step Tran tasks in one single run (~10 min on stock ngspice-47 Sparse 1c)."
+    },
     "sar12_hero_16cyc": {
       "title": "12-bit SAR ADC (16 Cycles, Hero)",
       "category": "hero",
@@ -70,7 +81,7 @@
     {
       "entry_id": "r9_7940hx_opt_zen4_uselib__klu",
       "submission_id": "r9_7940hx_opt_zen4_uselib",
-      "timestamp_utc": "2026-11-19T22:20:47Z",
+      "timestamp_utc": "2026-11-19T23:13:00Z",
       "solver": "klu",
       "num_threads": 1,
       "all_pass": true,
@@ -126,12 +137,37 @@
         "pdk_precompile_s": 0.0318,
         "notes": "Same build as opt/zen4-transient, loading precompiled GF180 typical PDK blob via .uselib (top-level netlists uncached)"
       },
-      "probe_total_s": 117.2841,
-      "probe_geomean_s": 25.4327,
-      "probe_geomean_speedup": 7.427,
+      "probe_total_s": 484.0614,
+      "probe_geomean_s": 43.3705,
+      "probe_geomean_speedup": 5.535,
       "hero_wall_s": 70.0012,
       "hero_speedup": 8.953,
       "decks": {
+        "opa1k_pvt16": {
+          "wall_s": 366.7773,
+          "speedup_vs_ref": 1.708,
+          "tran_s": null,
+          "load_s": null,
+          "factor_s": null,
+          "solve_s": null,
+          "trunc_s": null,
+          "tot_iter": null,
+          "eqns": null,
+          "pass": true,
+          "rel_rms": 5.311637252141133e-05,
+          "exact_grid": true,
+          "sar_codes_match": true,
+          "sar_codes_count": 0,
+          "eoc_max_dt_ps": 0.0,
+          "sdm_bits_match": true,
+          "sdm_bits_count": 0,
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": true,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 16000
+        },
         "sdm16_120cyc": {
           "wall_s": 30.5474,
           "speedup_vs_ref": 4.744,
@@ -154,7 +190,8 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 31.7246,
@@ -178,7 +215,8 @@
           "pll_code": 31,
           "pll_code_match": true,
           "pll_fout_mhz": 153.245,
-          "pll_vc_final_v": 0.9524
+          "pll_vc_final_v": 0.9524,
+          "opa_tasks_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 45.5301,
@@ -202,7 +240,8 @@
           "pll_code": null,
           "pll_code_match": null,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 9.482,
@@ -226,7 +265,8 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 70.0012,
@@ -250,14 +290,15 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         }
       }
     },
     {
       "entry_id": "r9_7940hx_opt_zen4_std__klu",
       "submission_id": "r9_7940hx_opt_zen4_std",
-      "timestamp_utc": "2026-11-19T22:20:47Z",
+      "timestamp_utc": "2026-11-19T23:13:00Z",
       "solver": "klu",
       "num_threads": 1,
       "all_pass": true,
@@ -313,12 +354,37 @@
         "pdk_precompile_s": null,
         "notes": "Stages 1-8: portable general opts + Zen 4 AVX-512 BSIM4v5/v6 SoA kernels + inline hardware exp/log + two-level stationary block cache with first-order Taylor charge sync"
       },
-      "probe_total_s": 120.6391,
-      "probe_geomean_s": 26.0101,
-      "probe_geomean_speedup": 7.262,
+      "probe_total_s": 618.0267,
+      "probe_geomean_s": 46.9303,
+      "probe_geomean_speedup": 5.116,
       "hero_wall_s": 71.8973,
       "hero_speedup": 8.717,
       "decks": {
+        "opa1k_pvt16": {
+          "wall_s": 497.3876,
+          "speedup_vs_ref": 1.26,
+          "tran_s": null,
+          "load_s": null,
+          "factor_s": null,
+          "solve_s": null,
+          "trunc_s": null,
+          "tot_iter": null,
+          "eqns": null,
+          "pass": true,
+          "rel_rms": 5.311637252141133e-05,
+          "exact_grid": true,
+          "sar_codes_match": true,
+          "sar_codes_count": 0,
+          "eoc_max_dt_ps": 0.0,
+          "sdm_bits_match": true,
+          "sdm_bits_count": 0,
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": true,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 16000
+        },
         "sdm16_120cyc": {
           "wall_s": 30.8049,
           "speedup_vs_ref": 4.704,
@@ -341,7 +407,8 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 31.5866,
@@ -365,7 +432,8 @@
           "pll_code": 31,
           "pll_code_match": true,
           "pll_fout_mhz": 153.245,
-          "pll_vc_final_v": 0.9524
+          "pll_vc_final_v": 0.9524,
+          "opa_tasks_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 48.5613,
@@ -389,7 +457,8 @@
           "pll_code": null,
           "pll_code_match": null,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 9.6863,
@@ -413,7 +482,8 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 71.8973,
@@ -437,14 +507,15 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         }
       }
     },
     {
       "entry_id": "r9_7940hx_opt_zen4_std__sparse",
       "submission_id": "r9_7940hx_opt_zen4_std",
-      "timestamp_utc": "2026-11-19T22:20:47Z",
+      "timestamp_utc": "2026-11-19T23:13:00Z",
       "solver": "sparse",
       "num_threads": 1,
       "all_pass": true,
@@ -500,12 +571,37 @@
         "pdk_precompile_s": null,
         "notes": "Stages 1-8: portable general opts + Zen 4 AVX-512 BSIM4v5/v6 SoA kernels + inline hardware exp/log + two-level stationary block cache with first-order Taylor charge sync"
       },
-      "probe_total_s": 216.7562,
-      "probe_geomean_s": 47.2826,
-      "probe_geomean_speedup": 3.995,
+      "probe_total_s": 700.0227,
+      "probe_geomean_s": 75.266,
+      "probe_geomean_speedup": 3.19,
       "hero_wall_s": 149.7441,
       "hero_speedup": 4.185,
       "decks": {
+        "opa1k_pvt16": {
+          "wall_s": 483.2665,
+          "speedup_vs_ref": 1.296,
+          "tran_s": null,
+          "load_s": null,
+          "factor_s": null,
+          "solve_s": null,
+          "trunc_s": null,
+          "tot_iter": null,
+          "eqns": null,
+          "pass": true,
+          "rel_rms": 2.3618765535508346e-06,
+          "exact_grid": true,
+          "sar_codes_match": true,
+          "sar_codes_count": 0,
+          "eoc_max_dt_ps": 0.0,
+          "sdm_bits_match": true,
+          "sdm_bits_count": 0,
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": true,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 16000
+        },
         "sdm16_120cyc": {
           "wall_s": 69.5674,
           "speedup_vs_ref": 2.083,
@@ -528,7 +624,8 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 38.7102,
@@ -552,7 +649,8 @@
           "pll_code": 31,
           "pll_code_match": true,
           "pll_fout_mhz": 153.252,
-          "pll_vc_final_v": 0.9528
+          "pll_vc_final_v": 0.9528,
+          "opa_tasks_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 87.1925,
@@ -576,7 +674,8 @@
           "pll_code": null,
           "pll_code_match": null,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 21.2861,
@@ -600,7 +699,8 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 149.7441,
@@ -624,14 +724,15 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         }
       }
     },
     {
       "entry_id": "r9_7940hx_stock_ngspice47__klu",
       "submission_id": "r9_7940hx_stock_ngspice47",
-      "timestamp_utc": "2026-11-19T22:20:47Z",
+      "timestamp_utc": "2026-11-19T23:13:00Z",
       "solver": "klu",
       "num_threads": 1,
       "all_pass": true,
@@ -687,12 +788,37 @@
         "pdk_precompile_s": null,
         "notes": "Unmodified upstream ngspice-47 baseline"
       },
-      "probe_total_s": 830.0002,
-      "probe_geomean_s": 156.6224,
-      "probe_geomean_speedup": 1.206,
+      "probe_total_s": 1466.0806,
+      "probe_geomean_s": 207.2934,
+      "probe_geomean_speedup": 1.158,
       "hero_wall_s": null,
       "hero_speedup": null,
       "decks": {
+        "opa1k_pvt16": {
+          "wall_s": 636.0804,
+          "speedup_vs_ref": 0.985,
+          "tran_s": null,
+          "load_s": null,
+          "factor_s": null,
+          "solve_s": null,
+          "trunc_s": null,
+          "tot_iter": null,
+          "eqns": null,
+          "pass": true,
+          "rel_rms": 5.30309874597702e-05,
+          "exact_grid": true,
+          "sar_codes_match": true,
+          "sar_codes_count": 0,
+          "eoc_max_dt_ps": 0.0,
+          "sdm_bits_match": true,
+          "sdm_bits_count": 0,
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": true,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 16000
+        },
         "sdm16_120cyc": {
           "wall_s": 86.7352,
           "speedup_vs_ref": 1.671,
@@ -715,7 +841,8 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 228.4925,
@@ -739,7 +866,8 @@
           "pll_code": 31,
           "pll_code_match": true,
           "pll_fout_mhz": 153.252,
-          "pll_vc_final_v": 0.9525
+          "pll_vc_final_v": 0.9525,
+          "opa_tasks_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 446.8181,
@@ -763,7 +891,8 @@
           "pll_code": null,
           "pll_code_match": null,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 67.9544,
@@ -787,14 +916,15 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         }
       }
     },
     {
       "entry_id": "r9_7940hx_stock_ngspice47__sparse",
       "submission_id": "r9_7940hx_stock_ngspice47",
-      "timestamp_utc": "2026-11-19T22:20:47Z",
+      "timestamp_utc": "2026-11-19T23:13:00Z",
       "solver": "sparse",
       "num_threads": 1,
       "all_pass": true,
@@ -850,12 +980,37 @@
         "pdk_precompile_s": null,
         "notes": "Unmodified upstream ngspice-47 baseline"
       },
-      "probe_total_s": 923.021,
-      "probe_geomean_s": 188.8861,
+      "probe_total_s": 1549.4943,
+      "probe_geomean_s": 240.0714,
       "probe_geomean_speedup": 1.0,
       "hero_wall_s": 626.7474,
       "hero_speedup": 1.0,
       "decks": {
+        "opa1k_pvt16": {
+          "wall_s": 626.4733,
+          "speedup_vs_ref": 1.0,
+          "tran_s": null,
+          "load_s": null,
+          "factor_s": null,
+          "solve_s": null,
+          "trunc_s": null,
+          "tot_iter": null,
+          "eqns": null,
+          "pass": true,
+          "rel_rms": 0.0,
+          "exact_grid": true,
+          "sar_codes_match": true,
+          "sar_codes_count": 0,
+          "eoc_max_dt_ps": 0.0,
+          "sdm_bits_match": true,
+          "sdm_bits_count": 0,
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": true,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 16000
+        },
         "sdm16_120cyc": {
           "wall_s": 144.9154,
           "speedup_vs_ref": 1.0,
@@ -878,7 +1033,8 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 232.1391,
@@ -902,7 +1058,8 @@
           "pll_code": 31,
           "pll_code_match": true,
           "pll_fout_mhz": 153.249,
-          "pll_vc_final_v": 0.9528
+          "pll_vc_final_v": 0.9528,
+          "opa_tasks_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 464.5063,
@@ -926,7 +1083,8 @@
           "pll_code": null,
           "pll_code_match": null,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 81.4602,
@@ -950,7 +1108,8 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 626.7474,
@@ -974,7 +1133,8 @@
           "pll_code": null,
           "pll_code_match": true,
           "pll_fout_mhz": null,
-          "pll_vc_final_v": null
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0
         }
       }
     }

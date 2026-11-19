@@ -8,15 +8,16 @@ Live Leaderboard: **https://al-255.github.io/ngspice-bench/**
 
 ## Benchmark Suite
 
-All 5 workloads are real post-layout-extraction (post-PEX) mixed-signal circuits using the open-source GlobalFoundries 180nm MCU PDK (`gf180mcuD`, included via the [`wafer-space/gf180mcu`](https://github.com/wafer-space/gf180mcu) git submodule), derived from [`aicdb`](https://github.com/aicdb):
+All 6 workloads are real post-layout-extraction (post-PEX) mixed-signal circuits using the open-source GlobalFoundries 180nm MCU PDK (`gf180mcuD`, included via the [`wafer-space/gf180mcu`](https://github.com/wafer-space/gf180mcu) git submodule), derived from [`aicdb`](https://github.com/aicdb):
 
-| Deck | Suite | Equations | Approx. Newton Iters | Description |
+| Deck | Suite | Equations | Work Volume | Description |
 |---|---|---:|---:|---|
-| `sar12_hero_16cyc` | `hero` | 1,559 | ~202,322 | 12-bit redundant post-PEX SAR ADC sampling a continuous 151.5 kHz sinewave over 16 full conversion cycles (>10 min on stock `ngspice-47` Sparse 1c). Verified bit-exact on all 16 output codes (`r = 0.9999997`). |
-| `sar12_probe_2cyc` | `probe` | 1,559 | ~25,457 | 2-cycle probe of the 12-bit post-PEX redundant SAR ADC on a continuous 151.5 kHz sinewave. |
-| `ti12_full_300ns` | `probe` | 7,221 | ~17,619 | Full-chip 3-channel time-interleaved 12-bit SAR ADC + PLL (300 ns transient). |
-| `pll_ring_150m_4us` | `probe` | 1,015 | ~153,944 | Closed-loop 7-stage wide-tuning (65.8–218.6 MHz, 3.3×) Type-II ring PLL with 6-bit SAR AFC + 161 GF180 stdcells; 4.0 µs startup from code `0` → half full-scale code `31` & 153.25 MHz lock. |
-| `sdm16_120cyc` | `probe` | 5,345 | ~66,348 | 16-bit switched-capacitor CIFB sigma-delta modulator with non-overlapping clocks + SC-CMFB (post-PEX, ±0.80 V diff @ 26.7 kHz sine, 37.5 µs / 120 cycles, bit-exact on all 115 PDM bits, ideal-DAC + Sinc³ recovery `r = 0.9993`). |
+| `sar12_hero_16cyc` | `hero` | 1,559 | ~202,322 iters | 12-bit redundant post-PEX SAR ADC sampling a continuous 151.5 kHz sinewave over 16 full conversion cycles (>10 min on stock `ngspice-47` Sparse 1c). Verified bit-exact on all 16 output codes (`r = 0.9999997`). |
+| `opa1k_pvt16` | `probe` | ~40–220 ea. | 16,000 tasks | 1,000 distinct post-PEX GF180 op-amps (12 topologies, 1.8V/3.3V, 200fF/2pF, 50nA–500µA) × 16 PVT corners = 16,000 scattered `OP + AC + 10 mV Step Tran` runs in one invocation (~10 min on stock `ngspice-47` Sparse 1c). |
+| `sar12_probe_2cyc` | `probe` | 1,559 | ~25,457 iters | 2-cycle probe of the 12-bit post-PEX redundant SAR ADC on a continuous 151.5 kHz sinewave. |
+| `ti12_full_300ns` | `probe` | 7,221 | ~17,619 iters | Full-chip 3-channel time-interleaved 12-bit SAR ADC + PLL (300 ns transient). |
+| `pll_ring_150m_4us` | `probe` | 1,015 | ~153,944 iters | Closed-loop 7-stage wide-tuning (65.8–218.6 MHz, 3.3×) Type-II ring PLL with 6-bit SAR AFC + 161 GF180 stdcells; 4.0 µs startup from code `0` → half full-scale code `31` & 153.25 MHz lock. |
+| `sdm16_120cyc` | `probe` | 5,345 | ~66,348 iters | 16-bit switched-capacitor CIFB sigma-delta modulator with non-overlapping clocks + SC-CMFB (post-PEX, ±0.80 V diff @ 26.7 kHz sine, 37.5 µs / 120 cycles, bit-exact on all 115 PDM bits, ideal-DAC + Sinc³ recovery `r = 0.9993`). |
 
 ---
 
@@ -25,6 +26,7 @@ All 5 workloads are real post-layout-extraction (post-PEX) mixed-signal circuits
 1. **Single-Core Only:** Every leaderboard entry runs strictly single-threaded (`num_threads=1`, `OMP_NUM_THREADS=1`), pinned to one logical CPU (`taskset -c <cpu>` on Linux).
 2. **Heterogeneous / big.LITTLE Core Classes Reported Separately:** On hybrid CPUs (Intel P-core / E-core / LP-E-core, AMD Zen / Zen-c, ARM big.LITTLE, Apple Silicon P-core / E-core), each distinct core class is benchmarked separately and gets its own leaderboard entry.
 3. **Strict Golden Waveform Verification:** Every run's binary `.raw` output is compared against stock `ngspice-47` golden waveforms (`golden/*.raw.gz`) via `scripts/compare_raw.py`.
+   - `opa1k_pvt16` requires all `16,000/16,000` scattered `(design, PVT)` tasks to complete with finite outputs and relative RMS `<= 1e-3` across all 7 summary metrics (`vout_dc`, `idd_dc`, `ac_dc`, `ac_pk`, `tr_v0`, `tr_v1`, `tr_pk`).
    - `ti12_full_300ns` requires relative RMS waveform error `<= 1e-3` across all saved signals.
    - `pll_ring_150m_4us` requires exact final 6-bit SAR AFC code (`31`), `afc_done` timing skew `< 20 ns`, final `v(vc)` error `< 10 mV`, locked `f_out` error `< 0.2%`, and `v(vc)` relative RMS `<= 0.02`.
    - `sdm16_120cyc` requires **bit-exact** latched `dac_p` PDM output across all `115/115` post-reset clock cycles, ideal-DAC + Sinc³ waveform recovery correlation `>= 0.99` (`0.9993`), PDM edge skew `< 500 ps`, and relative RMS `<= 0.01` across all analog voltage nodes.
@@ -169,4 +171,4 @@ ngspice-bench/
 ## Attribution & Licenses
 
 - **GF180MCU PDK:** [wafer-space/gf180mcu](https://github.com/wafer-space/gf180mcu) (Apache-2.0, GlobalFoundries PDK Authors), linked via git submodule.
-- **Post-PEX Circuits:** Derived from [aicdb](https://github.com/aicdb) (`sar-gen-gemini4`, `ti-gen-gemini4`, `pll-gen-opus5.5`, `sdm-gen-gemini4`).
+- **Post-PEX Circuits:** Derived from [aicdb](https://github.com/aicdb) (`sar-gen-gemini4`, `ti-gen-gemini4`, `pll-gen-opus5.5`, `sdm-gen-gemini4`, `opa-gen-gemini4`).

@@ -62,6 +62,8 @@
       accText = `code ${d.pll_code} · ${d.pll_fout_mhz != null ? d.pll_fout_mhz.toFixed(1) + " MHz" : ""}`;
     } else if (d.sdm_bits_count > 0) {
       accText = `${d.sdm_bits_count}/${d.sdm_bits_count} PDM bits${d.sdm_bits_match ? "" : " MISMATCH"}`;
+    } else if (d.opa_tasks_count > 0) {
+      accText = `${d.opa_tasks_count.toLocaleString()} tasks · rms ${fmtSci(d.rel_rms)}`;
     } else if (d.exact_grid) {
       accText += " · exact";
     }
