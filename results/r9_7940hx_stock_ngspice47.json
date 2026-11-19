@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "submission_id": "r9_7940hx_stock_ngspice47",
-  "timestamp_utc": "2026-11-19T20:43:00Z",
+  "timestamp_utc": "2026-11-19T21:18:01Z",
   "mode": "single_core",
   "all_ok": true,
   "host": {
@@ -61,38 +61,121 @@
       "solver": "klu",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 49.8596,
+      "wall_s": 50.7342,
       "rusage": {
-        "total_elapsed_s": 49.842,
-        "total_analysis_s": 49.6126,
-        "tran_analysis_s": 49.5938,
-        "tran_load_s": 33.4879,
-        "tran_factor_s": 10.1976,
-        "tran_solve_s": 2.57661,
-        "tran_trunc_s": 1.68569,
-        "reorder_s": 0.0014961,
-        "tot_iter": 54750,
-        "tran_iter": 54750,
-        "tran_pts": 14184,
-        "accepted_pts": 11329,
-        "rejected_pts": 2855,
+        "total_elapsed_s": 50.716,
+        "total_analysis_s": 50.4839,
+        "tran_analysis_s": 50.4647,
+        "tran_load_s": 34.1146,
+        "tran_factor_s": 10.3507,
+        "tran_solve_s": 2.63671,
+        "tran_trunc_s": 1.69904,
+        "reorder_s": 0.00147222,
+        "tot_iter": 55576,
+        "tran_iter": 55576,
+        "tran_pts": 14211,
+        "accepted_pts": 11245,
+        "rejected_pts": 2966,
         "eqns": 3609
       },
       "accuracy": {
         "pass": true,
         "exact_grid": false,
-        "npts_ref": 11328,
-        "npts_cand": 11328,
+        "npts_ref": 11244,
+        "npts_cand": 11244,
         "t_end_rel_diff": 0.0,
-        "worst_rel_rms": 2.533998149467665e-06,
-        "worst_vec": "v(xdut.vout1_n)",
+        "worst_rel_rms": 1.2849116339991007e-06,
+        "worst_vec": "v(xdut.vout1_p)",
         "sar_codes_ref": [],
         "sar_codes_cand": [],
         "sar_codes_match": true,
         "eoc_max_dt_ps": 0.0,
-        "sdm_bits_count": 120,
+        "sdm_bits_count": 115,
         "sdm_bits_match": true,
-        "sdm_pdm_max_dt_ps": 0.0011887294263084741
+        "sdm_pdm_max_dt_ps": 4.924649555336502e-05,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null,
+        "per_vec": {
+          "v(vin_p)": {
+            "max_abs": 2.972724288952122e-10,
+            "rms": 1.1054244501343672e-11,
+            "rel_rms": 1.0527852324958546e-11
+          },
+          "v(vin_n)": {
+            "max_abs": 2.972724288952122e-10,
+            "rms": 1.1054243906868611e-11,
+            "rel_rms": 1.0527851921230465e-11
+          },
+          "v(clk)": {
+            "max_abs": 4.370527787922045e-15,
+            "rms": 5.848478543340131e-17,
+            "rel_rms": 3.2491547463000726e-17
+          },
+          "v(xdut.phi1)": {
+            "max_abs": 5.721879289710685e-06,
+            "rms": 6.723123326388961e-08,
+            "rel_rms": 3.7252468938380863e-08
+          },
+          "v(xdut.phi2)": {
+            "max_abs": 1.4755693444890028e-07,
+            "rms": 4.289478519751136e-09,
+            "rel_rms": 2.379163997125629e-09
+          },
+          "v(xdut.dac_p)": {
+            "max_abs": 4.076117776641297e-08,
+            "rms": 8.040389931001991e-10,
+            "rel_rms": 4.454237279828397e-10
+          },
+          "v(xdut.dac_n)": {
+            "max_abs": 7.908251031807367e-08,
+            "rms": 1.01410821387057e-09,
+            "rel_rms": 5.617708866822175e-10
+          },
+          "v(xdut.vout1_p)": {
+            "max_abs": 9.997800057592876e-05,
+            "rms": 2.322843244487837e-06,
+            "rel_rms": 1.2849116339991007e-06
+          },
+          "v(xdut.vout1_n)": {
+            "max_abs": 4.141663732137868e-05,
+            "rms": 9.5733406020553e-07,
+            "rel_rms": 5.174038789088647e-07
+          },
+          "v(xdut.vout2_p)": {
+            "max_abs": 1.0321290480730383e-05,
+            "rms": 5.039305338720177e-07,
+            "rel_rms": 2.739174277976805e-07
+          },
+          "v(xdut.vout2_n)": {
+            "max_abs": 8.47866869054803e-05,
+            "rms": 1.952327810698578e-06,
+            "rel_rms": 1.049681117948117e-06
+          },
+          "v(xdut.pdm_bit)": {
+            "max_abs": 5.1487094587354676e-05,
+            "rms": 1.337762386166704e-06,
+            "rel_rms": 7.355668286232088e-07
+          },
+          "v(dout_0)": {
+            "max_abs": 7.402653483534749e-07,
+            "rms": 8.464586694324258e-09,
+            "rel_rms": 4.675175233862455e-09
+          },
+          "v(dout_valid)": {
+            "max_abs": 5.721879289710685e-06,
+            "rms": 6.723123326388961e-08,
+            "rel_rms": 3.7252468938380863e-08
+          },
+          "i(vvdd)": {
+            "max_abs": 1.1004778668248592e-08,
+            "rms": 3.456039489197225e-10,
+            "rel_rms": 1.4224306262337353e-09
+          }
+        }
       }
     },
     {
@@ -100,116 +183,345 @@
       "solver": "sparse",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 74.6516,
+      "wall_s": 75.5214,
       "rusage": {
-        "total_elapsed_s": 74.632,
-        "total_analysis_s": 74.4073,
-        "tran_analysis_s": 74.3928,
-        "tran_load_s": 41.0567,
-        "tran_factor_s": 22.3568,
-        "tran_solve_s": 7.2068,
-        "tran_trunc_s": 1.7287,
-        "reorder_s": 0.0726758,
-        "tot_iter": 54739,
-        "tran_iter": 54739,
-        "tran_pts": 14184,
-        "accepted_pts": 11329,
-        "rejected_pts": 2855,
+        "total_elapsed_s": 75.504,
+        "total_analysis_s": 75.2821,
+        "tran_analysis_s": 75.2673,
+        "tran_load_s": 41.6384,
+        "tran_factor_s": 22.6486,
+        "tran_solve_s": 7.30713,
+        "tran_trunc_s": 1.69518,
+        "reorder_s": 0.0719584,
+        "tot_iter": 55547,
+        "tran_iter": 55547,
+        "tran_pts": 14211,
+        "accepted_pts": 11245,
+        "rejected_pts": 2966,
         "eqns": 3609
       },
       "accuracy": {
         "pass": true,
         "exact_grid": true,
-        "npts_ref": 11328,
-        "npts_cand": 11328,
+        "npts_ref": 11244,
+        "npts_cand": 11244,
         "t_end_rel_diff": 0.0,
         "worst_rel_rms": 0.0,
-        "worst_vec": "",
+        "worst_vec": "v(xdut.vout2_p)",
         "sar_codes_ref": [],
         "sar_codes_cand": [],
         "sar_codes_match": true,
         "eoc_max_dt_ps": 0.0,
-        "sdm_bits_count": 120,
+        "sdm_bits_count": 115,
         "sdm_bits_match": true,
-        "sdm_pdm_max_dt_ps": 0.0
+        "sdm_pdm_max_dt_ps": 0.0,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null,
+        "per_vec": {
+          "v(vin_p)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(vin_n)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(clk)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(xdut.phi1)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(xdut.phi2)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(xdut.dac_p)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(xdut.dac_n)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(xdut.vout1_p)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(xdut.vout1_n)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(xdut.vout2_p)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(xdut.vout2_n)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(xdut.pdm_bit)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(dout_0)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(dout_valid)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "i(vvdd)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          }
+        }
       }
     },
     {
-      "deck": "pll1p2g_200ns",
+      "deck": "pll_ring_150m_4us",
       "solver": "klu",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 81.6163,
+      "wall_s": 228.4925,
       "rusage": {
-        "total_elapsed_s": 81.561,
-        "total_analysis_s": 80.8174,
-        "tran_analysis_s": 80.772,
-        "tran_load_s": 72.158,
-        "tran_factor_s": 1.64683,
-        "tran_solve_s": 0.446683,
-        "tran_trunc_s": 3.23414,
-        "reorder_s": 0.000470958,
-        "tot_iter": 27864,
-        "tran_iter": 27864,
-        "tran_pts": 10320,
-        "accepted_pts": 10298,
-        "rejected_pts": 22,
-        "eqns": 1307
+        "total_elapsed_s": 228.458,
+        "total_analysis_s": 228.205,
+        "tran_analysis_s": 228.191,
+        "tran_load_s": 211.099,
+        "tran_factor_s": 6.2333,
+        "tran_solve_s": 1.72464,
+        "tran_trunc_s": 3.98309,
+        "reorder_s": 0.000390791,
+        "tot_iter": 153976,
+        "tran_iter": 153976,
+        "tran_pts": 34951,
+        "accepted_pts": 30588,
+        "rejected_pts": 4363,
+        "eqns": 1015
       },
       "accuracy": {
         "pass": true,
-        "exact_grid": true,
-        "npts_ref": 10297,
-        "npts_cand": 10297,
+        "exact_grid": false,
+        "npts_ref": 30588,
+        "npts_cand": 30587,
         "t_end_rel_diff": 0.0,
-        "worst_rel_rms": 2.7135430012522306e-13,
-        "worst_vec": "v(outn)",
+        "worst_rel_rms": 0.000517108076138342,
+        "worst_vec": "v(vc)",
         "sar_codes_ref": [],
         "sar_codes_cand": [],
         "sar_codes_match": true,
         "eoc_max_dt_ps": 0.0,
         "sdm_bits_count": 0,
         "sdm_bits_match": true,
-        "sdm_pdm_max_dt_ps": 0.0
+        "sdm_pdm_max_dt_ps": 0.0,
+        "pll_code_ref": 31,
+        "pll_code_cand": 31,
+        "pll_code_match": true,
+        "pll_fout_mhz": 153.252,
+        "pll_vc_final_v": 0.9525,
+        "pll_vc_err_mv": 0.274,
+        "per_vec": {
+          "v(vc)": {
+            "max_abs": 0.004806373718234225,
+            "rms": 0.0005603764862766841,
+            "rel_rms": 0.000517108076138342
+          },
+          "v(out)": {
+            "max_abs": 0.2325442316877222,
+            "rms": 0.010016405130572573,
+            "rel_rms": 0.005464907059246346
+          },
+          "v(fb)": {
+            "max_abs": 0.0781140406679206,
+            "rms": 0.003179323286985304,
+            "rel_rms": 0.0017324152526325997
+          },
+          "v(ref_clk)": {
+            "max_abs": 2.347011474057581e-13,
+            "rms": 3.1497861356810877e-15,
+            "rel_rms": 1.7498811864894932e-15
+          },
+          "v(vc_hold)": {
+            "max_abs": 0.0003695340979232495,
+            "rms": 2.0668512244109688e-05,
+            "rel_rms": 1.135147624647872e-05
+          },
+          "v(afc_done)": {
+            "max_abs": 0.0001845267716553689,
+            "rms": 3.443760036567054e-06,
+            "rel_rms": 1.9119364142079923e-06
+          },
+          "v(code_0)": {
+            "max_abs": 0.00023354786945684047,
+            "rms": 4.1294115967298815e-06,
+            "rel_rms": 2.2921372328533226e-06
+          },
+          "v(code_1)": {
+            "max_abs": 0.0002329228416448892,
+            "rms": 4.1182645383480585e-06,
+            "rel_rms": 2.2856050278517733e-06
+          },
+          "v(code_2)": {
+            "max_abs": 0.00023291900657484987,
+            "rms": 4.1192686563340074e-06,
+            "rel_rms": 2.2861440801935697e-06
+          },
+          "v(code_3)": {
+            "max_abs": 0.00023040080404457264,
+            "rms": 4.1005193016639785e-06,
+            "rel_rms": 2.269969298795853e-06
+          },
+          "v(code_4)": {
+            "max_abs": 0.0002301221998979308,
+            "rms": 4.106723835717411e-06,
+            "rel_rms": 2.2755103021009053e-06
+          },
+          "v(code_5)": {
+            "max_abs": 7.484814763127285e-05,
+            "rms": 1.556794396406042e-06,
+            "rel_rms": 8.642107780647044e-07
+          },
+          "i(vvdd)": {
+            "max_abs": 3.39187852081334e-05,
+            "rms": 1.8385309023865934e-06,
+            "rel_rms": 1.8085916375133915e-06
+          }
+        }
       }
     },
     {
-      "deck": "pll1p2g_200ns",
+      "deck": "pll_ring_150m_4us",
       "solver": "sparse",
       "num_threads": 1,
       "rc": 0,
-      "wall_s": 86.6821,
+      "wall_s": 232.1391,
       "rusage": {
-        "total_elapsed_s": 86.632,
-        "total_analysis_s": 85.9386,
-        "tran_analysis_s": 85.9184,
-        "tran_load_s": 74.4323,
-        "tran_factor_s": 2.95484,
-        "tran_solve_s": 1.20162,
-        "tran_trunc_s": 3.56065,
-        "reorder_s": 0.0147557,
-        "tot_iter": 27864,
-        "tran_iter": 27864,
-        "tran_pts": 10320,
-        "accepted_pts": 10298,
-        "rejected_pts": 22,
-        "eqns": 1307
+        "total_elapsed_s": 232.104,
+        "total_analysis_s": 231.857,
+        "tran_analysis_s": 231.85,
+        "tran_load_s": 209.793,
+        "tran_factor_s": 8.7633,
+        "tran_solve_s": 3.78096,
+        "tran_trunc_s": 4.0894,
+        "reorder_s": 0.00447779,
+        "tot_iter": 153944,
+        "tran_iter": 153944,
+        "tran_pts": 34947,
+        "accepted_pts": 30589,
+        "rejected_pts": 4358,
+        "eqns": 1015
       },
       "accuracy": {
         "pass": true,
         "exact_grid": true,
-        "npts_ref": 10297,
-        "npts_cand": 10297,
+        "npts_ref": 30588,
+        "npts_cand": 30588,
         "t_end_rel_diff": 0.0,
         "worst_rel_rms": 0.0,
-        "worst_vec": "",
+        "worst_vec": "v(vc)",
         "sar_codes_ref": [],
         "sar_codes_cand": [],
         "sar_codes_match": true,
         "eoc_max_dt_ps": 0.0,
         "sdm_bits_count": 0,
         "sdm_bits_match": true,
-        "sdm_pdm_max_dt_ps": 0.0
+        "sdm_pdm_max_dt_ps": 0.0,
+        "pll_code_ref": 31,
+        "pll_code_cand": 31,
+        "pll_code_match": true,
+        "pll_fout_mhz": 153.249,
+        "pll_vc_final_v": 0.9528,
+        "pll_vc_err_mv": 0.0,
+        "per_vec": {
+          "v(vc)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(out)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(fb)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(ref_clk)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(vc_hold)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(afc_done)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(code_0)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(code_1)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(code_2)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(code_3)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(code_4)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(code_5)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "i(vvdd)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          }
+        }
       }
     },
     {

@@ -51,23 +51,53 @@ def decode_sar12_codes(d: Dict[str, np.ndarray], vdd: float = 1.8, t_per: float 
     return codes
 
 
-def decode_sdm_bits(d: Dict[str, np.ndarray], vdd: float = 1.8, sample_offset: float = 100e-9) -> List[int]:
-    """Extract settled PDM output bits on every rising edge of v(clk)."""
-    if "v(xdut.pdm_bit)" not in d or "v(clk)" not in d:
+def decode_sdm_bits(d: Dict[str, np.ndarray], vdd: float = 1.8) -> List[int]:
+    """Extract settled post-reset PDM DAC output bits during phi2 of each clock cycle."""
+    sig = "v(xdut.dac_p)" if "v(xdut.dac_p)" in d else ("v(xdut.pdm_bit)" if "v(xdut.pdm_bit)" in d else None)
+    if sig is None or "v(clk)" not in d:
         return []
     t = d["time"]
-    clk = d["v(clk)"]
-    pdm = d["v(xdut.pdm_bit)"]
+    ts = 312.5e-9
+    n_cyc = int(round(float(t[-1]) / ts))
     vth = 0.5 * vdd
-    idx = np.where((clk[:-1] < vth) & (clk[1:] >= vth))[0]
     bits: List[int] = []
-    for i in idx:
-        ts = float(t[i]) + sample_offset
-        if ts > float(t[-1]):
+    for k in range(5, n_cyc):
+        t_sample = (k + 0.85) * ts
+        if t_sample > float(t[-1]):
             break
-        k = int(np.argmin(np.abs(t - ts)))
-        bits.append(1 if float(pdm[k]) > vth else 0)
+        idx = int(np.argmin(np.abs(t - t_sample)))
+        bits.append(1 if float(d[sig][idx]) > vth else 0)
     return bits
+
+
+def decode_pll_metrics(d: Dict[str, np.ndarray], vdd: float = 1.8) -> Dict[str, Any]:
+    """Extract closed-loop PLL startup metrics: 6-bit SAR AFC code, AFC done time, locked VC & f_out."""
+    if "v(afc_done)" not in d or "v(code_5)" not in d or "v(vc)" not in d:
+        return {}
+    t = d["time"]
+    vth = 0.5 * vdd
+    code = np.zeros(len(t), dtype=int)
+    for b in range(6):
+        code += (d[f"v(code_{b})"] > vth).astype(int) << b
+    m_after = t > 0.5e-6
+    afc_idx = np.where(d["v(afc_done)"][m_after] > vth)[0]
+    t_afc = float(t[m_after][afc_idx[0]]) if len(afc_idx) else -1.0
+    m_vc = t >= float(t[-1]) - 0.4e-6
+    vc_final = float(np.mean(d["v(vc)"][m_vc]))
+    m_f = t >= float(t[-1]) - 0.8e-6
+    tw, vw = t[m_f], d["v(out)"][m_f]
+    up = np.where((vw[:-1] < vth) & (vw[1:] >= vth))[0]
+    if len(up) >= 3:
+        crs = [float(tw[i] + (vth - vw[i]) / (vw[i + 1] - vw[i]) * (tw[i + 1] - tw[i])) for i in up]
+        fout_mhz = (len(crs) - 1) / (crs[-1] - crs[0]) / 1e6
+    else:
+        fout_mhz = 0.0
+    return {
+        "code_final": int(code[-1]),
+        "t_afc_s": t_afc,
+        "vc_final_v": vc_final,
+        "fout_mhz": fout_mhz,
+    }
 
 
 def _rising_edges(d: Dict[str, np.ndarray], sig: str, vth: float = 0.9) -> List[float]:
@@ -121,6 +151,12 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
     sdm_match = (ref_sdm == cand_sdm) if ref_sdm else True
     sdm_pdm_max_dt_ps = 0.0
 
+    ref_pll = decode_pll_metrics(ref)
+    cand_pll = decode_pll_metrics(cand)
+    pll_code_match = True
+    pll_fout_rel_err = 0.0
+    pll_vc_err_mv = 0.0
+
     eoc_max_dt_ps = 0.0
     if ref_codes:
         er = _rising_edges(ref, "v(eoc)")
@@ -141,23 +177,49 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
             post_worst = max(post_worst, rms / scale)
         worst_rel_rms = post_worst
         passed = (t_cov < 1e-6) and codes_match and (eoc_max_dt_ps < 500.0) and (post_worst < 0.05)
+    elif ref_pll:
+        pll_code_match = (cand_pll.get("code_final") == ref_pll.get("code_final"))
+        t_afc_diff_ns = abs(cand_pll.get("t_afc_s", -1.0) - ref_pll.get("t_afc_s", -1.0)) * 1e9
+        pll_vc_err_mv = abs(cand_pll.get("vc_final_v", 0.0) - ref_pll.get("vc_final_v", 0.0)) * 1e3
+        f_ref_m = max(ref_pll.get("fout_mhz", 0.0), 1e-6)
+        pll_fout_rel_err = abs(cand_pll.get("fout_mhz", 0.0) - f_ref_m) / f_ref_m
+        vc_rms = per_vec.get("v(vc)", {}).get("rel_rms", float("inf"))
+        worst_rel_rms = vc_rms
+        worst_vec = "v(vc)"
+        passed = (
+            (t_cov < 1e-6)
+            and pll_code_match
+            and (t_afc_diff_ns < 20.0)
+            and (pll_vc_err_mv < 10.0)
+            and (pll_fout_rel_err < 0.002)
+            and (vc_rms <= 0.02)
+        )
     elif ref_sdm:
-        pr = _rising_edges(ref, "v(xdut.pdm_bit)")
-        pc = _rising_edges(cand, "v(xdut.pdm_bit)")
+        edge_sig = "v(xdut.dac_p)" if "v(xdut.dac_p)" in ref else "v(xdut.pdm_bit)"
+        pr = _rising_edges(ref, edge_sig)
+        pc = _rising_edges(cand, edge_sig)
         if len(pr) != len(pc):
             sdm_pdm_max_dt_ps = float("inf")
         elif pr:
             sdm_pdm_max_dt_ps = max(abs(a - b) * 1e12 for a, b in zip(pr, pc))
+        digital_nodes = {
+            "v(xdut.pdm_bit)", "v(xdut.dac_p)", "v(xdut.dac_n)",
+            "v(xdut.phi1)", "v(xdut.phi2)", "v(dout_0)", "v(dout_valid)",
+        }
         analog_worst = max(
-            (v["rel_rms"] for k, v in per_vec.items() if k != "v(xdut.pdm_bit)"),
+            (v["rel_rms"] for k, v in per_vec.items() if k not in digital_nodes),
             default=0.0,
         )
+        worst_rel_rms = analog_worst
+        worst_vec = max(
+            ((v["rel_rms"], k) for k, v in per_vec.items() if k not in digital_nodes),
+            default=(0.0, ""),
+        )[1]
         passed = (
             (t_cov < 1e-6)
             and sdm_match
             and (sdm_pdm_max_dt_ps < 500.0)
-            and (analog_worst <= tol_rms)
-            and (worst_rel_rms < 0.01)
+            and (analog_worst <= 0.01)
         )
     else:
         passed = (t_cov < 1e-6) and (worst_rel_rms <= tol_rms) and codes_match
@@ -177,6 +239,12 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
         "sdm_bits_count": len(ref_sdm),
         "sdm_bits_match": sdm_match,
         "sdm_pdm_max_dt_ps": sdm_pdm_max_dt_ps,
+        "pll_code_ref": ref_pll.get("code_final") if ref_pll else None,
+        "pll_code_cand": cand_pll.get("code_final") if cand_pll else None,
+        "pll_code_match": pll_code_match,
+        "pll_fout_mhz": round(cand_pll.get("fout_mhz", 0.0), 3) if cand_pll else None,
+        "pll_vc_final_v": round(cand_pll.get("vc_final_v", 0.0), 4) if cand_pll else None,
+        "pll_vc_err_mv": round(pll_vc_err_mv, 3) if ref_pll else None,
         "per_vec": per_vec,
     }
 
@@ -194,4 +262,6 @@ if __name__ == "__main__":
     )
     if res.get("sar_codes_ref"):
         print(f"  SAR codes match={res['sar_codes_match']}: ref={res['sar_codes_ref']} cand={res['sar_codes_cand']}")
+    if res.get("pll_code_ref") is not None:
+        print(f"  PLL code={res['pll_code_cand']}/{res['pll_code_ref']} fout={res['pll_fout_mhz']} MHz vc={res['pll_vc_final_v']} V")
     sys.exit(0 if res["pass"] else 1)

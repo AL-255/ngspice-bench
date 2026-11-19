@@ -58,6 +58,8 @@
     let accText = `rms ${fmtSci(d.rel_rms)}`;
     if (d.sar_codes_count > 0) {
       accText = `${d.sar_codes_count}/${d.sar_codes_count} codes${d.sar_codes_match ? "" : " MISMATCH"}`;
+    } else if (d.pll_code != null) {
+      accText = `code ${d.pll_code} · ${d.pll_fout_mhz != null ? d.pll_fout_mhz.toFixed(1) + " MHz" : ""}`;
     } else if (d.sdm_bits_count > 0) {
       accText = `${d.sdm_bits_count}/${d.sdm_bits_count} PDM bits${d.sdm_bits_match ? "" : " MISMATCH"}`;
     } else if (d.exact_grid) {
@@ -197,6 +199,8 @@
         let acc = fmtSci(d.rel_rms);
         if (d.sar_codes_count > 0) {
           acc = `${d.sar_codes_count}/${d.sar_codes_count} codes (EOC Δt ${d.eoc_max_dt_ps != null ? d.eoc_max_dt_ps.toFixed(1) + " ps" : "—"})`;
+        } else if (d.pll_code != null) {
+          acc = `AFC code ${d.pll_code} · ${d.pll_fout_mhz != null ? d.pll_fout_mhz.toFixed(2) + " MHz" : "—"} · VC ${d.pll_vc_final_v != null ? d.pll_vc_final_v.toFixed(3) + " V" : "—"}`;
         } else if (d.sdm_bits_count > 0) {
           acc = `${d.sdm_bits_count}/${d.sdm_bits_count} PDM bits (Δt ${d.sdm_pdm_max_dt_ps != null ? d.sdm_pdm_max_dt_ps.toFixed(1) + " ps" : "—"})`;
         } else if (d.exact_grid) {

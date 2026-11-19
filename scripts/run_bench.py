@@ -36,7 +36,7 @@ from compare_raw import compare_waveforms  # noqa: E402
 
 PROBE_DECKS = [
     "sdm16_120cyc",
-    "pll1p2g_200ns",
+    "pll_ring_150m_4us",
     "ti12_full_300ns",
     "sar12_probe_2cyc",
 ]

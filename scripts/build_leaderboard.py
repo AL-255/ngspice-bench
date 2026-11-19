@@ -14,7 +14,7 @@ OUT_PATH = REPO_ROOT / "docs" / "data" / "leaderboard.json"
 
 PROBE_DECKS = [
     "sdm16_120cyc",
-    "pll1p2g_200ns",
+    "pll_ring_150m_4us",
     "ti12_full_300ns",
     "sar12_probe_2cyc",
 ]
@@ -48,23 +48,23 @@ DECK_META = {
         "source": "aicdb/ti-gen-gemini4",
         "description": "7,221-equation post-PEX full-chip time-interleaved 12-bit ADC + PLL over 300 ns (17.6k Newton iterations).",
     },
-    "pll1p2g_200ns": {
-        "title": "1.2 GHz All-Digital PLL (200 ns)",
+    "pll_ring_150m_4us": {
+        "title": "150 MHz Wide-Tuning Ring PLL Startup (4 µs)",
         "category": "probe",
-        "eqns": 1307,
-        "iters_approx": 27864,
+        "eqns": 1015,
+        "iters_approx": 153944,
         "pdk": "GF180MCU D",
-        "source": "aicdb/pll-gen-gemini4",
-        "description": "Post-PEX 1.2 GHz all-digital PLL transient simulation over 200 ns (~240 oscillation cycles, 27.9k Newton iterations).",
+        "source": "aicdb/pll-gen-opus5.5",
+        "description": "Closed-loop Type-II charge-pump 7-stage ring PLL (3.3x wide tuning range: 65.8-218.6 MHz) starting from code 0, converging via 6-bit SAR AFC to half full-scale code 31, and phase-locking at 152.7 MHz.",
     },
     "sdm16_120cyc": {
         "title": "16-bit Switched-Cap SDM (120 Cycles)",
         "category": "probe",
         "eqns": 3609,
-        "iters_approx": 54739,
+        "iters_approx": 55547,
         "pdk": "GF180MCU D",
         "source": "aicdb/sdm-gen-gemini4",
-        "description": "Post-PEX 16-bit switched-capacitor CIFB sigma-delta modulator over 37.5 µs (120 clock cycles, 54.7k Newton iterations, verified bit-exact on all 120 PDM bits).",
+        "description": "Post-PEX 16-bit switched-capacitor CIFB sigma-delta modulator over 37.5 µs (120 clock cycles, unsaturated ±0.15 V in-band sine, verified bit-exact on all 115 post-reset latched PDM bits).",
     },
 }
 
@@ -73,8 +73,8 @@ REFERENCE_BASELINE_WALL_S = {
     "sar12_hero_16cyc": 628.48,
     "sar12_probe_2cyc": 79.66,
     "ti12_full_300ns": 464.51,
-    "pll1p2g_200ns": 86.68,
-    "sdm16_120cyc": 74.65,
+    "pll_ring_150m_4us": 232.14,
+    "sdm16_120cyc": 75.52,
 }
 
 
@@ -158,6 +158,10 @@ def build() -> None:
                     "sdm_bits_match": ac.get("sdm_bits_match"),
                     "sdm_bits_count": ac.get("sdm_bits_count", 0),
                     "sdm_pdm_max_dt_ps": ac.get("sdm_pdm_max_dt_ps"),
+                    "pll_code": ac.get("pll_code_cand"),
+                    "pll_code_match": ac.get("pll_code_match"),
+                    "pll_fout_mhz": ac.get("pll_fout_mhz"),
+                    "pll_vc_final_v": ac.get("pll_vc_final_v"),
                 }
 
             entries.append({

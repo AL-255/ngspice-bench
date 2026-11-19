@@ -1,0 +1,37 @@
+* GF180 Closed-Loop 7-Stage Wide-Tuning Ring PLL Startup (code 0 -> half full-scale code 31, 152.7 MHz lock)
+.include "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/design.ngspice"
+.param sw_stat_global=0
+.param sw_stat_mismatch=0
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" res_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" mimcap_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" cap_mim
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" moscap_typical
+.include "../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/spice/gf180mcu_fd_sc_mcu7t5v0.spice"
+.temp 27
+.options method=gear reltol=2e-3 abstol=1e-11 vntol=2e-5 itl4=100
+
+.include "../circuits/pll_ring_1v8_150m.spice"
+
+Vvdd vdd 0 DC 1.8
+Ven en 0 PWL(0 0 10n 0 11n 1.8)
+Vrst rst_n 0 PWL(0 0 120n 0 121n 1.8)
+Vafcen afc_en 0 DC 1.8
+Vlo c_lo 0 DC 0
+Vref ref_clk 0 PULSE(0 1.8 6.549646e-09 0.15n 0.15n 1.294929e-08 2.619859e-08)
+
+Xcp up upb dn dnb vc_hold en vc ibv vdd 0 cpbias
+Xlf vc 0 lf
+Xvco en out vc code_0 code_1 code_2 code_3 code_4 code_5 ibv vdd 0 vco
+Clo out 0 10f
+Xpre out ck fb c_lo vdd 0 presc
+Xdig ref_clk ck rst_n afc_en up upb dn dnb code_0 code_1 code_2 code_3 code_4 code_5 vc_hold afc_done fb vdd 0 pll_dig_int
+
+.save v(vc) v(out) v(fb) v(ref_clk) v(vc_hold) v(afc_done) v(code_0) v(code_1) v(code_2) v(code_3) v(code_4) v(code_5) i(Vvdd)
+.control
+tran 150p 4.0u uic
+rusage all
+write pll_ring_150m_4us.raw v(vc) v(out) v(fb) v(ref_clk) v(vc_hold) v(afc_done) v(code_0) v(code_1) v(code_2) v(code_3) v(code_4) v(code_5) i(Vvdd)
+quit
+.endc
+.end

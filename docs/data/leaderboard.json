@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-19T20:43:00Z",
+  "generated_utc": "2026-11-19T21:18:01Z",
   "mode": "single_core",
   "reference_baseline": {
     "description": "Stock ngspice-47 (Sparse 1-core) on AMD Ryzen 9 7940HX (Zen 4)",
@@ -7,13 +7,13 @@
       "sar12_hero_16cyc": 628.48,
       "sar12_probe_2cyc": 79.66,
       "ti12_full_300ns": 464.51,
-      "pll1p2g_200ns": 86.68,
-      "sdm16_120cyc": 74.65
+      "pll_ring_150m_4us": 232.14,
+      "sdm16_120cyc": 75.52
     }
   },
   "probe_decks": [
     "sdm16_120cyc",
-    "pll1p2g_200ns",
+    "pll_ring_150m_4us",
     "ti12_full_300ns",
     "sar12_probe_2cyc"
   ],
@@ -46,23 +46,23 @@
       "source": "aicdb/ti-gen-gemini4",
       "description": "7,221-equation post-PEX full-chip time-interleaved 12-bit ADC + PLL over 300 ns (17.6k Newton iterations)."
     },
-    "pll1p2g_200ns": {
-      "title": "1.2 GHz All-Digital PLL (200 ns)",
+    "pll_ring_150m_4us": {
+      "title": "150 MHz Wide-Tuning Ring PLL Startup (4 \u00b5s)",
       "category": "probe",
-      "eqns": 1307,
-      "iters_approx": 27864,
+      "eqns": 1015,
+      "iters_approx": 153944,
       "pdk": "GF180MCU D",
-      "source": "aicdb/pll-gen-gemini4",
-      "description": "Post-PEX 1.2 GHz all-digital PLL transient simulation over 200 ns (~240 oscillation cycles, 27.9k Newton iterations)."
+      "source": "aicdb/pll-gen-opus5.5",
+      "description": "Closed-loop Type-II charge-pump 7-stage ring PLL (3.3x wide tuning range: 65.8-218.6 MHz) starting from code 0, converging via 6-bit SAR AFC to half full-scale code 31, and phase-locking at 152.7 MHz."
     },
     "sdm16_120cyc": {
       "title": "16-bit Switched-Cap SDM (120 Cycles)",
       "category": "probe",
       "eqns": 3609,
-      "iters_approx": 54739,
+      "iters_approx": 55547,
       "pdk": "GF180MCU D",
       "source": "aicdb/sdm-gen-gemini4",
-      "description": "Post-PEX 16-bit switched-capacitor CIFB sigma-delta modulator over 37.5 \u00b5s (120 clock cycles, 54.7k Newton iterations, verified bit-exact on all 120 PDM bits)."
+      "description": "Post-PEX 16-bit switched-capacitor CIFB sigma-delta modulator over 37.5 \u00b5s (120 clock cycles, unsaturated \u00b10.15 V in-band sine, verified bit-exact on all 115 post-reset latched PDM bits)."
     }
   },
   "entry_count": 5,
@@ -70,7 +70,7 @@
     {
       "entry_id": "r9_7940hx_opt_zen4_uselib__klu",
       "submission_id": "r9_7940hx_opt_zen4_uselib",
-      "timestamp_utc": "2026-11-19T20:43:00Z",
+      "timestamp_utc": "2026-11-19T21:18:01Z",
       "solver": "klu",
       "num_threads": 1,
       "all_pass": true,
@@ -123,54 +123,62 @@
           "NGSPICE_OPT_ZEN4": 1
         },
         "pdk_mode": "precompiled_uselib",
-        "pdk_precompile_s": 0.0561,
+        "pdk_precompile_s": 0.0649,
         "notes": "Same build as opt/zen4-transient, loading precompiled GF180 typical PDK blob via .uselib (top-level netlists uncached)"
       },
-      "probe_total_s": 82.3335,
-      "probe_geomean_s": 16.4989,
-      "probe_geomean_speedup": 7.539,
+      "probe_total_s": 104.2096,
+      "probe_geomean_s": 22.0355,
+      "probe_geomean_speedup": 7.242,
       "hero_wall_s": 69.3535,
       "hero_speedup": 9.062,
       "decks": {
         "sdm16_120cyc": {
-          "wall_s": 17.4841,
-          "speedup_vs_ref": 4.27,
-          "tran_s": 17.3171,
-          "load_s": 5.6013,
-          "factor_s": 8.47425,
-          "solve_s": 2.85464,
-          "trunc_s": 0.194789,
-          "tot_iter": 54669,
+          "wall_s": 17.7683,
+          "speedup_vs_ref": 4.25,
+          "tran_s": 17.6507,
+          "load_s": 5.67583,
+          "factor_s": 8.69479,
+          "solve_s": 2.88699,
+          "trunc_s": 0.195948,
+          "tot_iter": 55558,
           "eqns": 3609,
           "pass": true,
-          "rel_rms": 0.0022124491654489636,
+          "rel_rms": 0.0005979707037862517,
           "exact_grid": false,
           "sar_codes_match": true,
           "sar_codes_count": 0,
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
-          "sdm_bits_count": 120,
-          "sdm_pdm_max_dt_ps": 167.83602975565128
+          "sdm_bits_count": 115,
+          "sdm_pdm_max_dt_ps": 0.13330197948073497,
+          "pll_code": null,
+          "pll_code_match": true,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
-        "pll1p2g_200ns": {
-          "wall_s": 10.1327,
-          "speedup_vs_ref": 8.554,
-          "tran_s": 9.84448,
-          "load_s": 7.50131,
-          "factor_s": 1.1786,
-          "solve_s": 0.446626,
-          "trunc_s": 0.308496,
-          "tot_iter": 27874,
-          "eqns": 1307,
+        "pll_ring_150m_4us": {
+          "wall_s": 31.7246,
+          "speedup_vs_ref": 7.317,
+          "tran_s": 31.5895,
+          "load_s": 23.8009,
+          "factor_s": 4.65344,
+          "solve_s": 1.87828,
+          "trunc_s": 0.440575,
+          "tot_iter": 153759,
+          "eqns": 1015,
           "pass": true,
-          "rel_rms": 0.000334770715311463,
+          "rel_rms": 0.0007297264818996854,
           "exact_grid": false,
           "sar_codes_match": true,
           "sar_codes_count": 0,
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": 0.0
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": 31,
+          "pll_code_match": true,
+          "pll_fout_mhz": 153.245,
+          "pll_vc_final_v": 0.9524
         },
         "ti12_full_300ns": {
           "wall_s": 45.5301,
@@ -190,7 +198,11 @@
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": 0.0
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
         "sar12_probe_2cyc": {
           "wall_s": 9.1866,
@@ -210,7 +222,11 @@
           "eoc_max_dt_ps": 24.492285700625214,
           "sdm_bits_match": null,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": null
+          "sdm_pdm_max_dt_ps": null,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
         "sar12_hero_16cyc": {
           "wall_s": 69.3535,
@@ -230,14 +246,18 @@
           "eoc_max_dt_ps": 110.73764355090294,
           "sdm_bits_match": null,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": null
+          "sdm_pdm_max_dt_ps": null,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         }
       }
     },
     {
       "entry_id": "r9_7940hx_opt_zen4_std__klu",
       "submission_id": "r9_7940hx_opt_zen4_std",
-      "timestamp_utc": "2026-11-19T20:43:00Z",
+      "timestamp_utc": "2026-11-19T21:18:01Z",
       "solver": "klu",
       "num_threads": 1,
       "all_pass": true,
@@ -293,51 +313,59 @@
         "pdk_precompile_s": null,
         "notes": "Stages 1-8: portable general opts + Zen 4 AVX-512 BSIM4v5/v6 SoA kernels + inline hardware exp/log + two-level stationary block cache with first-order Taylor charge sync"
       },
-      "probe_total_s": 85.061,
-      "probe_geomean_s": 16.6903,
-      "probe_geomean_speedup": 7.453,
+      "probe_total_s": 107.1943,
+      "probe_geomean_s": 22.3939,
+      "probe_geomean_speedup": 7.127,
       "hero_wall_s": 69.3998,
       "hero_speedup": 9.056,
       "decks": {
         "sdm16_120cyc": {
-          "wall_s": 17.197,
-          "speedup_vs_ref": 4.341,
-          "tran_s": 17.0432,
-          "load_s": 5.51469,
-          "factor_s": 8.36174,
-          "solve_s": 2.78722,
-          "trunc_s": 0.193322,
-          "tot_iter": 54669,
+          "wall_s": 17.8732,
+          "speedup_vs_ref": 4.225,
+          "tran_s": 17.7168,
+          "load_s": 5.75124,
+          "factor_s": 8.68796,
+          "solve_s": 2.88456,
+          "trunc_s": 0.194866,
+          "tot_iter": 55558,
           "eqns": 3609,
           "pass": true,
-          "rel_rms": 0.0022124491654489636,
+          "rel_rms": 0.0005979707037862517,
           "exact_grid": false,
           "sar_codes_match": true,
           "sar_codes_count": 0,
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
-          "sdm_bits_count": 120,
-          "sdm_pdm_max_dt_ps": 167.83602975565128
+          "sdm_bits_count": 115,
+          "sdm_pdm_max_dt_ps": 0.13330197948073497,
+          "pll_code": null,
+          "pll_code_match": true,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
-        "pll1p2g_200ns": {
-          "wall_s": 10.1295,
-          "speedup_vs_ref": 8.557,
-          "tran_s": 9.6754,
-          "load_s": 7.37603,
-          "factor_s": 1.16036,
-          "solve_s": 0.439245,
-          "trunc_s": 0.303629,
-          "tot_iter": 27874,
-          "eqns": 1307,
+        "pll_ring_150m_4us": {
+          "wall_s": 31.5866,
+          "speedup_vs_ref": 7.349,
+          "tran_s": 31.3749,
+          "load_s": 23.6589,
+          "factor_s": 4.6177,
+          "solve_s": 1.87214,
+          "trunc_s": 0.443908,
+          "tot_iter": 153759,
+          "eqns": 1015,
           "pass": true,
-          "rel_rms": 0.000334770715311463,
+          "rel_rms": 0.0007297264818996854,
           "exact_grid": false,
           "sar_codes_match": true,
           "sar_codes_count": 0,
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": 0.0
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": 31,
+          "pll_code_match": true,
+          "pll_fout_mhz": 153.245,
+          "pll_vc_final_v": 0.9524
         },
         "ti12_full_300ns": {
           "wall_s": 48.5613,
@@ -357,7 +385,11 @@
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": 0.0
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
         "sar12_probe_2cyc": {
           "wall_s": 9.1732,
@@ -377,7 +409,11 @@
           "eoc_max_dt_ps": 24.492285700625214,
           "sdm_bits_match": null,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": null
+          "sdm_pdm_max_dt_ps": null,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
         "sar12_hero_16cyc": {
           "wall_s": 69.3998,
@@ -397,14 +433,18 @@
           "eoc_max_dt_ps": 110.73764355090294,
           "sdm_bits_match": null,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": null
+          "sdm_pdm_max_dt_ps": null,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         }
       }
     },
     {
       "entry_id": "r9_7940hx_opt_zen4_std__sparse",
       "submission_id": "r9_7940hx_opt_zen4_std",
-      "timestamp_utc": "2026-11-19T20:43:00Z",
+      "timestamp_utc": "2026-11-19T21:18:01Z",
       "solver": "sparse",
       "num_threads": 1,
       "all_pass": true,
@@ -460,51 +500,59 @@
         "pdk_precompile_s": null,
         "notes": "Stages 1-8: portable general opts + Zen 4 AVX-512 BSIM4v5/v6 SoA kernels + inline hardware exp/log + two-level stationary block cache with first-order Taylor charge sync"
       },
-      "probe_total_s": 155.536,
-      "probe_geomean_s": 30.2162,
-      "probe_geomean_speedup": 4.117,
+      "probe_total_s": 181.7355,
+      "probe_geomean_s": 39.4685,
+      "probe_geomean_speedup": 4.044,
       "hero_wall_s": 143.9231,
       "hero_speedup": 4.367,
       "decks": {
         "sdm16_120cyc": {
-          "wall_s": 34.4036,
-          "speedup_vs_ref": 2.17,
-          "tran_s": 34.2543,
-          "load_s": 7.28251,
-          "factor_s": 19.7452,
-          "solve_s": 6.77672,
-          "trunc_s": 0.194476,
-          "tot_iter": 54697,
+          "wall_s": 35.6868,
+          "speedup_vs_ref": 2.116,
+          "tran_s": 35.5367,
+          "load_s": 7.55851,
+          "factor_s": 20.4534,
+          "solve_s": 7.04637,
+          "trunc_s": 0.198851,
+          "tot_iter": 55509,
           "eqns": 3609,
           "pass": true,
-          "rel_rms": 0.0022124661834821485,
+          "rel_rms": 0.007964966772611454,
           "exact_grid": false,
           "sar_codes_match": true,
           "sar_codes_count": 0,
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
-          "sdm_bits_count": 120,
-          "sdm_pdm_max_dt_ps": 167.83594549958994
+          "sdm_bits_count": 115,
+          "sdm_pdm_max_dt_ps": 0.4484093658722616,
+          "pll_code": null,
+          "pll_code_match": true,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
-        "pll1p2g_200ns": {
-          "wall_s": 13.7939,
-          "speedup_vs_ref": 6.284,
-          "tran_s": 13.3684,
-          "load_s": 9.04102,
-          "factor_s": 2.57556,
-          "solve_s": 0.844275,
-          "trunc_s": 0.368974,
-          "tot_iter": 27874,
-          "eqns": 1307,
+        "pll_ring_150m_4us": {
+          "wall_s": 38.7102,
+          "speedup_vs_ref": 5.997,
+          "tran_s": 38.5073,
+          "load_s": 26.0909,
+          "factor_s": 8.33291,
+          "solve_s": 2.64876,
+          "trunc_s": 0.473277,
+          "tot_iter": 153894,
+          "eqns": 1015,
           "pass": true,
-          "rel_rms": 0.0003347707153657541,
+          "rel_rms": 0.0005566222236219906,
           "exact_grid": false,
           "sar_codes_match": true,
           "sar_codes_count": 0,
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": 0.0
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": 31,
+          "pll_code_match": true,
+          "pll_fout_mhz": 153.252,
+          "pll_vc_final_v": 0.9528
         },
         "ti12_full_300ns": {
           "wall_s": 87.1925,
@@ -524,7 +572,11 @@
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": 0.0
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
         "sar12_probe_2cyc": {
           "wall_s": 20.146,
@@ -544,7 +596,11 @@
           "eoc_max_dt_ps": 139.27381532824907,
           "sdm_bits_match": null,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": null
+          "sdm_pdm_max_dt_ps": null,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
         "sar12_hero_16cyc": {
           "wall_s": 143.9231,
@@ -564,14 +620,18 @@
           "eoc_max_dt_ps": 99.16218347621545,
           "sdm_bits_match": null,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": null
+          "sdm_pdm_max_dt_ps": null,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         }
       }
     },
     {
       "entry_id": "r9_7940hx_stock_ngspice47__klu",
       "submission_id": "r9_7940hx_stock_ngspice47",
-      "timestamp_utc": "2026-11-19T20:43:00Z",
+      "timestamp_utc": "2026-11-19T21:18:01Z",
       "solver": "klu",
       "num_threads": 1,
       "all_pass": true,
@@ -627,51 +687,59 @@
         "pdk_precompile_s": null,
         "notes": "Unmodified upstream ngspice-47 baseline"
       },
-      "probe_total_s": 642.8524,
-      "probe_geomean_s": 104.0884,
-      "probe_geomean_speedup": 1.195,
+      "probe_total_s": 790.6032,
+      "probe_geomean_s": 135.2272,
+      "probe_geomean_speedup": 1.18,
       "hero_wall_s": null,
       "hero_speedup": null,
       "decks": {
         "sdm16_120cyc": {
-          "wall_s": 49.8596,
-          "speedup_vs_ref": 1.497,
-          "tran_s": 49.5938,
-          "load_s": 33.4879,
-          "factor_s": 10.1976,
-          "solve_s": 2.57661,
-          "trunc_s": 1.68569,
-          "tot_iter": 54750,
+          "wall_s": 50.7342,
+          "speedup_vs_ref": 1.489,
+          "tran_s": 50.4647,
+          "load_s": 34.1146,
+          "factor_s": 10.3507,
+          "solve_s": 2.63671,
+          "trunc_s": 1.69904,
+          "tot_iter": 55576,
           "eqns": 3609,
           "pass": true,
-          "rel_rms": 2.533998149467665e-06,
+          "rel_rms": 1.2849116339991007e-06,
           "exact_grid": false,
           "sar_codes_match": true,
           "sar_codes_count": 0,
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
-          "sdm_bits_count": 120,
-          "sdm_pdm_max_dt_ps": 0.0011887294263084741
+          "sdm_bits_count": 115,
+          "sdm_pdm_max_dt_ps": 4.924649555336502e-05,
+          "pll_code": null,
+          "pll_code_match": true,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
-        "pll1p2g_200ns": {
-          "wall_s": 81.6163,
-          "speedup_vs_ref": 1.062,
-          "tran_s": 80.772,
-          "load_s": 72.158,
-          "factor_s": 1.64683,
-          "solve_s": 0.446683,
-          "trunc_s": 3.23414,
-          "tot_iter": 27864,
-          "eqns": 1307,
+        "pll_ring_150m_4us": {
+          "wall_s": 228.4925,
+          "speedup_vs_ref": 1.016,
+          "tran_s": 228.191,
+          "load_s": 211.099,
+          "factor_s": 6.2333,
+          "solve_s": 1.72464,
+          "trunc_s": 3.98309,
+          "tot_iter": 153976,
+          "eqns": 1015,
           "pass": true,
-          "rel_rms": 2.7135430012522306e-13,
-          "exact_grid": true,
+          "rel_rms": 0.000517108076138342,
+          "exact_grid": false,
           "sar_codes_match": true,
           "sar_codes_count": 0,
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": 0.0
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": 31,
+          "pll_code_match": true,
+          "pll_fout_mhz": 153.252,
+          "pll_vc_final_v": 0.9525
         },
         "ti12_full_300ns": {
           "wall_s": 446.8181,
@@ -691,7 +759,11 @@
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": 0.0
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
         "sar12_probe_2cyc": {
           "wall_s": 64.5584,
@@ -711,14 +783,18 @@
           "eoc_max_dt_ps": 32.664400423824105,
           "sdm_bits_match": null,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": null
+          "sdm_pdm_max_dt_ps": null,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         }
       }
     },
     {
       "entry_id": "r9_7940hx_stock_ngspice47__sparse",
       "submission_id": "r9_7940hx_stock_ngspice47",
-      "timestamp_utc": "2026-11-19T20:43:00Z",
+      "timestamp_utc": "2026-11-19T21:18:01Z",
       "solver": "sparse",
       "num_threads": 1,
       "all_pass": true,
@@ -774,21 +850,21 @@
         "pdk_precompile_s": null,
         "notes": "Unmodified upstream ngspice-47 baseline"
       },
-      "probe_total_s": 705.5009,
-      "probe_geomean_s": 124.3945,
+      "probe_total_s": 851.8277,
+      "probe_geomean_s": 159.593,
       "probe_geomean_speedup": 1.0,
       "hero_wall_s": null,
       "hero_speedup": null,
       "decks": {
         "sdm16_120cyc": {
-          "wall_s": 74.6516,
+          "wall_s": 75.5214,
           "speedup_vs_ref": 1.0,
-          "tran_s": 74.3928,
-          "load_s": 41.0567,
-          "factor_s": 22.3568,
-          "solve_s": 7.2068,
-          "trunc_s": 1.7287,
-          "tot_iter": 54739,
+          "tran_s": 75.2673,
+          "load_s": 41.6384,
+          "factor_s": 22.6486,
+          "solve_s": 7.30713,
+          "trunc_s": 1.69518,
+          "tot_iter": 55547,
           "eqns": 3609,
           "pass": true,
           "rel_rms": 0.0,
@@ -797,19 +873,23 @@
           "sar_codes_count": 0,
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
-          "sdm_bits_count": 120,
-          "sdm_pdm_max_dt_ps": 0.0
+          "sdm_bits_count": 115,
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": true,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
-        "pll1p2g_200ns": {
-          "wall_s": 86.6821,
+        "pll_ring_150m_4us": {
+          "wall_s": 232.1391,
           "speedup_vs_ref": 1.0,
-          "tran_s": 85.9184,
-          "load_s": 74.4323,
-          "factor_s": 2.95484,
-          "solve_s": 1.20162,
-          "trunc_s": 3.56065,
-          "tot_iter": 27864,
-          "eqns": 1307,
+          "tran_s": 231.85,
+          "load_s": 209.793,
+          "factor_s": 8.7633,
+          "solve_s": 3.78096,
+          "trunc_s": 4.0894,
+          "tot_iter": 153944,
+          "eqns": 1015,
           "pass": true,
           "rel_rms": 0.0,
           "exact_grid": true,
@@ -818,7 +898,11 @@
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": 0.0
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": 31,
+          "pll_code_match": true,
+          "pll_fout_mhz": 153.249,
+          "pll_vc_final_v": 0.9528
         },
         "ti12_full_300ns": {
           "wall_s": 464.5063,
@@ -838,7 +922,11 @@
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": true,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": 0.0
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         },
         "sar12_probe_2cyc": {
           "wall_s": 79.6609,
@@ -858,7 +946,11 @@
           "eoc_max_dt_ps": 0.0,
           "sdm_bits_match": null,
           "sdm_bits_count": 0,
-          "sdm_pdm_max_dt_ps": null
+          "sdm_pdm_max_dt_ps": null,
+          "pll_code": null,
+          "pll_code_match": null,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null
         }
       }
     }
