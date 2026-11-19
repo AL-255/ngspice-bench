@@ -160,6 +160,15 @@
         dynamic comparator, asynchronous SAR digital control logic, and extracted RC parasitics (<code>sar_12b_1v8_mvote_mim.spice</code>, 587 R, 1,232 C, 794 subckt/MOS instances).
         Exercises both 3.3 V BSIM4v5 (including trap-assisted tunneling on <code>pfet_03v3</code>) and 5 V BSIM4v6 stdcell transistors across rapid comparator decisions and digital bit-cycling.
       </p>
+      <figure class="waveform-figure">
+        <a href="img/sar12_hero_16cyc.svg" target="_blank" rel="noopener">
+          <img src="img/sar12_hero_16cyc.svg" alt="sar12_hero_16cyc transient waveforms: decoded 15-bit SAR code, phi_s, eoc, and supply current" loading="lazy" />
+        </a>
+        <figcaption>
+          <span>Golden transient waveform (stock <code>ngspice-47</code>): reconstructed 15-bit redundant SAR codes across all 16 conversion cycles, sampling/EOC strobes, and supply current.</span>
+          <a class="inline-link" href="img/sar12_hero_16cyc.svg" target="_blank" rel="noopener">Open full SVG</a>
+        </figcaption>
+      </figure>
       <div class="detail-grid">
         <div class="detail-box">
           <h4>Simulation Parameters</h4>
@@ -198,6 +207,15 @@
         Preserves the exact same circuit, DC operating point, comparator dynamics, and solver profile as <code>sar12_hero_16cyc</code> at ~1/8th the wall time,
         making it ideal for rapid single-core profiling and regression sweeps.
       </p>
+      <figure class="waveform-figure">
+        <a href="img/sar12_probe_2cyc.svg" target="_blank" rel="noopener">
+          <img src="img/sar12_probe_2cyc.svg" alt="sar12_probe_2cyc transient waveforms: phi_s, comp_clk, eoc, MSB-to-LSB bit decisions, and supply current" loading="lazy" />
+        </a>
+        <figcaption>
+          <span>Golden transient waveform (stock <code>ngspice-47</code>): 2 conversion cycles zoomed in to show asynchronous <code>v(comp_clk)</code> pulses, sequential MSB&rarr;LSB bit settling, and supply current.</span>
+          <a class="inline-link" href="img/sar12_probe_2cyc.svg" target="_blank" rel="noopener">Open full SVG</a>
+        </figcaption>
+      </figure>
       <div class="detail-grid">
         <div class="detail-box">
           <h4>Simulation Parameters</h4>
@@ -236,6 +254,15 @@
         Stresses L2/L3 cache footprint during device evaluation, BSIM4 model-binning &amp; PDK/subcircuit netlist expansion (where <code>.uselib</code> shines),
         and truncation-error evaluation across thousands of MOSFETs.
       </p>
+      <figure class="waveform-figure">
+        <a href="img/ti12_full_probe_30ns.svg" target="_blank" rel="noopener">
+          <img src="img/ti12_full_probe_30ns.svg" alt="ti12_full_probe_30ns transient waveforms: vip, vin, vsh_p, fref, phi_s, and supply current" loading="lazy" />
+        </a>
+        <figcaption>
+          <span>Golden transient waveform (stock <code>ngspice-47</code>): differential analog input, track/hold node <code>v(vsh_p)</code>, reference clock <code>v(fref)</code>, and post-UIC supply current.</span>
+          <a class="inline-link" href="img/ti12_full_probe_30ns.svg" target="_blank" rel="noopener">Open full SVG</a>
+        </figcaption>
+      </figure>
       <div class="detail-grid">
         <div class="detail-box">
           <h4>Simulation Parameters</h4>
@@ -273,6 +300,15 @@
         Because high-frequency oscillation keeps a large fraction of transistors actively switching every 20 ps timestep, this workload heavily stresses
         raw BSIM4 evaluation throughput (transcendental <code>exp</code>/<code>log</code>, SIMD efficiency) and frontend PDK load latency.
       </p>
+      <figure class="waveform-figure">
+        <a href="img/pll1p2g_probe_20ns.svg" target="_blank" rel="noopener">
+          <img src="img/pll1p2g_probe_20ns.svg" alt="pll1p2g_probe_20ns transient waveforms: differential 1.2 GHz out/outn clocks and supply current" loading="lazy" />
+        </a>
+        <figcaption>
+          <span>Golden transient waveform (stock <code>ngspice-47</code>): differential 1.2 GHz oscillator clocks <code>v(out)</code> / <code>v(outn)</code> and post-UIC dynamic supply current.</span>
+          <a class="inline-link" href="img/pll1p2g_probe_20ns.svg" target="_blank" rel="noopener">Open full SVG</a>
+        </figcaption>
+      </figure>
       <div class="detail-grid">
         <div class="detail-box">
           <h4>Simulation Parameters</h4>
@@ -310,6 +346,15 @@
         Features dense capacitor/switch coupling and high matrix fill-in (20,418 Sparse fill-ins), making it the most
         <strong>linear-solver-bound</strong> workload in the suite — highlighting KLU vs Sparse LU refactorization and triangular solve performance.
       </p>
+      <figure class="waveform-figure">
+        <a href="img/sdm16_probe_8cyc.svg" target="_blank" rel="noopener">
+          <img src="img/sdm16_probe_8cyc.svg" alt="sdm16_probe_8cyc transient waveforms: vin_p, integrator outputs vout1_p/vout2_p, clk, pdm_bit, and supply current" loading="lazy" />
+        </a>
+        <figcaption>
+          <span>Golden transient waveform (stock <code>ngspice-47</code>): analog input, 1st/2nd switched-cap integrator outputs, sampling clock, PDM output bitstream, and supply current.</span>
+          <a class="inline-link" href="img/sdm16_probe_8cyc.svg" target="_blank" rel="noopener">Open full SVG</a>
+        </figcaption>
+      </figure>
       <div class="detail-grid">
         <div class="detail-box">
           <h4>Simulation Parameters</h4>

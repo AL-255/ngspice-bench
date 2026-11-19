@@ -507,6 +507,31 @@ code {
   max-width: 960px;
 }
 
+.waveform-figure {
+  margin: 0 0 16px;
+  background: #0d141e;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.waveform-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.waveform-figure figcaption {
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 @media (max-width: 760px) {
   .bar-row { grid-template-columns: 1fr; gap: 4px; }
   .bar-metric { text-align: left; }
