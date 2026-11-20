@@ -1,0 +1,259 @@
+#!/usr/bin/env bash
+# AppRun entrypoint for ngspice-bench-x86_64.AppImage
+# Self-contained GF180 post-PEX mixed-signal SPICE benchmark suite with
+# multi-ISA auto-dispatch (AVX-512 v4 / AVX2 v3 / x86-64 v1) + stock ngspice-47.
+set -euo pipefail
+
+HERE="$(dirname "$(readlink -f "$0")")"
+BENCH_ROOT="$HERE/usr/share/ngspice-bench"
+PY="$HERE/usr/python/bin/python3"
+
+export PYTHONHOME="$HERE/usr/python"
+export PYTHONNOUSERSITE=1
+export PYTHONDONTWRITEBYTECODE=1
+export LD_LIBRARY_PATH="$HERE/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+# Load build metadata
+if [ -f "$HERE/usr/BUILD_INFO.env" ]; then
+    # shellcheck disable=SC1091
+    source "$HERE/usr/BUILD_INFO.env"
+fi
+NGSPICE_OPT_REF="${NGSPICE_OPT_REF:-opt/zen4-transient}"
+NGSPICE_STOCK_REF="${NGSPICE_STOCK_REF:-ngspice-47@a80f6e3e9}"
+NGSPICE_COMPILER="${NGSPICE_COMPILER:-GCC 12 (Ubuntu 22.04)}"
+
+# Create temporary spinit pointing to bundled XSPICE codemodels inside mounted AppDir
+TMP_SPINIT="$(mktemp -d "${TMPDIR:-/tmp}/ngspice_appimg_XXXXXX")"
+trap 'rm -rf "$TMP_SPINIT"' EXIT
+cat > "$TMP_SPINIT/spinit" <<EOF
+* ngspice-bench AppImage init file
+alias exit quit
+alias acct rusage all
+set x11lineararcs
+set num_threads=1
+unset osdi_enabled
+if \$?xspice_enabled
+ codemodel $HERE/usr/lib/ngspice/spice2poly.cm
+ codemodel $HERE/usr/lib/ngspice/analog.cm
+ codemodel $HERE/usr/lib/ngspice/digital.cm
+ codemodel $HERE/usr/lib/ngspice/xtradev.cm
+ codemodel $HERE/usr/lib/ngspice/xtraevt.cm
+ codemodel $HERE/usr/lib/ngspice/table.cm
+ codemodel $HERE/usr/lib/ngspice/tlines.cm
+end
+EOF
+export SPICE_SCRIPTS="$TMP_SPINIT"
+
+detect_isa() {
+    local flags
+    flags="$(grep -m1 '^flags' /proc/cpuinfo 2>/dev/null | cut -d: -f2 || true)"
+    has_flag() { [[ " $flags " == *" $1 "* ]]; }
+    if has_flag avx512f && has_flag avx512dq && has_flag avx512vl && has_flag avx512bw && has_flag avx512cd; then
+        echo "v4"
+    elif has_flag avx2 && has_flag fma && has_flag bmi2 && has_flag movbe; then
+        echo "v3"
+    else
+        echo "v1"
+    fi
+}
+
+isa_to_bin() {
+    case "$1" in
+        v4|avx512) echo "$HERE/usr/bin/ngspice-opt-v4" ;;
+        v3|avx2)   echo "$HERE/usr/bin/ngspice-opt-v3" ;;
+        v1|sse2)   echo "$HERE/usr/bin/ngspice-opt-v1" ;;
+        stock)     echo "$HERE/usr/bin/ngspice-stock" ;;
+        *)         echo "ERROR: unknown --isa '$1' (expected auto|v4|v3|v1|stock)" >&2; exit 2 ;;
+    esac
+}
+
+isa_to_meta() {
+    case "$1" in
+        v4|avx512)
+            BUILD_NAME="ngspice-47 opt/zen4-transient (AppImage x86-64-v4 AVX-512)"
+            CFLAGS_META="-O3 -march=x86-64-v4 -fno-math-errno -fno-trapping-math -fno-semantic-interposition -flto=auto"
+            OPT_GEN=1; OPT_ZEN4=1; GIT_REF="$NGSPICE_OPT_REF"
+            CONF_META="--without-x --with-readline=no --disable-debug --enable-xspice --enable-cider --enable-openmp --enable-klu --enable-osdi --enable-opt-general --enable-opt-zen4"
+            ;;
+        v3|avx2)
+            BUILD_NAME="ngspice-47 opt/zen4-transient (AppImage x86-64-v3 AVX2)"
+            CFLAGS_META="-O3 -march=x86-64-v3 -fno-math-errno -fno-trapping-math -fno-semantic-interposition -flto=auto"
+            OPT_GEN=1; OPT_ZEN4=0; GIT_REF="$NGSPICE_OPT_REF"
+            CONF_META="--without-x --with-readline=no --disable-debug --enable-xspice --enable-cider --enable-openmp --enable-klu --enable-osdi --enable-opt-general --disable-opt-zen4"
+            ;;
+        v1|sse2)
+            BUILD_NAME="ngspice-47 opt/zen4-transient (AppImage x86-64-v1 portable)"
+            CFLAGS_META="-O3 -march=x86-64 -mno-avx -mno-avx512f -fno-math-errno -fno-trapping-math -fno-semantic-interposition -flto=auto"
+            OPT_GEN=1; OPT_ZEN4=0; GIT_REF="$NGSPICE_OPT_REF"
+            CONF_META="--without-x --with-readline=no --disable-debug --enable-xspice --enable-cider --enable-openmp --enable-klu --enable-osdi --enable-opt-general --disable-opt-zen4"
+            ;;
+        stock)
+            BUILD_NAME="Stock ngspice-47 (upstream)"
+            CFLAGS_META="-O2 -march=x86-64"
+            OPT_GEN=0; OPT_ZEN4=0; GIT_REF="$NGSPICE_STOCK_REF"
+            CONF_META="--without-x --with-readline=no --disable-debug --enable-xspice --enable-cider --enable-openmp --enable-klu --enable-osdi"
+            ;;
+    esac
+}
+
+print_help() {
+    local auto_isa
+    auto_isa="$(detect_isa)"
+    cat <<EOF
+ngspice-bench AppImage (x86_64 Linux, self-contained single-core SPICE benchmark)
+  Optimized build : $NGSPICE_OPT_REF
+  Stock baseline  : $NGSPICE_STOCK_REF
+  Builder         : $NGSPICE_COMPILER
+  Detected CPU ISA: $auto_isa ($(grep -m1 '^model name' /proc/cpuinfo 2>/dev/null | cut -d: -f2- | xargs || echo unknown))
+
+Usage:
+  ngspice-bench.AppImage [OPTIONS]
+  ngspice-bench.AppImage ngspice [ngspice args...]        Run auto-selected optimized ngspice
+  ngspice-bench.AppImage ngspice-stock [ngspice args...]  Run stock ngspice-47
+
+Quick Presets:
+  --smoke               Quick ~8s golden check (sar12_probe_2cyc, KLU, optimized)
+  --suite probe         Run the 5 probe workloads (sar12_probe_2cyc, ti12, pll, sdm16, opa1k)
+  --suite all           Run all 6 workloads including sar12_hero_16cyc (default)
+  --decks D1 [D2 ...]   Run explicit deck(s): sar12_hero_16cyc sar12_probe_2cyc
+                        ti12_full_300ns pll_ring_150m_4us sdm16_120cyc opa1k_pvt16
+
+Target & Solver Options:
+  --isa auto|v4|v3|v1|stock   Select bundled binary (default: auto -> $auto_isa)
+  --stock                     Shorthand for --isa stock
+  --compare                   Run both optimized (auto ISA) and stock ngspice-47
+  --solvers klu|sparse ...    Solvers to benchmark (default: klu sparse)
+  --uselib                    Use precompiled GF180 PDK blob (.uselib)
+
+Host / Output Options:
+  --out-dir DIR               Directory to save submission JSON (default: ./ngspice-bench-results)
+  --submission-id ID          Custom submission slug (default: auto-generated from host+isa)
+  --pin-cpu N                 Pin single-core run to logical CPU N
+  --core-class LABEL          Explicit core class label (e.g. 'P-core', 'E-core')
+  --all-core-classes          Run on every detected core class (Intel hybrid P/E/LP-E)
+  --platform STR              Optional platform/chassis label
+  --memory STR                Optional RAM label
+  --storage STR               Optional SSD label
+  --info                      Print detected host/ISA/core classes and exit
+  -h, --help                  Show this help message
+
+Note: On headless/container hosts without FUSE, run with:
+  APPIMAGE_EXTRACT_AND_RUN=1 ./ngspice-bench-x86_64.AppImage --smoke
+EOF
+}
+
+# Direct ngspice binary passthrough
+if [ "${1:-}" = "ngspice" ]; then
+    shift
+    exec "$(isa_to_bin "$(detect_isa)")" "$@"
+elif [ "${1:-}" = "ngspice-stock" ]; then
+    shift
+    exec "$HERE/usr/bin/ngspice-stock" "$@"
+elif [ "${1:-}" = "python3" ]; then
+    shift
+    exec "$PY" "$@"
+fi
+
+ISA="auto"
+COMPARE=0
+SMOKE=0
+INFO_ONLY=0
+OUT_DIR="${PWD}/ngspice-bench-results"
+SUB_ID=""
+EXTRA_ARGS=()
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            print_help; exit 0 ;;
+        --info)
+            INFO_ONLY=1; shift ;;
+        --smoke)
+            SMOKE=1; shift ;;
+        --isa)
+            ISA="$2"; shift 2 ;;
+        --stock)
+            ISA="stock"; shift ;;
+        --compare)
+            COMPARE=1; shift ;;
+        --out-dir|--results-dir)
+            OUT_DIR="$2"; shift 2 ;;
+        --submission-id)
+            SUB_ID="$2"; shift 2 ;;
+        *)
+            EXTRA_ARGS+=("$1"); shift ;;
+    esac
+done
+
+AUTO_ISA="$(detect_isa)"
+if [ "$ISA" = "auto" ]; then
+    ISA="$AUTO_ISA"
+fi
+
+if [ "$INFO_ONLY" -eq 1 ]; then
+    echo "ngspice-bench AppImage Info"
+    echo "  Optimized Ref : $NGSPICE_OPT_REF"
+    echo "  Stock Ref     : $NGSPICE_STOCK_REF"
+    echo "  Compiler      : $NGSPICE_COMPILER"
+    echo "  Detected ISA  : $AUTO_ISA (selected: $ISA -> $(basename "$(isa_to_bin "$ISA")"))"
+    "$PY" -c "
+import sys, json
+sys.path.insert(0, '$BENCH_ROOT/scripts')
+import run_bench
+cc = run_bench.detect_core_classes()
+hi = run_bench.detect_host_info(cc)
+print('  CPU Model     :', hi['cpu_model'])
+print('  Cores/Threads :', f\"{hi['physical_cores']}c / {hi['logical_cpus']}t\")
+print('  OS / Arch     :', f\"{hi['os']} ({hi['arch']})\")
+print('  Core Classes  :', json.dumps(cc))
+"
+    exit 0
+fi
+
+if [ "$SMOKE" -eq 1 ]; then
+    EXTRA_ARGS=(--decks sar12_probe_2cyc --solvers klu "${EXTRA_ARGS[@]}")
+fi
+
+HOST_SLUG="$(hostname -s 2>/dev/null | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9_' || echo host)"
+
+run_one_target() {
+    local target_isa="$1"
+    local bin_path
+    bin_path="$(isa_to_bin "$target_isa")"
+    isa_to_meta "$target_isa"
+
+    local sid="$SUB_ID"
+    if [ -z "$sid" ]; then
+        if [ "$target_isa" = "stock" ]; then
+            sid="${HOST_SLUG}_stock_ngspice47"
+        else
+            sid="${HOST_SLUG}_opt_${target_isa}_std"
+        fi
+    elif [ "$COMPARE" -eq 1 ]; then
+        sid="${sid}_${target_isa}"
+    fi
+
+    echo ">>> Running ngspice-bench | target=$target_isa ($(basename "$bin_path")) | results -> $OUT_DIR"
+    "$PY" "$BENCH_ROOT/scripts/run_bench.py" \
+        --bin "$bin_path" \
+        --submission-id "$sid" \
+        --build-name "$BUILD_NAME" \
+        --compiler "$NGSPICE_COMPILER" \
+        --ngspice-repo "https://github.com/AL-255/ngspice-sf-mirror" \
+        --ngspice-ref "$GIT_REF" \
+        --configure-flags "$CONF_META" \
+        --cflags "$CFLAGS_META" \
+        --opt-general "$OPT_GEN" \
+        --opt-zen4 "$OPT_ZEN4" \
+        --results-dir "$OUT_DIR" \
+        --no-rebuild-leaderboard \
+        "${EXTRA_ARGS[@]}"
+}
+
+mkdir -p "$OUT_DIR"
+if [ "$COMPARE" -eq 1 ]; then
+    run_one_target "$ISA"
+    run_one_target "stock"
+else
+    run_one_target "$ISA"
+fi
