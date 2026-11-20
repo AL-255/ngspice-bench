@@ -5,28 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ngspice-bench — Single-Core SPICE Performance Leaderboard</title>
   <meta name="theme-color" content="#d9423a" />
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=6" />
   <script>try{var t=localStorage.getItem('ngspice-bench-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 </head>
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <div>
+      <div class="header-main">
         <div class="eyebrow">GF180MCU Post-PEX Transient Suite &middot; Strict IEEE-754 Verification</div>
         <h1><span class="brand-mark">ngspice</span>-bench <span class="badge-mode">Single-Core (1c / 1t)</span></h1>
         <p class="subtitle">
           Single-core processor &amp; build performance leaderboard across real GlobalFoundries 180nm post-PEX mixed-signal circuits.
           Hybrid / big.LITTLE CPUs report each core class (e.g. P-core, E-core, Big, Little) separately.
         </p>
+        <nav class="header-links" aria-label="Primary navigation">
+          <a class="btn-link" href="index.html" aria-current="page">Leaderboard</a>
+          <a class="btn-link btn-secondary" href="workloads.html">Workloads</a>
+          <a class="btn-link btn-secondary" href="https://github.com/AL-255/ngspice-bench" target="_blank" rel="noopener">GitHub Repo</a>
+          <a class="btn-link btn-secondary" href="https://github.com/AL-255/ngspice-bench#quick-start--run-guide" target="_blank" rel="noopener">Run &amp; Submit</a>
+          <button class="iconbtn" id="theme" title="Toggle light / dark theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg></button>
+        </nav>
       </div>
-      <nav class="header-links" aria-label="Primary navigation">
-        <a class="btn-link" href="index.html" aria-current="page">Leaderboard</a>
-        <a class="btn-link btn-secondary" href="workloads.html">Workloads</a>
-        <a class="btn-link btn-secondary" href="https://github.com/AL-255/ngspice-bench" target="_blank" rel="noopener">GitHub Repo</a>
-        <a class="btn-link btn-secondary" href="https://github.com/AL-255/ngspice-bench#quick-start--run-guide" target="_blank" rel="noopener">Run &amp; Submit</a>
-        <button class="iconbtn" id="theme" title="Toggle light / dark theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg></button>
-        <a class="brand-logo-link" href="https://analogmiko.com/" target="_blank" rel="noopener" title="AnalogMiko" aria-label="AnalogMiko"><img class="brand-logo" src="https://analogmiko.com/static/AMK1.png" alt="AnalogMiko" width="38" height="37" /></a>
-      </nav>
+      <a class="brand-logo-link" href="https://analogmiko.com/" target="_blank" rel="noopener" title="AnalogMiko" aria-label="AnalogMiko"><img class="brand-logo" src="https://analogmiko.com/static/AMK1.png" alt="AnalogMiko" width="149" height="144" /></a>
     </div>
   </header>
 
