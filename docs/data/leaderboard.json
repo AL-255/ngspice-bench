@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-20T19:10:55Z",
+  "generated_utc": "2026-11-20T19:20:12Z",
   "mode": "single_core",
   "reference_baseline": {
     "description": "Stock ngspice-47 (Sparse 1-core) on AMD Ryzen 9 7940HX (Zen 4)",
@@ -2320,7 +2320,7 @@
         "arm_part": null
       },
       "build": {
-        "name": "Stock ngspice-47 (O2)",
+        "name": "Stock ngspice-47 (upstream)",
         "ngspice_version": "ngspice-47 : Circuit level simulation program",
         "repo": "https://github.com/AL-255/ngspice-sf-mirror",
         "git_ref": "master@a80f6e3e9",
@@ -2542,7 +2542,7 @@
         "arm_part": null
       },
       "build": {
-        "name": "Stock ngspice-47 (O2)",
+        "name": "Stock ngspice-47 (upstream)",
         "ngspice_version": "ngspice-47 : Circuit level simulation program",
         "repo": "https://github.com/AL-255/ngspice-sf-mirror",
         "git_ref": "master@a80f6e3e9",
