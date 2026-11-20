@@ -26,7 +26,11 @@
     "is_hybrid": false,
     "detected_core_classes": [
       "Homogeneous"
-    ]
+    ],
+    "platform": "Minisforum 790S7 (DRFXL, MGDRFXL)",
+    "machine_model": "DRFXL",
+    "memory": "32 GB (2x16 GB) DDR5-4800 (Samsung M425R2GA3BB0-CQKOL)",
+    "storage": "Crucial P3 Plus CT4000P3PSSD8 (4 TB NVMe)"
   },
   "core_class": {
     "class_id": "homogeneous",
@@ -36,7 +40,8 @@
     "max_freq_mhz": 5314.2,
     "l2_cache": "1024K",
     "capacity": null,
-    "arm_part": null
+    "arm_part": null,
+    "l1d_cache": "32K"
   },
   "build": {
     "name": "Stock ngspice-47 (upstream)",
