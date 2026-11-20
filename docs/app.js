@@ -151,23 +151,64 @@
     }
   }
 
+  function computeLogAxis(walls) {
+    const pos = walls.filter((w) => w > 0);
+    const minW = pos.length ? Math.min(...pos) : 1;
+    const maxW = pos.length ? Math.max(...pos) : 100;
+    const bases = [1, 2, 5];
+    const candidates = [];
+    for (let exp = -1; exp <= 4; exp++) {
+      const p = Math.pow(10, exp);
+      for (const b of bases) candidates.push(b * p);
+    }
+    let minTick = candidates[0];
+    for (const c of candidates) {
+      if (c <= minW * 0.65) minTick = c;
+    }
+    let maxTick = candidates[candidates.length - 1];
+    for (const c of candidates) {
+      if (c >= maxW * 1.05) {
+        maxTick = c;
+        break;
+      }
+    }
+    if (maxTick <= minTick * 2) maxTick = minTick * 10;
+    const logMin = Math.log10(minTick);
+    const logMax = Math.log10(maxTick);
+    const ticks = candidates.filter((c) => c >= minTick && c <= maxTick);
+    return { logMin, logMax, ticks };
+  }
+
+  function fmtTickSec(v) {
+    return v >= 1 ? `${v}s` : `${v.toFixed(1)}s`;
+  }
+
   function renderBarChart(rows, workload) {
     const chart = $("bar-chart");
     $("chart-title").textContent =
       workload === "probe_geomean"
-        ? "Single-Core Probe Geomean Wall Time (Lower is Faster)"
-        : `Single-Core Wall Time — ${workload} (Lower is Faster)`;
+        ? "Single-Core Probe Geomean Wall Time (Log Scale · Lower is Faster)"
+        : `Single-Core Wall Time — ${workload} (Log Scale · Lower is Faster)`;
 
     if (!rows.length) {
       chart.innerHTML = `<div class="empty">No matching single-core entries for the current filters.</div>`;
       return;
     }
 
-    const maxWall = Math.max(...rows.map((r) => r.m.wall || 0), 0.01);
-    chart.innerHTML = rows
-      .slice(0, 12)
+    const visible = rows.slice(0, 12);
+    const { logMin, logMax, ticks } = computeLogAxis(visible.map((r) => r.m.wall || 0));
+    const span = Math.max(logMax - logMin, 1e-6);
+    const toAxisPct = (w) => Math.max(0, Math.min(100, ((Math.log10(Math.max(w, 1e-6)) - logMin) / span) * 100));
+    const toBarPct = (w) => Math.max(2, toAxisPct(w));
+
+    const gridHtml = ticks
+      .slice(1, -1)
+      .map((t) => `<span class="bar-gridline" style="left:${toAxisPct(t).toFixed(2)}%"></span>`)
+      .join("");
+
+    const barsHtml = visible
       .map(({ e, m }) => {
-        const pct = Math.max(2, (m.wall / maxWall) * 100);
+        const pct = toBarPct(m.wall || 0.01);
         const isStock = (e.build.name || "").toLowerCase().includes("stock");
         let cls = "klu-std";
         if (isStock) cls = "stock";
@@ -180,12 +221,25 @@
               ${esc(e.build.name)} <small>(${e.solver.toUpperCase()}${pdkTag}) · ${esc(e.core_class.label)}</small>
             </div>
             <div class="bar-track">
+              ${gridHtml}
               <div class="bar-fill ${cls}" style="width:${pct.toFixed(1)}%"></div>
             </div>
             <div class="bar-metric">${fmtSec(m.wall)} <span style="color:var(--green)">(${fmtSpeedup(m.speedup)})</span></div>
           </div>`;
       })
       .join("");
+
+    const axisTicksHtml = ticks
+      .map((t) => `<span class="bar-axis-tick" style="left:${toAxisPct(t).toFixed(2)}%">${fmtTickSec(t)}</span>`)
+      .join("");
+
+    chart.innerHTML =
+      barsHtml +
+      `<div class="bar-axis-row">
+        <div></div>
+        <div class="bar-axis" aria-label="Logarithmic wall time scale">${axisTicksHtml}</div>
+        <div></div>
+      </div>`;
   }
 
   function renderDetailRow(e) {

@@ -20,12 +20,12 @@
   --purple-bg: #ede9fe;
   --red: #991b1b;
   --red-bg: #fee2e2;
-  --bar-uselib-a: #166534;
-  --bar-uselib-b: #2ca02c;
-  --bar-klu-a: #c4372f;
-  --bar-klu-b: #d9423a;
-  --bar-sparse-a: #c2410c;
-  --bar-sparse-b: #ff7f0e;
+  --bar-uselib-a: #c2410c;
+  --bar-uselib-b: #ff7f0e;
+  --bar-klu-a: #c2410c;
+  --bar-klu-b: #fb923c;
+  --bar-sparse-a: #b45309;
+  --bar-sparse-b: #f59e0b;
   --bar-stock-a: #7a5c52;
   --bar-stock-b: #a47148;
   --rank1: #b45309;
@@ -58,12 +58,12 @@
     --purple-bg: #311d42;
     --red: #fca5a5;
     --red-bg: #3b1515;
-    --bar-uselib-a: #15803d;
-    --bar-uselib-b: #4ade80;
-    --bar-klu-a: #d9423a;
-    --bar-klu-b: #ff8f6b;
-    --bar-sparse-a: #c2410c;
-    --bar-sparse-b: #fb923c;
+    --bar-uselib-a: #c2410c;
+    --bar-uselib-b: #ff7f0e;
+    --bar-klu-a: #c2410c;
+    --bar-klu-b: #fb923c;
+    --bar-sparse-a: #b45309;
+    --bar-sparse-b: #f59e0b;
     --bar-stock-a: #6b534a;
     --bar-stock-b: #a47148;
     --rank1: #fcd34d;
@@ -94,12 +94,12 @@
   --purple-bg: #311d42;
   --red: #fca5a5;
   --red-bg: #3b1515;
-  --bar-uselib-a: #15803d;
-  --bar-uselib-b: #4ade80;
-  --bar-klu-a: #d9423a;
-  --bar-klu-b: #ff8f6b;
-  --bar-sparse-a: #c2410c;
-  --bar-sparse-b: #fb923c;
+  --bar-uselib-a: #c2410c;
+  --bar-uselib-b: #ff7f0e;
+  --bar-klu-a: #c2410c;
+  --bar-klu-b: #fb923c;
+  --bar-sparse-a: #b45309;
+  --bar-sparse-b: #f59e0b;
   --bar-stock-a: #6b534a;
   --bar-stock-b: #a47148;
   --rank1: #fcd34d;
@@ -426,6 +426,7 @@ h1 .brand-mark {
 }
 
 .bar-track {
+  position: relative;
   background: var(--surface-2);
   border-radius: 6px;
   height: 22px;
@@ -433,7 +434,19 @@ h1 .brand-mark {
   border: 1px solid var(--border);
 }
 
+.bar-gridline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+  opacity: 0.65;
+  pointer-events: none;
+}
+
 .bar-fill {
+  position: relative;
+  z-index: 1;
   height: 100%;
   border-radius: 5px;
   transition: width 0.25s ease;
@@ -443,6 +456,32 @@ h1 .brand-mark {
 .bar-fill.klu-std { background: linear-gradient(90deg, var(--bar-klu-a), var(--bar-klu-b)); }
 .bar-fill.sparse { background: linear-gradient(90deg, var(--bar-sparse-a), var(--bar-sparse-b)); }
 .bar-fill.stock { background: linear-gradient(90deg, var(--bar-stock-a), var(--bar-stock-b)); }
+
+.bar-axis-row {
+  display: grid;
+  grid-template-columns: minmax(210px, 310px) 1fr 142px;
+  align-items: center;
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.bar-axis {
+  position: relative;
+  height: 18px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.bar-axis-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.bar-axis-tick:first-child { transform: translateX(0); }
+.bar-axis-tick:last-child { transform: translateX(-100%); }
 
 .bar-metric {
   font-family: var(--mono);
@@ -709,5 +748,7 @@ code {
 
 @media (max-width: 760px) {
   .bar-row { grid-template-columns: 1fr; gap: 4px; }
+  .bar-axis-row { grid-template-columns: 1fr; gap: 0; }
+  .bar-axis-row > :first-child, .bar-axis-row > :last-child { display: none; }
   .bar-metric { text-align: left; }
 }
