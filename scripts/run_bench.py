@@ -624,6 +624,7 @@ def main() -> None:
     ap.add_argument("--opt-apple", type=int, choices=[0, 1], default=None, help="NGSPICE_OPT_APPLE flag value (0 or 1)")
     ap.add_argument("--notes", default="", help="Free-form notes about build or hardware")
     ap.add_argument("--tol-rms", type=float, default=1e-3)
+    ap.add_argument("--results-dir", default="", help="Override output directory for submission JSON (default: repo results/)")
     ap.add_argument("--no-rebuild-leaderboard", action="store_true")
     args = ap.parse_args()
 
@@ -674,7 +675,8 @@ def main() -> None:
     else:
         target_classes = [detected_classes[0]]
 
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    out_results_dir = Path(args.results_dir).expanduser().resolve() if args.results_dir else RESULTS_DIR
+    out_results_dir.mkdir(parents=True, exist_ok=True)
     overall_ok = True
 
     for cls in target_classes:
@@ -754,7 +756,7 @@ def main() -> None:
             },
             "runs": runs,
         }
-        out_path = RESULTS_DIR / f"{sub_id}.json"
+        out_path = out_results_dir / f"{sub_id}.json"
         out_path.write_text(json.dumps(payload, indent=2) + "\n")
         print(f"Saved submission -> {out_path} (all_ok={all_ok})")
 
