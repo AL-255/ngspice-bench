@@ -103,6 +103,8 @@ def build() -> None:
         sub = json.loads(path.read_text())
         if sub.get("mode", "single_core") != "single_core":
             continue
+        if sub.get("build", {}).get("pdk_mode") == "precompiled_uselib":
+            continue
         submissions.append(sub)
 
         # Group runs within a submission by solver (klu vs sparse) -> one leaderboard row per (submission, solver)
