@@ -202,25 +202,37 @@ def detect_core_classes() -> List[Dict[str, Any]]:
         }]
 
     if sys_name == "Darwin":
-        # Apple Silicon P-core / E-core detection via sysctl hw.nperflevels
+        # Apple Silicon core-tier detection via sysctl hw.nperflevels
         def _sysctl(key: str) -> str:
             r = subprocess.run(["sysctl", "-n", key], capture_output=True, text=True)
             return r.stdout.strip() if r.returncode == 0 else ""
 
-        nlevels = _sysctl("hw.nperflevels")
-        if nlevels.isdigit() and int(nlevels) >= 2:
+        nlevels_s = _sysctl("hw.nperflevels")
+        if nlevels_s.isdigit() and int(nlevels_s) >= 2:
+            nlevels = int(nlevels_s)
             out = []
-            for lv in range(int(nlevels)):
-                name = _sysctl(f"hw.perflevel{lv}.name") or (f"P-core" if lv == 0 else f"E-core")
+            for lv in range(nlevels):
+                name = _sysctl(f"hw.perflevel{lv}.name") or ("P-core" if lv == 0 else "E-core")
                 ncores = _sysctl(f"hw.perflevel{lv}.physicalcpu")
+                l1d = _sysctl(f"hw.perflevel{lv}.l1dcachesize")
                 l2 = _sysctl(f"hw.perflevel{lv}.l2cachesize")
+                if lv == 0:
+                    qos = "default"
+                elif lv == nlevels - 1:
+                    qos = "background"
+                else:
+                    # On 3-tier Apple Silicon (Super / Performance / Efficiency), macOS XNU QoS
+                    # only distinguishes perflevel0 (default) and perflevel_last (background);
+                    # intermediate clusters cannot be exclusively pinned on an idle machine.
+                    qos = "unselectable"
                 out.append({
                     "class_id": name.lower().replace(" ", "_"),
                     "label": "P-core" if "performance" in name.lower() else ("E-core" if "efficiency" in name.lower() else name),
                     "hybrid": True,
                     "cpus": list(range(int(ncores))) if ncores.isdigit() else [0],
                     "pin_cpu": None,
-                    "macos_qos": "default" if lv == 0 else "background",
+                    "macos_qos": qos,
+                    "l1d_cache": f"{int(l1d)//1024}K" if l1d.isdigit() else None,
                     "l2_cache": f"{int(l2)//1024}K" if l2.isdigit() else None,
                 })
             return out
@@ -234,10 +246,17 @@ def detect_core_classes() -> List[Dict[str, Any]]:
     }]
 
 
-def detect_host_info(core_classes: List[Dict[str, Any]]) -> Dict[str, Any]:
+def detect_host_info(
+    core_classes: List[Dict[str, Any]],
+    platform_override: str = "",
+    memory_override: str = "",
+    storage_override: str = "",
+) -> Dict[str, Any]:
     info: Dict[str, Any] = {
         "os": f"{platform.system()} {platform.release()}",
         "arch": platform.machine(),
+        "platform": platform_override or None,
+        "machine_model": None,
         "cpu_model": platform.processor() or "Unknown CPU",
         "logical_cpus": os.cpu_count() or 1,
         "physical_cores": None,
@@ -245,12 +264,20 @@ def detect_host_info(core_classes: List[Dict[str, Any]]) -> Dict[str, Any]:
         "l2_cache": None,
         "l3_cache": None,
         "ram_gb": None,
+        "memory": memory_override or None,
+        "storage": storage_override or None,
         "isa_features": [],
         "is_hybrid": len(core_classes) > 1,
         "detected_core_classes": [c["label"] for c in core_classes],
     }
 
     if platform.system() == "Linux":
+        vendor = _read_text_safe(Path("/sys/devices/virtual/dmi/id/sys_vendor"))
+        prod = _read_text_safe(Path("/sys/devices/virtual/dmi/id/product_name"))
+        if prod:
+            info["machine_model"] = f"{vendor} {prod}".strip() if vendor and vendor.lower() not in prod.lower() else prod
+            if not info["platform"]:
+                info["platform"] = info["machine_model"]
         cpuinfo = _read_text_safe(Path("/proc/cpuinfo"))
         m = re.search(r"^model name\s*:\s*(.+)$", cpuinfo, re.M)
         if m:
@@ -280,12 +307,92 @@ def detect_host_info(core_classes: List[Dict[str, Any]]) -> Dict[str, Any]:
         if mm:
             info["ram_gb"] = round(int(mm.group(1)) / (1024 * 1024), 1)
     elif platform.system() == "Darwin":
-        r = subprocess.run(["sysctl", "-n", "machdep.cpu.brand_string"], capture_output=True, text=True)
-        if r.returncode == 0 and r.stdout.strip():
-            info["cpu_model"] = r.stdout.strip()
-        r2 = subprocess.run(["sysctl", "-n", "hw.memsize"], capture_output=True, text=True)
-        if r2.returncode == 0 and r2.stdout.strip().isdigit():
-            info["ram_gb"] = round(int(r2.stdout.strip()) / (1024**3), 1)
+        def _sys(k: str) -> str:
+            rr = subprocess.run(["sysctl", "-n", k], capture_output=True, text=True)
+            return rr.stdout.strip() if rr.returncode == 0 else ""
+        brand = _sys("machdep.cpu.brand_string")
+        if brand:
+            info["cpu_model"] = brand
+        hw_model = _sys("hw.model")
+        if hw_model:
+            info["machine_model"] = hw_model
+        sw_ver = subprocess.run(["sw_vers", "-productVersion"], capture_output=True, text=True)
+        if sw_ver.returncode == 0 and sw_ver.stdout.strip():
+            info["os"] = f"macOS {sw_ver.stdout.strip()} (Darwin {platform.release()})"
+        if not info["platform"]:
+            # Best-effort hardware model detection via system_profiler (falls back to hw.model)
+            model_name, model_num = "", ""
+            try:
+                sp = subprocess.run(["system_profiler", "SPHardwareDataType"], capture_output=True, text=True, timeout=5)
+                if sp.returncode == 0:
+                    mn = re.search(r"Model Name:\s*(.+)", sp.stdout)
+                    mnum = re.search(r"Model Number:\s*(.+)", sp.stdout)
+                    if mn and mn.group(1).strip() and mn.group(1).strip().lower() != "unknown":
+                        model_name = mn.group(1).strip()
+                    if mnum and mnum.group(1).strip() and mnum.group(1).strip().lower() != "unknown":
+                        model_num = mnum.group(1).strip()
+            except Exception:
+                pass
+            parts = [p for p in [hw_model, model_num] if p]
+            if model_name and parts:
+                info["platform"] = f"{model_name} ({', '.join(parts)})"
+            elif model_name:
+                info["platform"] = model_name
+            elif parts:
+                info["platform"] = ", ".join(parts)
+        pcpu = _sys("hw.physicalcpu")
+        if pcpu.isdigit():
+            info["physical_cores"] = int(pcpu)
+        l1d = _sys("hw.perflevel0.l1dcachesize") or _sys("hw.l1dcachesize")
+        if l1d.isdigit():
+            info["l1d_cache"] = f"{int(l1d)//1024}K"
+        l2 = _sys("hw.perflevel0.l2cachesize") or _sys("hw.l2cachesize")
+        if l2.isdigit():
+            info["l2_cache"] = f"{int(l2)//1024}K"
+        mem = _sys("hw.memsize")
+        if mem.isdigit():
+            info["ram_gb"] = round(int(mem) / (1024**3), 1)
+        if not info["memory"] or not info["storage"]:
+            try:
+                sp_ms = subprocess.run(
+                    ["system_profiler", "SPMemoryDataType", "SPNVMeDataType"],
+                    capture_output=True, text=True, timeout=8,
+                )
+                if sp_ms.returncode == 0:
+                    txt = sp_ms.stdout
+                    if not info["memory"]:
+                        msz = re.search(r"Memory:\s*(\d+\s*[GM]B)", txt)
+                        mtype = re.search(r"Type:\s*([^\n]+)", txt)
+                        mmfg = re.search(r"Manufacturer:\s*([^\n]+)", txt)
+                        mparts = [
+                            x.group(1).strip() for x in (msz, mtype) if x and x.group(1).strip().lower() != "unknown"
+                        ]
+                        if mparts:
+                            s = " ".join(mparts)
+                            if mmfg and mmfg.group(1).strip().lower() not in ("unknown", ""):
+                                s += f" ({mmfg.group(1).strip()})"
+                            info["memory"] = s
+                    if not info["storage"]:
+                        smod = re.search(r"Model:\s*([^\n]+)", txt)
+                        scap = re.search(r"Capacity:\s*([0-9.]+\s*[TG]B)", txt)
+                        if smod and smod.group(1).strip().lower() != "unknown":
+                            s = smod.group(1).strip()
+                            if scap:
+                                s += f" ({scap.group(1).strip()} NVMe)"
+                            info["storage"] = s
+            except Exception:
+                pass
+        feats = []
+        for fname, skey in [
+            ("neon", "hw.optional.AdvSIMD"),
+            ("fp16", "hw.optional.arm.FEAT_FP16"),
+            ("bf16", "hw.optional.arm.FEAT_BF16"),
+            ("sme", "hw.optional.arm.FEAT_SME"),
+            ("sme2", "hw.optional.arm.FEAT_SME2"),
+        ]:
+            if _sys(skey) == "1":
+                feats.append(fname)
+        info["isa_features"] = feats
 
     return info
 
@@ -417,7 +524,7 @@ def run_one(
     if pin_cpu is not None and platform.system() == "Linux" and shutil.which("taskset"):
         cmd = ["taskset", "-c", str(pin_cpu)] + cmd
     elif macos_qos == "background" and platform.system() == "Darwin" and shutil.which("taskpolicy"):
-        cmd = ["taskpolicy", "-b"] + cmd
+        cmd = ["taskpolicy", "-c", "background"] + cmd
 
     t0 = time.perf_counter()
     proc = subprocess.run(cmd, cwd=str(work_dir), env=env, capture_output=True, text=True)
@@ -457,6 +564,9 @@ def main() -> None:
     ap.add_argument("--solvers", nargs="+", default=["klu", "sparse"], choices=["klu", "sparse"])
     ap.add_argument("--uselib", action="store_true", help="Precompile GF180 PDK once via --precompile and run with .uselib")
     ap.add_argument("--core-class", help="Explicit core class label (e.g. 'P-core', 'E-core', 'Zen 4', 'Homogeneous')")
+    ap.add_argument("--platform", default="", help="Host platform / chassis model (e.g. 'MacBook Pro (Mac18,1, MHWV4LL/A)')")
+    ap.add_argument("--memory", default="", help="Host memory details (e.g. '32 GB LPDDR5 (Samsung)')")
+    ap.add_argument("--storage", default="", help="Host SSD / storage details (e.g. 'APPLE SSD AP1024Z (1 TB NVMe)')")
     ap.add_argument("--pin-cpu", type=int, help="Pin single-core run to specific Linux logical CPU ID")
     ap.add_argument("--all-core-classes", action="store_true", help="Run separately on every detected core class (for big.LITTLE / hybrid CPUs)")
     ap.add_argument("--compiler", default="", help="Compiler name/version (e.g. 'GCC 13.3.0')")
@@ -467,6 +577,7 @@ def main() -> None:
     ap.add_argument("--ldflags", default="", help="LDFLAGS used to build ngspice")
     ap.add_argument("--opt-general", type=int, choices=[0, 1], default=None, help="NGSPICE_OPT_GENERAL flag value (0 or 1)")
     ap.add_argument("--opt-zen4", type=int, choices=[0, 1], default=None, help="NGSPICE_OPT_ZEN4 flag value (0 or 1)")
+    ap.add_argument("--opt-apple", type=int, choices=[0, 1], default=None, help="NGSPICE_OPT_APPLE flag value (0 or 1)")
     ap.add_argument("--notes", default="", help="Free-form notes about build or hardware")
     ap.add_argument("--tol-rms", type=float, default=1e-3)
     ap.add_argument("--no-rebuild-leaderboard", action="store_true")
@@ -484,14 +595,33 @@ def main() -> None:
     decks = args.decks if args.decks else (PROBE_DECKS if args.suite == "probe" else (HERO_DECKS if args.suite == "hero" else ALL_DECKS))
 
     detected_classes = detect_core_classes()
-    host_info = detect_host_info(detected_classes)
+    host_info = detect_host_info(
+        detected_classes,
+        platform_override=args.platform,
+        memory_override=args.memory,
+        storage_override=args.storage,
+    )
     ng_ver = detect_ngspice_version(ng_bin)
 
     if args.all_core_classes:
-        target_classes = detected_classes
+        target_classes = []
+        for cls in detected_classes:
+            if cls.get("macos_qos") == "unselectable":
+                print(
+                    f"Skipping core class '{cls['label']}' (class_id={cls['class_id']}): "
+                    "macOS XNU QoS cannot pin a single thread exclusively to intermediate perflevel clusters.",
+                    file=sys.stderr,
+                )
+                continue
+            target_classes.append(cls)
     elif args.core_class or args.pin_cpu is not None:
         base = detected_classes[0].copy()
         if args.core_class:
+            want = args.core_class.strip().lower()
+            for cls in detected_classes:
+                if cls["label"].lower() == want or cls["class_id"].lower() == want:
+                    base = cls.copy()
+                    break
             base["label"] = args.core_class
             base["class_id"] = re.sub(r"[^a-z0-9]+", "_", args.core_class.lower()).strip("_")
         if args.pin_cpu is not None:
@@ -554,6 +684,7 @@ def main() -> None:
                 "hybrid": cls.get("hybrid", False),
                 "pin_cpu": pin_cpu,
                 "max_freq_mhz": cls.get("max_freq_mhz"),
+                "l1d_cache": cls.get("l1d_cache") or host_info.get("l1d_cache"),
                 "l2_cache": cls.get("l2_cache") or host_info.get("l2_cache"),
                 "capacity": cls.get("capacity"),
                 "arm_part": cls.get("arm_part"),
@@ -570,6 +701,7 @@ def main() -> None:
                 "feature_flags": {
                     "NGSPICE_OPT_GENERAL": args.opt_general,
                     "NGSPICE_OPT_ZEN4": args.opt_zen4,
+                    **({"NGSPICE_OPT_APPLE": args.opt_apple} if args.opt_apple is not None else {}),
                 },
                 "pdk_mode": "precompiled_uselib" if args.uselib else "standard",
                 "pdk_precompile_s": precompile_s,

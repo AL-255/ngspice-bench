@@ -34,7 +34,7 @@
 
   function corePillClass(label) {
     const l = (label || "").toLowerCase();
-    if (l.includes("p-core") || l.includes("prime") || l.includes("big")) return "pill-pcore";
+    if (l.includes("super") || l.includes("p-core") || l.includes("prime") || l.includes("big")) return "pill-pcore";
     if (l.includes("e-core") || l.includes("little")) return "pill-ecore";
     return "pill-core";
   }
@@ -192,6 +192,8 @@
     const ff = (e.build && e.build.feature_flags) || {};
     const optGen = ff.NGSPICE_OPT_GENERAL == null ? "n/a" : String(ff.NGSPICE_OPT_GENERAL);
     const optZen4 = ff.NGSPICE_OPT_ZEN4 == null ? "n/a" : String(ff.NGSPICE_OPT_ZEN4);
+    const optApple = ff.NGSPICE_OPT_APPLE == null ? null : String(ff.NGSPICE_OPT_APPLE);
+    const ffStr = `NGSPICE_OPT_GENERAL=${optGen}, NGSPICE_OPT_ZEN4=${optZen4}` + (optApple != null ? `, NGSPICE_OPT_APPLE=${optApple}` : "");
     const isa = (e.host.isa_features || []).join(", ") || "—";
     const deckOrder = [DATA.hero_deck, ...DATA.probe_decks];
     const deckRows = deckOrder
@@ -235,7 +237,7 @@
                 <div class="kv-k">ngspice Version</div><div class="kv-v">${esc(e.build.ngspice_version || "—")}</div>
                 <div class="kv-k">Repo / Ref</div><div class="kv-v">${esc(e.build.repo || "—")} ${e.build.git_ref ? `@ ${esc(e.build.git_ref)}` : ""}</div>
                 <div class="kv-k">Compiler</div><div class="kv-v">${esc(e.build.compiler || "—")}</div>
-                <div class="kv-k">Feature Flags</div><div class="kv-v">NGSPICE_OPT_GENERAL=${esc(optGen)}, NGSPICE_OPT_ZEN4=${esc(optZen4)}</div>
+                <div class="kv-k">Feature Flags</div><div class="kv-v">${esc(ffStr)}</div>
                 <div class="kv-k">PDK Mode</div><div class="kv-v">${esc(e.build.pdk_mode)}${e.build.pdk_precompile_s != null ? ` (precompile ${(e.build.pdk_precompile_s * 1000).toFixed(1)} ms)` : ""}</div>
                 <div class="kv-k">./configure</div><div class="kv-v">${esc(e.build.configure_flags || "—")}</div>
                 <div class="kv-k">CFLAGS</div><div class="kv-v">${esc(e.build.cflags || "—")}</div>
@@ -247,13 +249,15 @@
               <h4>Processor, Core Class &amp; Host</h4>
               <div class="kv-list">
                 <div class="kv-k">CPU Model</div><div class="kv-v">${esc(e.host.cpu_model)}</div>
+                ${e.host.platform ? `<div class="kv-k">Platform</div><div class="kv-v">${esc(e.host.platform)}</div>` : ""}
                 <div class="kv-k">Core Class</div><div class="kv-v">${esc(e.core_class.label)} (${e.core_class.hybrid ? "Hybrid / big.LITTLE" : "Homogeneous"})</div>
                 <div class="kv-k">Pinned CPU ID</div><div class="kv-v">${e.core_class.pin_cpu != null ? `cpu${e.core_class.pin_cpu} (1 core / 1 thread)` : "1 core / 1 thread"}</div>
                 <div class="kv-k">Max Core Freq</div><div class="kv-v">${e.core_class.max_freq_mhz != null ? `${e.core_class.max_freq_mhz} MHz` : "—"}</div>
-                <div class="kv-k">Caches</div><div class="kv-v">L1d ${esc(e.host.l1d_cache || "—")} / L2 ${esc(e.core_class.l2_cache || e.host.l2_cache || "—")} / L3 ${esc(e.host.l3_cache || "—")}</div>
+                <div class="kv-k">Caches</div><div class="kv-v">L1d ${esc(e.core_class.l1d_cache || e.host.l1d_cache || "—")} / L2 ${esc(e.core_class.l2_cache || e.host.l2_cache || "—")} / L3 ${esc(e.host.l3_cache || "—")}</div>
                 <div class="kv-k">ISA Features</div><div class="kv-v">${esc(isa)}</div>
                 <div class="kv-k">OS / Arch</div><div class="kv-v">${esc(e.host.os)} (${esc(e.host.arch)})</div>
-                <div class="kv-k">Memory</div><div class="kv-v">${e.host.ram_gb != null ? `${e.host.ram_gb} GiB` : "—"}</div>
+                <div class="kv-k">Memory</div><div class="kv-v">${esc(e.host.memory || (e.host.ram_gb != null ? `${e.host.ram_gb} GiB` : "—"))}</div>
+                ${e.host.storage ? `<div class="kv-k">Storage (SSD)</div><div class="kv-v">${esc(e.host.storage)}</div>` : ""}
                 <div class="kv-k">Submission</div><div class="kv-v">${esc(e.submission_id)} (${esc(e.timestamp_utc || "")})</div>
               </div>
             </div>
@@ -300,6 +304,7 @@
         if (q) {
           const hay = [
             e.host.cpu_model,
+            e.host.platform || "",
             e.core_class.label,
             e.build.name,
             e.build.compiler,
@@ -342,7 +347,14 @@
         const pills = [];
         if (ff.NGSPICE_OPT_GENERAL === 1) pills.push(`<span class="pill pill-opt">OPT_GENERAL</span>`);
         if (ff.NGSPICE_OPT_ZEN4 === 1) pills.push(`<span class="pill pill-opt">OPT_ZEN4</span>`);
+        if (ff.NGSPICE_OPT_APPLE === 1) pills.push(`<span class="pill pill-opt">OPT_APPLE</span>`);
         if (e.build.pdk_mode === "precompiled_uselib") pills.push(`<span class="pill pill-uselib">.uselib</span>`);
+
+        const subMeta = [
+          e.host.platform ? esc(e.host.platform) : "",
+          e.core_class.max_freq_mhz ? `${(e.core_class.max_freq_mhz / 1000).toFixed(2)} GHz` : "",
+          e.core_class.l2_cache ? `L2 ${esc(e.core_class.l2_cache)}` : "",
+        ].filter(Boolean).join(" · ");
 
         const mainRow = `
           <tr class="main-row ${isOpen ? "expanded" : ""}" data-id="${esc(e.entry_id)}">
@@ -351,8 +363,7 @@
               <div class="cpu-name">${esc(e.host.cpu_model)}</div>
               <div class="subline">
                 <span class="pill ${corePillClass(e.core_class.label)}">${esc(e.core_class.label)}</span>
-                ${e.core_class.max_freq_mhz ? `${(e.core_class.max_freq_mhz / 1000).toFixed(2)} GHz` : ""}
-                ${e.core_class.l2_cache ? `· L2 ${esc(e.core_class.l2_cache)}` : ""}
+                ${subMeta}
               </div>
             </td>
             <td>

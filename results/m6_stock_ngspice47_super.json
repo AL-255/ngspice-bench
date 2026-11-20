@@ -1,0 +1,933 @@
+{
+  "schema_version": 1,
+  "submission_id": "m6_stock_ngspice47_super",
+  "timestamp_utc": "2026-11-19T23:31:04Z",
+  "mode": "single_core",
+  "all_ok": false,
+  "host": {
+    "os": "macOS 27.2.1 (Darwin 27.2.0)",
+    "arch": "arm64",
+    "platform": "MacBook Pro (Mac18,1, MHWV4LL/A)",
+    "machine_model": "Mac18,1",
+    "cpu_model": "Apple M6",
+    "logical_cpus": 12,
+    "physical_cores": 12,
+    "l1d_cache": "128K",
+    "l2_cache": "20480K",
+    "l3_cache": null,
+    "ram_gb": 32.0,
+    "isa_features": [
+      "fp16",
+      "bf16",
+      "sme",
+      "sme2"
+    ],
+    "is_hybrid": true,
+    "detected_core_classes": [
+      "Super",
+      "P-core",
+      "E-core"
+    ],
+    "memory": "32 GB LPDDR5 (Samsung)",
+    "storage": "APPLE SSD AP1024Z (1 TB NVMe)"
+  },
+  "core_class": {
+    "class_id": "super",
+    "label": "Super",
+    "hybrid": true,
+    "pin_cpu": null,
+    "max_freq_mhz": null,
+    "l1d_cache": "128K",
+    "l2_cache": "20480K",
+    "capacity": null,
+    "arm_part": null
+  },
+  "build": {
+    "name": "Stock ngspice-47 (O2)",
+    "ngspice_version": "ngspice-47 : Circuit level simulation program",
+    "repo": "https://github.com/AL-255/ngspice-sf-mirror",
+    "git_ref": "master@a80f6e3e9",
+    "compiler": "Apple Clang 21.0.0",
+    "configure_flags": "--without-x --with-readline=no --disable-debug --enable-xspice --enable-cider --enable-openmp --enable-klu --enable-osdi",
+    "cflags": "-O2",
+    "ldflags": "-lomp",
+    "feature_flags": {
+      "NGSPICE_OPT_GENERAL": 0,
+      "NGSPICE_OPT_ZEN4": 0,
+      "NGSPICE_OPT_APPLE": 0
+    },
+    "pdk_mode": "standard",
+    "pdk_precompile_s": null,
+    "notes": "Stock unmodified ngspice-47 baseline on MacBook Pro (Mac18,1, MHWV4LL/A), Apple M6 Super core (perflevel0, 128 KiB L1D / 20 MiB L2) (Note: upstream ngspice-47 numparse.c UB overflows rshunt=1e12 to INT_MAX on Clang 21/ARM64, causing opa1k_pvt16 failure in stock build.)"
+  },
+  "runs": [
+    {
+      "deck": "opa1k_pvt16",
+      "solver": "klu",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 528.7411,
+      "rusage": {
+        "total_elapsed_s": 528.736,
+        "total_analysis_s": 0.0
+      },
+      "accuracy": {
+        "pass": false,
+        "exact_grid": true,
+        "npts_ref": 16000,
+        "npts_cand": 16000,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 15.143914409754881,
+        "worst_vec": "ac_dc",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null,
+        "opa_tasks_count": 16000,
+        "per_vec": {
+          "vout_dc": {
+            "max_abs": 1.7366217078442756,
+            "rms": 0.2184497025061854,
+            "rel_rms": 0.09760487385009833
+          },
+          "idd_dc": {
+            "max_abs": 1.1107527849472392e-07,
+            "rms": 2.1064324286082175e-08,
+            "rel_rms": 1.9627996478306195e-05
+          },
+          "ac_dc": {
+            "max_abs": 1937.00159857135,
+            "rms": 15.855207999008224,
+            "rel_rms": 15.143914409754881
+          },
+          "ac_pk": {
+            "max_abs": 1937.00159857135,
+            "rms": 15.876226612340004,
+            "rel_rms": 0.2157697483107953
+          },
+          "tr_v0": {
+            "max_abs": 1.7366217078442756,
+            "rms": 0.21844970500765337,
+            "rel_rms": 0.09760487496777061
+          },
+          "tr_v1": {
+            "max_abs": 1.7266216246452313,
+            "rms": 0.2167842274226008,
+            "rel_rms": 0.0964308598602718
+          },
+          "tr_pk": {
+            "max_abs": 1.7261789913097156,
+            "rms": 0.2166229803129151,
+            "rel_rms": 0.09635913275099377
+          }
+        }
+      }
+    },
+    {
+      "deck": "opa1k_pvt16",
+      "solver": "sparse",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 530.6024,
+      "rusage": {
+        "total_elapsed_s": 530.595,
+        "total_analysis_s": 0.0
+      },
+      "accuracy": {
+        "pass": false,
+        "exact_grid": true,
+        "npts_ref": 16000,
+        "npts_cand": 16000,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 0.1883786174291619,
+        "worst_vec": "ac_dc",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null,
+        "opa_tasks_count": 16000,
+        "per_vec": {
+          "vout_dc": {
+            "max_abs": 1.7366217072834602,
+            "rms": 0.2184498527218634,
+            "rel_rms": 0.09760494096752691
+          },
+          "idd_dc": {
+            "max_abs": 1.1107521802297596e-07,
+            "rms": 2.1064395423125617e-08,
+            "rel_rms": 1.962806276467832e-05
+          },
+          "ac_dc": {
+            "max_abs": 4.9303614652681045,
+            "rms": 0.19722656118427584,
+            "rel_rms": 0.1883786174291619
+          },
+          "ac_pk": {
+            "max_abs": 68.4451849727265,
+            "rms": 0.8078477831926888,
+            "rel_rms": 0.01097925326396112
+          },
+          "tr_v0": {
+            "max_abs": 1.7366217072834602,
+            "rms": 0.2184498527336527,
+            "rel_rms": 0.0976049409727931
+          },
+          "tr_v1": {
+            "max_abs": 1.72662162287377,
+            "rms": 0.21678428504023178,
+            "rel_rms": 0.09643088548998557
+          },
+          "tr_pk": {
+            "max_abs": 1.7261791562088025,
+            "rms": 0.21662308260351823,
+            "rel_rms": 0.09635917825232419
+          }
+        }
+      }
+    },
+    {
+      "deck": "sdm16_120cyc",
+      "solver": "klu",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 46.6451,
+      "rusage": {
+        "total_elapsed_s": 46.63,
+        "total_analysis_s": 46.4272,
+        "tran_analysis_s": 46.1551,
+        "tran_load_s": 27.3273,
+        "tran_factor_s": 13.3826,
+        "tran_solve_s": 3.5571,
+        "tran_trunc_s": 1.0819,
+        "reorder_s": 0.00294852,
+        "tot_iter": 66553,
+        "tran_iter": 66109,
+        "tran_pts": 13583,
+        "accepted_pts": 10885,
+        "rejected_pts": 2698,
+        "eqns": 5345
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": false,
+        "npts_ref": 10901,
+        "npts_cand": 10885,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 0.0061023420473089235,
+        "worst_vec": "v(xdut.vout2_n)",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 115,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 234.52396239840314,
+        "sdm_dac_corr": 0.99932,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
+      }
+    },
+    {
+      "deck": "sdm16_120cyc",
+      "solver": "sparse",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 75.9763,
+      "rusage": {
+        "total_elapsed_s": 75.964,
+        "total_analysis_s": 75.755,
+        "tran_analysis_s": 75.4325,
+        "tran_load_s": 37.5697,
+        "tran_factor_s": 27.18,
+        "tran_solve_s": 8.81099,
+        "tran_trunc_s": 1.07543,
+        "reorder_s": 0.236275,
+        "tot_iter": 66765,
+        "tran_iter": 66703,
+        "tran_pts": 13624,
+        "accepted_pts": 10906,
+        "rejected_pts": 2718,
+        "eqns": 5345
+      },
+      "accuracy": {
+        "pass": false,
+        "exact_grid": false,
+        "npts_ref": 10901,
+        "npts_cand": 10906,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 0.059853610746892896,
+        "worst_vec": "v(xdut.vout2_n)",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 115,
+        "sdm_bits_match": false,
+        "sdm_pdm_max_dt_ps": 312340.3999125451,
+        "sdm_dac_corr": 0.99931,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null,
+        "per_vec": {
+          "v(vin_p)": {
+            "max_abs": 3.196785829384652e-07,
+            "rms": 4.182287902016476e-08,
+            "rel_rms": 3.2171448339719777e-08
+          },
+          "v(vin_n)": {
+            "max_abs": 3.196785829384652e-07,
+            "rms": 4.182287902160721e-08,
+            "rel_rms": 3.2171447618316354e-08
+          },
+          "v(clk)": {
+            "max_abs": 2.3345601309716323e-12,
+            "rms": 6.059029853813206e-14,
+            "rel_rms": 3.366127696562892e-14
+          },
+          "v(xdut.phi1)": {
+            "max_abs": 0.1636011574944024,
+            "rms": 0.005012251800478531,
+            "rel_rms": 0.0027753670698205278
+          },
+          "v(xdut.phi2)": {
+            "max_abs": 0.5143508461189474,
+            "rms": 0.0123651580204206,
+            "rel_rms": 0.00685014168774929
+          },
+          "v(xdut.dac_p)": {
+            "max_abs": 1.8026218703204913,
+            "rms": 0.22994507562420233,
+            "rel_rms": 0.12728459615044813
+          },
+          "v(xdut.dac_n)": {
+            "max_abs": 1.8035860767403467,
+            "rms": 0.2312906958795551,
+            "rel_rms": 0.12810378888153653
+          },
+          "v(xdut.vout1_p)": {
+            "max_abs": 0.8120454705548208,
+            "rms": 0.06574894907028243,
+            "rel_rms": 0.03642991488307904
+          },
+          "v(xdut.vout1_n)": {
+            "max_abs": 0.805850579416009,
+            "rms": 0.06629251814248455,
+            "rel_rms": 0.03688950708721458
+          },
+          "v(xdut.vout2_p)": {
+            "max_abs": 0.9835270671606379,
+            "rms": 0.1029161529557703,
+            "rel_rms": 0.056907406381580865
+          },
+          "v(xdut.vout2_n)": {
+            "max_abs": 0.9891756800488365,
+            "rms": 0.10279901394141612,
+            "rel_rms": 0.059853610746892896
+          },
+          "v(xdut.pdm_bit)": {
+            "max_abs": 1.8001434041416218,
+            "rms": 0.2267771818550391,
+            "rel_rms": 0.1254557482645921
+          },
+          "v(dout_0)": {
+            "max_abs": 1.8487544739969255,
+            "rms": 0.3288763910120431,
+            "rel_rms": 0.17931385310052875
+          },
+          "v(dout_valid)": {
+            "max_abs": 0.1636011574944024,
+            "rms": 0.005012251800478531,
+            "rel_rms": 0.0027753670698205278
+          },
+          "i(vvdd)": {
+            "max_abs": 0.0026461425538446383,
+            "rms": 6.0335834634415316e-05,
+            "rel_rms": 0.013037347777044215
+          }
+        }
+      }
+    },
+    {
+      "deck": "pll_ring_150m_4us",
+      "solver": "klu",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 117.4664,
+      "rusage": {
+        "total_elapsed_s": 117.449,
+        "total_analysis_s": 117.271,
+        "tran_analysis_s": 117.264,
+        "tran_load_s": 106.794,
+        "tran_factor_s": 4.84445,
+        "tran_solve_s": 1.42198,
+        "tran_trunc_s": 1.8966,
+        "reorder_s": 0.0002141,
+        "tot_iter": 154101,
+        "tran_iter": 154101,
+        "tran_pts": 34969,
+        "accepted_pts": 30595,
+        "rejected_pts": 4374,
+        "eqns": 1015
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": false,
+        "npts_ref": 30588,
+        "npts_cand": 30594,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 0.0006529644390184608,
+        "worst_vec": "v(vc)",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": 31,
+        "pll_code_cand": 31,
+        "pll_code_match": true,
+        "pll_fout_mhz": 153.251,
+        "pll_vc_final_v": 0.9531,
+        "pll_vc_err_mv": 0.365
+      }
+    },
+    {
+      "deck": "pll_ring_150m_4us",
+      "solver": "sparse",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 120.1353,
+      "rusage": {
+        "total_elapsed_s": 120.116,
+        "total_analysis_s": 119.941,
+        "tran_analysis_s": 119.938,
+        "tran_load_s": 108.355,
+        "tran_factor_s": 5.18059,
+        "tran_solve_s": 2.19719,
+        "tran_trunc_s": 1.89419,
+        "reorder_s": 0.00242186,
+        "tot_iter": 154040,
+        "tran_iter": 154040,
+        "tran_pts": 34958,
+        "accepted_pts": 30592,
+        "rejected_pts": 4366,
+        "eqns": 1015
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": false,
+        "npts_ref": 30588,
+        "npts_cand": 30591,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 0.000621151491860203,
+        "worst_vec": "v(vc)",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": 31,
+        "pll_code_cand": 31,
+        "pll_code_match": true,
+        "pll_fout_mhz": 153.253,
+        "pll_vc_final_v": 0.9526,
+        "pll_vc_err_mv": 0.134
+      }
+    },
+    {
+      "deck": "ti12_full_300ns",
+      "solver": "klu",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 171.9486,
+      "rusage": {
+        "total_elapsed_s": 171.868,
+        "total_analysis_s": 170.071,
+        "tran_analysis_s": 169.986,
+        "tran_load_s": 144.591,
+        "tran_factor_s": 5.39679,
+        "tran_solve_s": 1.37095,
+        "tran_trunc_s": 7.32496,
+        "reorder_s": 0.00157285,
+        "tot_iter": 17618,
+        "tran_iter": 17618,
+        "tran_pts": 6469,
+        "accepted_pts": 6300,
+        "rejected_pts": 169,
+        "eqns": 7221
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": false,
+        "npts_ref": 6299,
+        "npts_cand": 6299,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 7.140848039559776e-06,
+        "worst_vec": "v(vsh_p)",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
+      }
+    },
+    {
+      "deck": "ti12_full_300ns",
+      "solver": "sparse",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 175.6146,
+      "rusage": {
+        "total_elapsed_s": 175.552,
+        "total_analysis_s": 173.747,
+        "tran_analysis_s": 173.493,
+        "tran_load_s": 139.881,
+        "tran_factor_s": 13.4824,
+        "tran_solve_s": 3.91396,
+        "tran_trunc_s": 6.51935,
+        "reorder_s": 0.305627,
+        "tot_iter": 17618,
+        "tran_iter": 17618,
+        "tran_pts": 6469,
+        "accepted_pts": 6300,
+        "rejected_pts": 169,
+        "eqns": 7221
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": false,
+        "npts_ref": 6299,
+        "npts_cand": 6299,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 7.1408480376363555e-06,
+        "worst_vec": "v(vsh_p)",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
+      }
+    },
+    {
+      "deck": "sar12_probe_2cyc",
+      "solver": "klu",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 31.656,
+      "rusage": {
+        "total_elapsed_s": 31.641,
+        "total_analysis_s": 31.3686,
+        "tran_analysis_s": 31.1102,
+        "tran_load_s": 27.6082,
+        "tran_factor_s": 1.71363,
+        "tran_solve_s": 0.413779,
+        "tran_trunc_s": 0.758749,
+        "reorder_s": 0.00161409,
+        "tot_iter": 25690,
+        "tran_iter": 25438,
+        "tran_pts": 6702,
+        "accepted_pts": 6077,
+        "rejected_pts": 625,
+        "eqns": 1559
+      },
+      "accuracy": {
+        "pass": false,
+        "exact_grid": false,
+        "npts_ref": 6072,
+        "npts_cand": 6077,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 7.668548996860216,
+        "worst_vec": "v(bit_14)",
+        "sar_codes_ref": [
+          17579,
+          22903
+        ],
+        "sar_codes_cand": [
+          17579,
+          22903
+        ],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 165.70348673965893,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null,
+        "per_vec": {
+          "v(vip)": {
+            "max_abs": 1.1245455677766358e-09,
+            "rms": 2.758913667609618e-10,
+            "rel_rms": 1.900676120361484e-10
+          },
+          "v(vin)": {
+            "max_abs": 1.1245454012431821e-09,
+            "rms": 2.7589136460017837e-10,
+            "rel_rms": 3.0654596066686483e-10
+          },
+          "v(phi_s)": {
+            "max_abs": 0.0,
+            "rms": 0.0,
+            "rel_rms": 0.0
+          },
+          "v(comp_clk)": {
+            "max_abs": 0.7048444496973152,
+            "rms": 0.05469372539199188,
+            "rel_rms": 0.02961959696454231
+          },
+          "v(eoc)": {
+            "max_abs": 1.4707168825527095,
+            "rms": 0.02916088612630436,
+            "rel_rms": 0.015588765568587478
+          },
+          "i(vvdd)": {
+            "max_abs": 0.005171834679513931,
+            "rms": 0.00019287046412381386,
+            "rel_rms": 0.02407584251357492
+          },
+          "v(bit_0)": {
+            "max_abs": 1.8564379448257005,
+            "rms": 0.13512333282991376,
+            "rel_rms": 0.07222526578568794
+          },
+          "v(bit_1)": {
+            "max_abs": 1.8472900362196207,
+            "rms": 0.06944750314574734,
+            "rel_rms": 0.039077999277867426
+          },
+          "v(bit_2)": {
+            "max_abs": 1.8429698971418271,
+            "rms": 0.06705110877681894,
+            "rel_rms": 0.037009273439474806
+          },
+          "v(bit_3)": {
+            "max_abs": 1.8429698760219204,
+            "rms": 0.06708455463268134,
+            "rel_rms": 0.03703672538159466
+          },
+          "v(bit_4)": {
+            "max_abs": 1.856918288497688,
+            "rms": 0.06670371640738719,
+            "rel_rms": 0.03552299213072567
+          },
+          "v(bit_5)": {
+            "max_abs": 1.8569178002766196,
+            "rms": 0.06620565747294481,
+            "rel_rms": 0.03724621034318355
+          },
+          "v(bit_6)": {
+            "max_abs": 1.856917311949053,
+            "rms": 0.06678827325695978,
+            "rel_rms": 0.03685594174267237
+          },
+          "v(bit_7)": {
+            "max_abs": 1.8521376013971889,
+            "rms": 0.07184996653708756,
+            "rel_rms": 0.03840493048437004
+          },
+          "v(bit_8)": {
+            "max_abs": 1.8472906793464767,
+            "rms": 0.0704035475656437,
+            "rel_rms": 0.038948630669339575
+          },
+          "v(bit_9)": {
+            "max_abs": 1.8429740804682697,
+            "rms": 0.06830045406888328,
+            "rel_rms": 0.037006931788059624
+          },
+          "v(bit_10)": {
+            "max_abs": 1.8569175797009847,
+            "rms": 0.06723080960124538,
+            "rel_rms": 0.03723122456943543
+          },
+          "v(bit_11)": {
+            "max_abs": 1.8569175739886992,
+            "rms": 0.06623760921240919,
+            "rel_rms": 0.035274495165359625
+          },
+          "v(bit_12)": {
+            "max_abs": 1.856917131321265,
+            "rms": 0.06704083854649871,
+            "rel_rms": 0.03714477323935404
+          },
+          "v(bit_13)": {
+            "max_abs": 1.8569185738594685,
+            "rms": 0.06720555733568474,
+            "rel_rms": 0.03578986919358397
+          },
+          "v(bit_14)": {
+            "max_abs": 1.8921413620298284,
+            "rms": 0.14216593534357191,
+            "rel_rms": 0.0757355591070921
+          }
+        }
+      }
+    },
+    {
+      "deck": "sar12_probe_2cyc",
+      "solver": "sparse",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 39.4767,
+      "rusage": {
+        "total_elapsed_s": 39.461,
+        "total_analysis_s": 39.1864,
+        "tran_analysis_s": 38.8108,
+        "tran_load_s": 28.6408,
+        "tran_factor_s": 7.73161,
+        "tran_solve_s": 1.00868,
+        "tran_trunc_s": 0.780442,
+        "reorder_s": 0.0518062,
+        "tot_iter": 25680,
+        "tran_iter": 25428,
+        "tran_pts": 6687,
+        "accepted_pts": 6073,
+        "rejected_pts": 614,
+        "eqns": 1559
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": false,
+        "npts_ref": 6072,
+        "npts_cand": 6073,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 0.022571388803982424,
+        "worst_vec": "v(bit_0)",
+        "sar_codes_ref": [
+          17579,
+          22903
+        ],
+        "sar_codes_cand": [
+          17579,
+          22903
+        ],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 43.66142612050245,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
+      }
+    },
+    {
+      "deck": "sar12_hero_16cyc",
+      "solver": "klu",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 247.8362,
+      "rusage": {
+        "total_elapsed_s": 247.805,
+        "total_analysis_s": 247.526,
+        "tran_analysis_s": 247.265,
+        "tran_load_s": 219.453,
+        "tran_factor_s": 13.5917,
+        "tran_solve_s": 3.31289,
+        "tran_trunc_s": 5.98975,
+        "reorder_s": 0.00163507,
+        "tot_iter": 202552,
+        "tran_iter": 202300,
+        "tran_pts": 53314,
+        "accepted_pts": 48483,
+        "rejected_pts": 4831,
+        "eqns": 1559
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": false,
+        "npts_ref": 48478,
+        "npts_cand": 48483,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 0.014000408372569205,
+        "worst_vec": "v(bit_14)",
+        "sar_codes_ref": [
+          17579,
+          22903,
+          27578,
+          31412,
+          32072,
+          31321,
+          27300,
+          22442,
+          15189,
+          9865,
+          5190,
+          1364,
+          696,
+          1447,
+          5476,
+          10326
+        ],
+        "sar_codes_cand": [
+          17579,
+          22903,
+          27578,
+          31412,
+          32072,
+          31321,
+          27300,
+          22442,
+          15189,
+          9865,
+          5190,
+          1364,
+          696,
+          1447,
+          5476,
+          10326
+        ],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 165.70348673965893,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
+      }
+    },
+    {
+      "deck": "sar12_hero_16cyc",
+      "solver": "sparse",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 308.0979,
+      "rusage": {
+        "total_elapsed_s": 308.064,
+        "total_analysis_s": 307.788,
+        "tran_analysis_s": 307.415,
+        "tran_load_s": 227.318,
+        "tran_factor_s": 61.1046,
+        "tran_solve_s": 7.96239,
+        "tran_trunc_s": 6.00472,
+        "reorder_s": 0.0509889,
+        "tot_iter": 202516,
+        "tran_iter": 202264,
+        "tran_pts": 53317,
+        "accepted_pts": 48485,
+        "rejected_pts": 4832,
+        "eqns": 1559
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": false,
+        "npts_ref": 48478,
+        "npts_cand": 48485,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 0.009031869248729035,
+        "worst_vec": "v(bit_0)",
+        "sar_codes_ref": [
+          17579,
+          22903,
+          27578,
+          31412,
+          32072,
+          31321,
+          27300,
+          22442,
+          15189,
+          9865,
+          5190,
+          1364,
+          696,
+          1447,
+          5476,
+          10326
+        ],
+        "sar_codes_cand": [
+          17579,
+          22903,
+          27578,
+          31412,
+          32072,
+          31321,
+          27300,
+          22442,
+          15189,
+          9865,
+          5190,
+          1364,
+          696,
+          1447,
+          5476,
+          10326
+        ],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 75.08079711266812,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null
+      }
+    }
+  ]
+}
