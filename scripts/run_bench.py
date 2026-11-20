@@ -211,6 +211,7 @@ def detect_core_classes() -> List[Dict[str, Any]]:
         if nlevels_s.isdigit() and int(nlevels_s) >= 2:
             nlevels = int(nlevels_s)
             out = []
+            higher_cores = 0
             for lv in range(nlevels):
                 name = _sysctl(f"hw.perflevel{lv}.name") or ("P-core" if lv == 0 else "E-core")
                 ncores = _sysctl(f"hw.perflevel{lv}.physicalcpu")
@@ -221,10 +222,10 @@ def detect_core_classes() -> List[Dict[str, Any]]:
                 elif lv == nlevels - 1:
                     qos = "background"
                 else:
-                    # On 3-tier Apple Silicon (Super / Performance / Efficiency), macOS XNU QoS
-                    # only distinguishes perflevel0 (default) and perflevel_last (background);
-                    # intermediate clusters cannot be exclusively pinned on an idle machine.
-                    qos = "unselectable"
+                    # On 3-tier Apple Silicon (Super / Performance / Efficiency), hold the
+                    # higher-tier cores with zero-memory register spinners at default QoS
+                    # while running the benchmark under taskpolicy -c utility.
+                    qos = "utility_pinned"
                 out.append({
                     "class_id": name.lower().replace(" ", "_"),
                     "label": "P-core" if "performance" in name.lower() else ("E-core" if "efficiency" in name.lower() else name),
@@ -232,9 +233,12 @@ def detect_core_classes() -> List[Dict[str, Any]]:
                     "cpus": list(range(int(ncores))) if ncores.isdigit() else [0],
                     "pin_cpu": None,
                     "macos_qos": qos,
+                    "higher_tier_cores": higher_cores if qos == "utility_pinned" else 0,
                     "l1d_cache": f"{int(l1d)//1024}K" if l1d.isdigit() else None,
                     "l2_cache": f"{int(l2)//1024}K" if l2.isdigit() else None,
                 })
+                if ncores.isdigit():
+                    higher_cores += int(ncores)
             return out
 
     return [{
@@ -447,6 +451,27 @@ def precompile_pdk(ngspice_bin: Path, out_nglib: Path, pin_cpu: Optional[int]) -
     return round(dt_s, 4)
 
 
+def _ensure_reg_spinner() -> Optional[Path]:
+    """Build a zero-memory serial register spinner used to hold higher-tier cores on 3-tier Apple Silicon."""
+    spin_bin = Path(tempfile.gettempdir()) / "ngbench_reg_spin"
+    if spin_bin.exists():
+        return spin_bin
+    cc = shutil.which("cc") or shutil.which("clang")
+    if not cc:
+        return None
+    src = Path(tempfile.gettempdir()) / "ngbench_reg_spin.c"
+    src.write_text(
+        "#include <stdint.h>\n"
+        "int main(void) {\n"
+        "    uint64_t x = 1;\n"
+        "    for (;;) { __asm__ volatile(\"add %0, %0, #1\" : \"+r\"(x)); }\n"
+        "    return 0;\n"
+        "}\n"
+    )
+    r = subprocess.run([cc, "-O2", str(src), "-o", str(spin_bin)], capture_output=True)
+    return spin_bin if r.returncode == 0 and spin_bin.exists() else None
+
+
 def run_one(
     ngspice_bin: Path,
     deck_name: str,
@@ -456,6 +481,7 @@ def run_one(
     pin_cpu: Optional[int],
     macos_qos: Optional[str],
     nglib_path: Optional[Path],
+    higher_tier_cores: int = 0,
 ) -> Dict[str, Any]:
     src_cir = DECKS_DIR / f"{deck_name}.cir"
     text = src_cir.read_text()
@@ -521,14 +547,32 @@ def run_one(
     env["OMP_PROC_BIND"] = "true"
 
     cmd = [str(ngspice_bin), "-b", str(cir_out), "-o", str(log_out)]
+    spinners: List[subprocess.Popen] = []
     if pin_cpu is not None and platform.system() == "Linux" and shutil.which("taskset"):
         cmd = ["taskset", "-c", str(pin_cpu)] + cmd
     elif macos_qos == "background" and platform.system() == "Darwin" and shutil.which("taskpolicy"):
         cmd = ["taskpolicy", "-c", "background"] + cmd
+    elif macos_qos == "utility_pinned" and platform.system() == "Darwin" and shutil.which("taskpolicy"):
+        cmd = ["taskpolicy", "-c", "utility"] + cmd
+        if higher_tier_cores > 0:
+            spin_bin = _ensure_reg_spinner()
+            if spin_bin is not None:
+                for _ in range(higher_tier_cores):
+                    spinners.append(subprocess.Popen([str(spin_bin)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL))
+                time.sleep(0.1)
 
-    t0 = time.perf_counter()
-    proc = subprocess.run(cmd, cwd=str(work_dir), env=env, capture_output=True, text=True)
-    wall_s = time.perf_counter() - t0
+    try:
+        t0 = time.perf_counter()
+        proc = subprocess.run(cmd, cwd=str(work_dir), env=env, capture_output=True, text=True)
+        wall_s = time.perf_counter() - t0
+    finally:
+        for sp in spinners:
+            sp.terminate()
+        for sp in spinners:
+            try:
+                sp.wait(timeout=2.0)
+            except Exception:
+                sp.kill()
 
     log_text = log_out.read_text(errors="replace") if log_out.exists() else ""
     rusage = parse_rusage(log_text)
@@ -637,6 +681,7 @@ def main() -> None:
         sub_id = args.submission_id if len(target_classes) == 1 else f"{args.submission_id}_{cls['class_id']}"
         pin_cpu = cls.get("pin_cpu")
         macos_qos = cls.get("macos_qos")
+        higher_tier_cores = int(cls.get("higher_tier_cores") or 0)
         print(
             f"\n=== ngspice-bench (1-core) | id={sub_id} | cpu={host_info['cpu_model']} "
             f"| core_class={cls['label']} (pin_cpu={pin_cpu}) | uselib={args.uselib} ==="
@@ -654,7 +699,7 @@ def main() -> None:
             all_ok = True
             for d in decks:
                 for s in args.solvers:
-                    r = run_one(ng_bin, d, s, work_dir, args.tol_rms, pin_cpu, macos_qos, nglib_path)
+                    r = run_one(ng_bin, d, s, work_dir, args.tol_rms, pin_cpu, macos_qos, nglib_path, higher_tier_cores)
                     runs.append(r)
                     ru = r["rusage"]
                     ac = r["accuracy"]
