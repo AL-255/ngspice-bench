@@ -2,7 +2,9 @@
 """Generate warm light-theme SVG transient waveform plots aligned with aicdb/hub-gemini4 palette."""
 from __future__ import annotations
 
+import argparse
 import html
+import json
 import re
 import sys
 from pathlib import Path
@@ -248,8 +250,417 @@ def _mask_window(t: np.ndarray, y: np.ndarray, t_min: float, t_max: Optional[flo
     return t[m], y[m]
 
 
+def render_opa1k_bode_svg(
+    npz_path: Path,
+    manifest_path: Path,
+    out_path: Path,
+    n_pvt_tasks: int = 16000,
+) -> None:
+    """Render a 2x2 op-amp portfolio figure: Open-Loop Bode Mag & Phase, 10 mV Step, and UGBW vs IDD."""
+    data = np.load(npz_path)
+    manifest = json.loads(manifest_path.read_text())
+
+    freq = data["freq"].astype(float)
+    logf = np.log10(freq)
+    aol_db = data["aol_db"].astype(float)
+    aol_ph = data["aol_ph"].astype(float)
+    idd_ua = np.maximum(data["idd_a"].astype(float), 1e-12) * 1e6
+    tr_dv = data["tr_dv_mv"].astype(float)
+    n_cells = aol_db.shape[0]
+    t_norm = np.linspace(0.0, 1.0, tr_dv.shape[1])
+
+    cl_pf = np.array([float(m["cl_pf"]) for m in manifest])
+    vdd_v = np.array([float(m["vdd"]) for m in manifest])
+    archs = [m["arch"] for m in manifest]
+
+    # Exact 0 dB UGBW & Phase Margin across all 1,000 cells
+    ugbw = np.full(n_cells, np.nan)
+    pm_deg = np.full(n_cells, np.nan)
+    for i in range(n_cells):
+        y = aol_db[i]
+        cross = np.where((y[:-1] >= 0.0) & (y[1:] < 0.0))[0]
+        if len(cross) > 0:
+            k = int(cross[0])
+            frac = (0.0 - y[k]) / (y[k + 1] - y[k])
+            ugbw[i] = 10.0 ** (logf[k] + frac * (logf[k + 1] - logf[k]))
+            ph_u = aol_ph[i, k] + frac * (aol_ph[i, k + 1] - aol_ph[i, k])
+            pm_deg[i] = 180.0 + ph_u
+
+    a0_med = float(np.median(aol_db[:, 0]))
+    ugbw_p5, ugbw_med, ugbw_p95 = np.nanpercentile(ugbw, [5, 50, 95])
+    pm_p5, pm_med, pm_p95 = np.nanpercentile(pm_deg, [5, 50, 95])
+    ifom_med = float(np.nanmedian((ugbw / 1e6) * cl_pf / (idd_ua / 1e3)))
+    tr_end_med = float(np.median(tr_dv[:, -1]))
+    tr_pk_p95 = float(np.percentile(np.max(tr_dv, axis=1), 95))
+
+    # Stratified sample of 300 cells (25 per topology, evenly spaced by UGBW) + global extremes
+    by_arch: Dict[str, List[int]] = {}
+    for i, a in enumerate(archs):
+        by_arch.setdefault(a, []).append(i)
+    sample_set = set()
+    for a in sorted(by_arch):
+        idxs = sorted(by_arch[a], key=lambda k: ugbw[k] if np.isfinite(ugbw[k]) else 0.0)
+        pick = np.linspace(0, len(idxs) - 1, min(25, len(idxs)), dtype=int)
+        for p in pick:
+            sample_set.add(idxs[int(p)])
+    sample_idxs = sorted(sample_set)
+
+    # All-1,000 exact percentiles
+    db_p10, db_p50, db_p90 = np.percentile(aol_db, [10, 50, 90], axis=0)
+    ph_p10, ph_p50, ph_p90 = np.percentile(aol_ph, [10, 50, 90], axis=0)
+    tr_p10, tr_p50, tr_p90 = np.percentile(tr_dv, [10, 50, 90], axis=0)
+
+    W, H = 960, 672
+    pw, ph = 408.0, 228.0
+    x_left, x_right = 64.0, 534.0
+    y_top, y_bot = 88.0, 396.0
+
+    def sx(v: float, x0: float, xmin: float, xmax: float) -> float:
+        return x0 + ((v - xmin) / (xmax - xmin)) * pw
+
+    def sy(v: float, y0: float, ymin: float, ymax: float) -> float:
+        return y0 + ph - ((v - ymin) / (ymax - ymin)) * ph
+
+    def build_compound_path(
+        xs_arr: np.ndarray,
+        ys_mat: np.ndarray,
+        indices: List[int],
+        x0: float,
+        y0: float,
+        xmin: float,
+        xmax: float,
+        ymin: float,
+        ymax: float,
+        stride: int = 1,
+    ) -> str:
+        xs_s = xs_arr[::stride]
+        px = [x0 + ((float(v) - xmin) / (xmax - xmin)) * pw for v in xs_s]
+        segs: List[str] = []
+        for idx in indices:
+            ys_s = ys_mat[idx, ::stride]
+            py = [y0 + ph - ((float(v) - ymin) / (ymax - ymin)) * ph for v in ys_s]
+            cmds = [f"M{px[0]:.1f},{py[0]:.1f}"] + [f"L{px[k]:.1f},{py[k]:.1f}" for k in range(1, len(px))]
+            segs.append("".join(cmds))
+        return "".join(segs)
+
+    def build_band_polygon(
+        xs_arr: np.ndarray,
+        lo_arr: np.ndarray,
+        hi_arr: np.ndarray,
+        x0: float,
+        y0: float,
+        xmin: float,
+        xmax: float,
+        ymin: float,
+        ymax: float,
+    ) -> str:
+        top_pts = [f"{sx(float(xs_arr[k]), x0, xmin, xmax):.1f},{sy(float(hi_arr[k]), y0, ymin, ymax):.1f}" for k in range(len(xs_arr))]
+        bot_pts = [f"{sx(float(xs_arr[k]), x0, xmin, xmax):.1f},{sy(float(lo_arr[k]), y0, ymin, ymax):.1f}" for k in range(len(xs_arr) - 1, -1, -1)]
+        return " ".join(top_pts + bot_pts)
+
+    def build_polyline(
+        xs_arr: np.ndarray,
+        ys_arr: np.ndarray,
+        x0: float,
+        y0: float,
+        xmin: float,
+        xmax: float,
+        ymin: float,
+        ymax: float,
+    ) -> str:
+        return " ".join(
+            f"{sx(float(xs_arr[k]), x0, xmin, xmax):.1f},{sy(float(ys_arr[k]), y0, ymin, ymax):.1f}"
+            for k in range(len(xs_arr))
+        )
+
+    def fmt_hz_short(hz: float) -> str:
+        if hz >= 1e9:
+            return f"{hz/1e9:.0f} GHz"
+        if hz >= 1e6:
+            return f"{hz/1e6:.2f} MHz" if hz < 1e7 else f"{hz/1e6:.0f} MHz"
+        if hz >= 1e3:
+            return f"{hz/1e3:.0f} kHz"
+        return f"{hz:.0f} Hz"
+
+    e = html.escape
+    title = "opa1k_pvt16 — 1,000 Post-PEX Op-Amps × 16 PVT Corners (Open-Loop Bode, Step & FoM)"
+    subtitle = (
+        f"1,000 GF180 cells · 12 topologies · A0 med {a0_med:.1f} dB · "
+        f"UGBW {fmt_hz_short(ugbw_p5)}–{fmt_hz_short(ugbw_p95)} (med {fmt_hz_short(ugbw_med)}) · "
+        f"PM med {pm_med:.1f}° · {n_pvt_tasks:,} PVT tasks"
+    )
+
+    lines: List[str] = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" role="img" aria-label="{e(title)}">',
+        "<style>",
+        "  .bg { fill: #fffaf6; }",
+        "  .panel-bg { fill: #ffffff; stroke: #f0dccd; stroke-width: 1; }",
+        "  .grid { stroke: #f3e4d8; stroke-width: 1; }",
+        "  .guide { stroke: #d8c2b2; stroke-width: 1; stroke-dasharray: 4 4; }",
+        "  .ref-red { stroke: #c4372f; stroke-width: 1.2; stroke-dasharray: 5 4; opacity: 0.78; }",
+        "  .ref-green { stroke: #2ca02c; stroke-width: 1.1; stroke-dasharray: 4 4; opacity: 0.75; }",
+        "  .title { fill: #2b1a17; font-weight: 700; font-size: 13.5px; font-family: Inter,system-ui,-apple-system,'Segoe UI',sans-serif; }",
+        "  .sub { fill: #7a5c52; font-size: 10.8px; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }",
+        "  .ptitle { fill: #2b1a17; font-weight: 600; font-size: 11.5px; font-family: Inter,system-ui,-apple-system,'Segoe UI',sans-serif; }",
+        "  .axlbl { fill: #7a5c52; font-size: 10.5px; font-family: Inter,system-ui,-apple-system,'Segoe UI',sans-serif; }",
+        "  .tick { fill: #7a5c52; font-size: 10px; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }",
+        "  .legend { fill: #2b1a17; font-size: 10px; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }",
+        "  .badge-bg { fill: #fffaf6; fill-opacity: 0.92; stroke: #ebd5c5; stroke-width: 1; }",
+        "  .badge-txt { fill: #4a332d; font-size: 9.8px; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }",
+        "  .guide-txt { fill: #9b7e72; font-size: 9px; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }",
+        "</style>",
+        f'<rect class="bg" x="0" y="0" width="{W}" height="{H}" rx="8"/>',
+        f'<text class="title" x="{x_left:.0f}" y="24">{e(title)}</text>',
+        f'<text class="sub" x="{x_left:.0f}" y="42">{e(subtitle)}</text>',
+    ]
+
+    sample_200f = [i for i in sample_idxs if cl_pf[i] < 1.0]
+    sample_2p = [i for i in sample_idxs if cl_pf[i] >= 1.0]
+
+    def draw_legend_inline(x_right_edge: float, y_base: float, items: List[Tuple[str, str, str]]) -> None:
+        lx = x_right_edge
+        for lbl, color, dash in reversed(items):
+            approx_w = len(lbl) * 6.0 + 18
+            lx -= approx_w
+            da = f' stroke-dasharray="{dash}"' if dash else ""
+            lines.append(
+                f'<line x1="{lx:.1f}" y1="{y_base - 3.5:.1f}" x2="{lx + 11:.1f}" y2="{y_base - 3.5:.1f}" '
+                f'stroke="{color}" stroke-width="2.1"{da} stroke-linecap="round"/>'
+            )
+            lines.append(f'<text class="legend" x="{lx + 15:.1f}" y="{y_base:.1f}">{e(lbl)}</text>')
+            lx -= 8
+
+    # ---------- PANEL 1 (Top-Left): Open-Loop Bode Magnitude ----------
+    f_min, f_max = 0.0, 9.0
+    db_min, db_max = -40.0, 120.0
+    lines.append(f'<text class="ptitle" x="{x_left:.0f}" y="{y_top - 10:.0f}">Open-Loop Bode Magnitude |A_ol(f)| (dB)</text>')
+    draw_legend_inline(
+        x_left + pw,
+        y_top - 10,
+        [("200fF", COLORS["blue"], ""), ("2pF", COLORS["orange"], ""), ("Med(1k)", COLORS["red"], "")],
+    )
+    lines.append(f'<rect class="panel-bg" x="{x_left:.0f}" y="{y_top:.0f}" width="{pw:.0f}" height="{ph:.0f}" rx="4"/>')
+    for db_tick in (-40, 0, 40, 80, 120):
+        gy = sy(db_tick, y_top, db_min, db_max)
+        if db_min < db_tick < db_max:
+            lines.append(f'<line class="grid" x1="{x_left:.0f}" y1="{gy:.1f}" x2="{x_left + pw:.0f}" y2="{gy:.1f}"/>')
+        lines.append(f'<text class="tick" x="{x_left - 7:.0f}" y="{gy + 3.5:.1f}" text-anchor="end">{db_tick}</text>')
+    dec_labels = {0: "1", 2: "100", 4: "10k", 6: "1M", 8: "100M", 9: "1G"}
+    for dec in range(10):
+        gx = sx(float(dec), x_left, f_min, f_max)
+        if 0 < dec < 9:
+            lines.append(f'<line class="grid" x1="{gx:.1f}" y1="{y_top:.0f}" x2="{gx:.1f}" y2="{y_top + ph:.0f}"/>')
+        if dec in dec_labels:
+            lines.append(f'<text class="tick" x="{gx:.1f}" y="{y_top + ph + 14:.0f}" text-anchor="middle">{dec_labels[dec]}</text>')
+    lines.append(f'<text class="axlbl" x="{x_left + pw / 2:.1f}" y="{y_top + ph + 29:.0f}" text-anchor="middle">Frequency (Hz)</text>')
+    y_0db = sy(0.0, y_top, db_min, db_max)
+    lines.append(f'<line class="ref-red" x1="{x_left:.0f}" y1="{y_0db:.1f}" x2="{x_left + pw:.0f}" y2="{y_0db:.1f}"/>')
+
+    lines.append(f'<clipPath id="clip_mag"><rect x="{x_left:.0f}" y="{y_top:.0f}" width="{pw:.0f}" height="{ph:.0f}"/></clipPath>')
+    lines.append('<g clip-path="url(#clip_mag)">')
+    p_mag_2p = build_compound_path(logf, aol_db, sample_2p, x_left, y_top, f_min, f_max, db_min, db_max, stride=3)
+    p_mag_200 = build_compound_path(logf, aol_db, sample_200f, x_left, y_top, f_min, f_max, db_min, db_max, stride=3)
+    lines.append(f'<path fill="none" stroke="{COLORS["orange"]}" stroke-width="0.65" stroke-opacity="0.22" d="{p_mag_2p}"/>')
+    lines.append(f'<path fill="none" stroke="{COLORS["blue"]}" stroke-width="0.65" stroke-opacity="0.22" d="{p_mag_200}"/>')
+    lines.append(
+        f'<polygon fill="{COLORS["red"]}" fill-opacity="0.12" points="'
+        f'{build_band_polygon(logf, db_p10, db_p90, x_left, y_top, f_min, f_max, db_min, db_max)}"/>'
+    )
+    lines.append(
+        f'<polyline fill="none" stroke="{COLORS["red"]}" stroke-width="2.2" stroke-linejoin="round" points="'
+        f'{build_polyline(logf, db_p50, x_left, y_top, f_min, f_max, db_min, db_max)}"/>'
+    )
+    lines.append(f'<rect class="badge-bg" x="{x_left + 8:.0f}" y="{y_top + ph - 26:.0f}" width="174" height="19" rx="3"/>')
+    lines.append(
+        f'<text class="badge-txt" x="{x_left + 14:.0f}" y="{y_top + ph - 13:.0f}">'
+        f'0 dB UGBW: {fmt_hz_short(ugbw_p5)}–{fmt_hz_short(ugbw_p95)}</text>'
+    )
+    lines.append("</g>")
+
+    # ---------- PANEL 2 (Top-Right): Open-Loop Bode Phase ----------
+    ph_min, ph_max = -225.0, 15.0
+    lines.append(f'<text class="ptitle" x="{x_right:.0f}" y="{y_top - 10:.0f}">Open-Loop Bode Phase ∠A_ol(f) (deg)</text>')
+    draw_legend_inline(
+        x_right + pw,
+        y_top - 10,
+        [("60° PM", COLORS["green"], "4 3"), ("-180°", COLORS["red"], "4 3"), ("Med(1k)", COLORS["red"], "")],
+    )
+    lines.append(f'<rect class="panel-bg" x="{x_right:.0f}" y="{y_top:.0f}" width="{pw:.0f}" height="{ph:.0f}" rx="4"/>')
+    for ph_tick in (-225, -180, -135, -90, -45, 0):
+        gy = sy(ph_tick, y_top, ph_min, ph_max)
+        if ph_min < ph_tick < ph_max:
+            lines.append(f'<line class="grid" x1="{x_right:.0f}" y1="{gy:.1f}" x2="{x_right + pw:.0f}" y2="{gy:.1f}"/>')
+        lines.append(f'<text class="tick" x="{x_right - 7:.0f}" y="{gy + 3.5:.1f}" text-anchor="end">{ph_tick}°</text>')
+    for dec in range(10):
+        gx = sx(float(dec), x_right, f_min, f_max)
+        if 0 < dec < 9:
+            lines.append(f'<line class="grid" x1="{gx:.1f}" y1="{y_top:.0f}" x2="{gx:.1f}" y2="{y_top + ph:.0f}"/>')
+        if dec in dec_labels:
+            lines.append(f'<text class="tick" x="{gx:.1f}" y="{y_top + ph + 14:.0f}" text-anchor="middle">{dec_labels[dec]}</text>')
+    lines.append(f'<text class="axlbl" x="{x_right + pw / 2:.1f}" y="{y_top + ph + 29:.0f}" text-anchor="middle">Frequency (Hz)</text>')
+    y_m180 = sy(-180.0, y_top, ph_min, ph_max)
+    y_m120 = sy(-120.0, y_top, ph_min, ph_max)
+    lines.append(f'<line class="ref-red" x1="{x_right:.0f}" y1="{y_m180:.1f}" x2="{x_right + pw:.0f}" y2="{y_m180:.1f}"/>')
+    lines.append(f'<line class="ref-green" x1="{x_right:.0f}" y1="{y_m120:.1f}" x2="{x_right + pw:.0f}" y2="{y_m120:.1f}"/>')
+
+    lines.append(f'<clipPath id="clip_ph"><rect x="{x_right:.0f}" y="{y_top:.0f}" width="{pw:.0f}" height="{ph:.0f}"/></clipPath>')
+    lines.append('<g clip-path="url(#clip_ph)">')
+    p_ph_2p = build_compound_path(logf, aol_ph, sample_2p, x_right, y_top, f_min, f_max, ph_min, ph_max, stride=3)
+    p_ph_200 = build_compound_path(logf, aol_ph, sample_200f, x_right, y_top, f_min, f_max, ph_min, ph_max, stride=3)
+    lines.append(f'<path fill="none" stroke="{COLORS["orange"]}" stroke-width="0.65" stroke-opacity="0.22" d="{p_ph_2p}"/>')
+    lines.append(f'<path fill="none" stroke="{COLORS["blue"]}" stroke-width="0.65" stroke-opacity="0.22" d="{p_ph_200}"/>')
+    lines.append(
+        f'<polygon fill="{COLORS["red"]}" fill-opacity="0.12" points="'
+        f'{build_band_polygon(logf, ph_p10, ph_p90, x_right, y_top, f_min, f_max, ph_min, ph_max)}"/>'
+    )
+    lines.append(
+        f'<polyline fill="none" stroke="{COLORS["red"]}" stroke-width="2.2" stroke-linejoin="round" points="'
+        f'{build_polyline(logf, ph_p50, x_right, y_top, f_min, f_max, ph_min, ph_max)}"/>'
+    )
+    lines.append(f'<rect class="badge-bg" x="{x_right + 8:.0f}" y="{y_top + ph - 26:.0f}" width="188" height="19" rx="3"/>')
+    lines.append(
+        f'<text class="badge-txt" x="{x_right + 14:.0f}" y="{y_top + ph - 13:.0f}">'
+        f'PM med {pm_med:.1f}° (P5–P95: {pm_p5:.0f}°–{pm_p95:.0f}°)</text>'
+    )
+    lines.append("</g>")
+
+    # ---------- PANEL 3 (Bottom-Left): Closed-Loop 10 mV Step Response ----------
+    tr_min, tr_max = -1.0, 15.0
+    lines.append(f'<text class="ptitle" x="{x_left:.0f}" y="{y_bot - 10:.0f}">10 mV Step Response Δv_out (mV)</text>')
+    draw_legend_inline(
+        x_left + pw,
+        y_bot - 10,
+        [("200fF", COLORS["blue"], ""), ("2pF", COLORS["orange"], ""), ("Med(1k)", COLORS["green"], "")],
+    )
+    lines.append(f'<rect class="panel-bg" x="{x_left:.0f}" y="{y_bot:.0f}" width="{pw:.0f}" height="{ph:.0f}" rx="4"/>')
+    for v_tick in (0, 5, 10, 15):
+        gy = sy(float(v_tick), y_bot, tr_min, tr_max)
+        if tr_min < v_tick < tr_max:
+            lines.append(f'<line class="grid" x1="{x_left:.0f}" y1="{gy:.1f}" x2="{x_left + pw:.0f}" y2="{gy:.1f}"/>')
+        lines.append(f'<text class="tick" x="{x_left - 7:.0f}" y="{gy + 3.5:.1f}" text-anchor="end">{v_tick}</text>')
+    for xi in range(6):
+        frac = xi / 5.0
+        gx = sx(frac, x_left, 0.0, 1.0)
+        if 0 < xi < 5:
+            lines.append(f'<line class="grid" x1="{gx:.1f}" y1="{y_bot:.0f}" x2="{gx:.1f}" y2="{y_bot + ph:.0f}"/>')
+        lines.append(f'<text class="tick" x="{gx:.1f}" y="{y_bot + ph + 14:.0f}" text-anchor="middle">{frac:.1f}</text>')
+    lines.append(f'<text class="axlbl" x="{x_left + pw / 2:.1f}" y="{y_bot + ph + 29:.0f}" text-anchor="middle">Normalized Time (t / t_stop)</text>')
+    y_10mv = sy(10.0, y_bot, tr_min, tr_max)
+    lines.append(f'<line class="ref-red" x1="{x_left:.0f}" y1="{y_10mv:.1f}" x2="{x_left + pw:.0f}" y2="{y_10mv:.1f}"/>')
+
+    lines.append(f'<clipPath id="clip_step"><rect x="{x_left:.0f}" y="{y_bot:.0f}" width="{pw:.0f}" height="{ph:.0f}"/></clipPath>')
+    lines.append('<g clip-path="url(#clip_step)">')
+    p_tr_2p = build_compound_path(t_norm, tr_dv, sample_2p, x_left, y_bot, 0.0, 1.0, tr_min, tr_max, stride=2)
+    p_tr_200 = build_compound_path(t_norm, tr_dv, sample_200f, x_left, y_bot, 0.0, 1.0, tr_min, tr_max, stride=2)
+    lines.append(f'<path fill="none" stroke="{COLORS["orange"]}" stroke-width="0.65" stroke-opacity="0.22" d="{p_tr_2p}"/>')
+    lines.append(f'<path fill="none" stroke="{COLORS["blue"]}" stroke-width="0.65" stroke-opacity="0.22" d="{p_tr_200}"/>')
+    lines.append(
+        f'<polygon fill="{COLORS["green"]}" fill-opacity="0.14" points="'
+        f'{build_band_polygon(t_norm, tr_p10, tr_p90, x_left, y_bot, 0.0, 1.0, tr_min, tr_max)}"/>'
+    )
+    lines.append(
+        f'<polyline fill="none" stroke="{COLORS["green"]}" stroke-width="2.2" stroke-linejoin="round" points="'
+        f'{build_polyline(t_norm, tr_p50, x_left, y_bot, 0.0, 1.0, tr_min, tr_max)}"/>'
+    )
+    lines.append(f'<rect class="badge-bg" x="{x_left + pw - 238:.0f}" y="{y_bot + ph - 26:.0f}" width="230" height="19" rx="3"/>')
+    lines.append(
+        f'<text class="badge-txt" x="{x_left + pw - 232:.0f}" y="{y_bot + ph - 13:.0f}">'
+        f'Settled med {tr_end_med:.2f} mV · P95 pk {tr_pk_p95:.1f} mV</text>'
+    )
+    lines.append("</g>")
+
+    # ---------- PANEL 4 (Bottom-Right): UGBW vs I_DD Portfolio Scatter (All 1,000 Cells) ----------
+    ix_min, ix_max = -3.0, 3.0  # log10(I_DD / uA): 1 nA .. 1 mA
+    uy_min, uy_max = 3.0, 9.0   # log10(UGBW / Hz): 1 kHz .. 1 GHz
+    lines.append(f'<text class="ptitle" x="{x_right:.0f}" y="{y_bot - 10:.0f}">Portfolio Trade-Off: UGBW (Hz) vs I_DD (All 1,000 Cells)</text>')
+    lines.append(f'<rect class="panel-bg" x="{x_right:.0f}" y="{y_bot:.0f}" width="{pw:.0f}" height="{ph:.0f}" rx="4"/>')
+    u_ticks = {3: "1k", 4: "10k", 5: "100k", 6: "1M", 7: "10M", 8: "100M", 9: "1G"}
+    for u_dec, u_lbl in u_ticks.items():
+        gy = sy(float(u_dec), y_bot, uy_min, uy_max)
+        if uy_min < u_dec < uy_max:
+            lines.append(f'<line class="grid" x1="{x_right:.0f}" y1="{gy:.1f}" x2="{x_right + pw:.0f}" y2="{gy:.1f}"/>')
+        lines.append(f'<text class="tick" x="{x_right - 7:.0f}" y="{gy + 3.5:.1f}" text-anchor="end">{u_lbl}</text>')
+    i_ticks = {-3: "1n", -2: "10n", -1: "100n", 0: "1µ", 1: "10µ", 2: "100µ", 3: "1m"}
+    for i_dec, i_lbl in i_ticks.items():
+        gx = sx(float(i_dec), x_right, ix_min, ix_max)
+        if ix_min < i_dec < ix_max:
+            lines.append(f'<line class="grid" x1="{gx:.1f}" y1="{y_bot:.0f}" x2="{gx:.1f}" y2="{y_bot + ph:.0f}"/>')
+        lines.append(f'<text class="tick" x="{gx:.1f}" y="{y_bot + ph + 14:.0f}" text-anchor="middle">{i_lbl}</text>')
+    lines.append(f'<text class="axlbl" x="{x_right + pw / 2:.1f}" y="{y_bot + ph + 29:.0f}" text-anchor="middle">Quiescent Supply Current I_DD (A)</text>')
+
+    lines.append(f'<clipPath id="clip_fom"><rect x="{x_right:.0f}" y="{y_bot:.0f}" width="{pw:.0f}" height="{ph:.0f}"/></clipPath>')
+    lines.append('<g clip-path="url(#clip_fom)">')
+    # Constant UGBW/I_DD guide diagonals: log10(UGBW) = log10(I_DD_uA) + c
+    for c_val, c_lbl in ((5.0, "0.1 GHz/mA"), (6.0, "1 GHz/mA"), (7.0, "10 GHz/mA")):
+        x1 = max(ix_min, uy_min - c_val)
+        y1 = x1 + c_val
+        x2 = min(ix_max, uy_max - c_val)
+        y2 = x2 + c_val
+        px1, py1 = sx(x1, x_right, ix_min, ix_max), sy(y1, y_bot, uy_min, uy_max)
+        px2, py2 = sx(x2, x_right, ix_min, ix_max), sy(y2, y_bot, uy_min, uy_max)
+        lines.append(f'<line class="guide" x1="{px1:.1f}" y1="{py1:.1f}" x2="{px2:.1f}" y2="{py2:.1f}"/>')
+    # Label outer guides cleanly in open white space away from scatter points
+    lines.append(f'<text class="guide-txt" x="{sx(1.55, x_right, ix_min, ix_max):.1f}" y="{sy(8.62, y_bot, uy_min, uy_max):.1f}">10 GHz/mA</text>')
+    lines.append(f'<text class="guide-txt" x="{sx(0.90, x_right, ix_min, ix_max):.1f}" y="{sy(5.35, y_bot, uy_min, uy_max):.1f}">0.1 GHz/mA</text>')
+
+    # Plot ALL 1,000 individual cells colored by (CL, VDD)
+    class_spec = [
+        ("200 fF · 1.8 V", COLORS["blue"], (cl_pf < 1.0) & (vdd_v < 2.5)),
+        ("200 fF · 3.3 V", COLORS["cyan"], (cl_pf < 1.0) & (vdd_v >= 2.5)),
+        ("2 pF · 1.8 V", COLORS["orange"], (cl_pf >= 1.0) & (vdd_v < 2.5)),
+        ("2 pF · 3.3 V", COLORS["red"], (cl_pf >= 1.0) & (vdd_v >= 2.5)),
+    ]
+    log_idd = np.log10(idd_ua)
+    log_ugbw = np.log10(np.where(np.isfinite(ugbw), ugbw, np.nan))
+    for _, col, mask in class_spec:
+        idxs = np.where(mask & np.isfinite(log_ugbw))[0]
+        circles = [
+            f'<circle cx="{sx(float(log_idd[k]), x_right, ix_min, ix_max):.1f}" '
+            f'cy="{sy(float(log_ugbw[k]), y_bot, uy_min, uy_max):.1f}" r="2.0"/>'
+            for k in idxs
+        ]
+        lines.append(f'<g fill="{col}" fill-opacity="0.62">' + "".join(circles) + "</g>")
+
+    # Legend box in guaranteed-empty top-left corner of Panel 4
+    bx, by = x_right + 10, y_bot + 10
+    lines.append(f'<rect class="badge-bg" x="{bx:.0f}" y="{by:.0f}" width="118" height="68" rx="4"/>')
+    for ci, (lbl, col, _) in enumerate(class_spec):
+        cy = by + 13 + ci * 15
+        lines.append(f'<circle cx="{bx + 11:.0f}" cy="{cy - 3:.0f}" r="3.2" fill="{col}" fill-opacity="0.85"/>')
+        lines.append(f'<text class="legend" x="{bx + 20:.0f}" y="{cy:.0f}">{e(lbl)}</text>')
+
+    # FoM summary box in guaranteed-empty bottom-right corner of Panel 4
+    fx, fy = x_right + pw - 168, y_bot + ph - 38
+    lines.append(f'<rect class="badge-bg" x="{fx:.0f}" y="{fy:.0f}" width="160" height="30" rx="4"/>')
+    lines.append(f'<text class="badge-txt" x="{fx + 7:.0f}" y="{fy + 12:.0f}">IFoM med {ifom_med:.0f} MHz·pF/mA</text>')
+    lines.append(f'<text class="badge-txt" x="{fx + 7:.0f}" y="{fy + 24:.0f}">12 topos · 16 PVT corners</text>')
+    lines.append("</g>")
+
+    lines.append("</svg>")
+    out_path.write_text("\n".join(lines) + "\n")
+    print(f"Wrote {out_path.name} ({out_path.stat().st_size / 1024:.1f} KiB)")
+
+
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--only", default="", help="Optional substring filter (e.g. opa1k)")
+    args = ap.parse_args()
+    only = args.only.lower()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    def want(name: str) -> bool:
+        return (not only) or (only in name.lower())
+
+    if only == "opa1k":
+        opa_bode_npz = GOLDEN_DIR / "opa1k_bode_step_1k.npz"
+        opa_manifest = REPO_ROOT / "circuits" / "opa1000" / "manifest.json"
+        render_opa1k_bode_svg(
+            npz_path=opa_bode_npz,
+            manifest_path=opa_manifest,
+            out_path=OUT_DIR / "opa1k_pvt16.svg",
+            n_pvt_tasks=16000,
+        )
+        return
 
     # 1. sar12_hero_16cyc (continuous 1-cycle sinewave input + 12-bit redundant SAR output overlay!)
     d = parse_raw(GOLDEN_DIR / "sar12_hero_16cyc_baseline.raw.gz")
@@ -522,8 +933,17 @@ def main() -> None:
         )
 
     # 6. opa1k_pvt16 (1,000 distinct GF180 post-PEX op-amps x 16 PVT corners = 16,000 scattered tasks!)
-    opa_raw = GOLDEN_DIR / "opa1k_pvt16_baseline.raw.gz"
-    if opa_raw.exists():
+    opa_bode_npz = GOLDEN_DIR / "opa1k_bode_step_1k.npz"
+    opa_manifest = REPO_ROOT / "circuits" / "opa1000" / "manifest.json"
+    if want("opa1k_pvt16") and opa_bode_npz.exists() and opa_manifest.exists():
+        render_opa1k_bode_svg(
+            npz_path=opa_bode_npz,
+            manifest_path=opa_manifest,
+            out_path=OUT_DIR / "opa1k_pvt16.svg",
+            n_pvt_tasks=16000,
+        )
+    elif want("opa1k_pvt16") and (GOLDEN_DIR / "opa1k_pvt16_baseline.raw.gz").exists():
+        opa_raw = GOLDEN_DIR / "opa1k_pvt16_baseline.raw.gz"
         d = parse_raw(opa_raw)
         n_des = 1000
         n_cor = len(d["idx_v"]) // n_des

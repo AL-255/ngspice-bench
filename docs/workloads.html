@@ -425,12 +425,12 @@
         and small-matrix <code>OP + AC + Tran</code> solver/teardown overhead — a regime where Sparse 1.3 outperforms KLU on tiny ~40–220 equation matrices.
       </p>
       <figure class="waveform-figure">
-        <a href="img/opa1k_pvt16.svg?v=5" target="_blank" rel="noopener">
-          <img src="img/opa1k_pvt16.svg?v=5" alt="opa1k_pvt16 across 1,000 post-PEX op-amps and 16 PVT corners: DC supply current, DC output bias, AC closed-loop gain and peaking, and 10 mV step settling" loading="lazy" />
+        <a href="img/opa1k_pvt16.svg?v=6" target="_blank" rel="noopener">
+          <img src="img/opa1k_pvt16.svg?v=6" alt="opa1k_pvt16 across all 1,000 post-PEX op-amps: open-loop Bode magnitude and phase, 10 mV closed-loop step settling, and UGBW versus quiescent IDD portfolio trade-off" loading="lazy" />
         </a>
         <figcaption>
-          <span>Golden 16,000-task summary (stock <code>ngspice-47</code>): DC supply current (5+ decades) &amp; output bias across 16 PVT corners, closed-loop AC DC-gain/peaking, and <code>10 mV</code> step settling across all 1,000 post-PEX op-amps.</span>
-          <a class="inline-link" href="img/opa1k_pvt16.svg?v=5" target="_blank" rel="noopener">Open full SVG</a>
+          <span>Portfolio characterization across all <strong>1,000</strong> post-PEX GF180 op-amps (12 topologies, nominal 27&deg;C): open-loop Bode magnitude <code>|A<sub>ol</sub>(f)|</code> (<code>A<sub>0</sub></code> med <code>62.5 dB</code>, UGBW <code>18 kHz–106 MHz</code>), open-loop Bode phase <code>&ang;A<sub>ol</sub>(f)</code> (PM med <code>63.3&deg;</code>), closed-loop <code>10 mV</code> step settling, and <code>UGBW</code> vs quiescent <code>I<sub>DD</sub></code> across all 1,000 cells (IFoM med <code>424 MHz&middot;pF/mA</code>).</span>
+          <a class="inline-link" href="img/opa1k_pvt16.svg?v=6" target="_blank" rel="noopener">Open full SVG</a>
         </figcaption>
       </figure>
       <div class="detail-grid">
@@ -448,7 +448,7 @@
           <h4>Saved Metrics &amp; Verification Criteria</h4>
           <div class="kv-list">
             <div class="kv-k">Saved Summary Vectors</div><div class="kv-v">idx_v, vout_dc, idd_dc, ac_dc, ac_pk, tr_v0, tr_v1, tr_pk across all 16,000 tasks (binary .raw)</div>
-            <div class="kv-k">Accuracy Check</div><div class="kv-v">All 16,000/16,000 tasks finite and worst relative RMS &le; 1e-3 across all 7 metric vectors (2.36e-6 Sparse / 5.31e-5 KLU on Zen 4)</div>
+            <div class="kv-k">Accuracy Check</div><div class="kv-v">All 16,000/16,000 tasks finite and worst relative RMS &le; 1e-3 across all 7 metric vectors (2.90e-6 Sparse / 5.30e-5 KLU on Zen 4)</div>
           </div>
         </div>
       </div>
@@ -460,7 +460,7 @@
         <div>
           <h3>GF180MCU D PDK Submodule</h3>
           <p>
-            All 5 decks include the exact GlobalFoundries 180nm MCU PDK models via the <code>pdk/gf180mcu</code> git submodule
+            All 6 decks include the exact GlobalFoundries 180nm MCU PDK models via the <code>pdk/gf180mcu</code> git submodule
             (<code>design.ngspice</code>, <code>sm141064.ngspice</code> corners <code>typical</code>, <code>res_typical</code>, <code>moscap_typical</code>,
             <code>mimcap_typical</code>, <code>cap_mim</code>, plus <code>gf180mcu_fd_sc_mcu7t5v0.spice</code>).
           </p>
