@@ -412,21 +412,30 @@ h1 .brand-mark {
 }
 
 .bar-label {
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.bar-label-main {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--text);
-  font-weight: 500;
+  font-size: 12.5px;
+  font-weight: 600;
 }
 
-.bar-label small {
+.bar-label-sub {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--muted);
   font-size: 11px;
-  font-weight: 400;
+  font-family: var(--mono);
+  margin-top: 1px;
 }
 
 .bar-track {
-  position: relative;
   background: var(--surface-2);
   border-radius: 6px;
   height: 22px;
@@ -434,19 +443,7 @@ h1 .brand-mark {
   border: 1px solid var(--border);
 }
 
-.bar-gridline {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--border);
-  opacity: 0.65;
-  pointer-events: none;
-}
-
 .bar-fill {
-  position: relative;
-  z-index: 1;
   height: 100%;
   border-radius: 5px;
   transition: width 0.25s ease;
@@ -456,32 +453,6 @@ h1 .brand-mark {
 .bar-fill.klu-std { background: linear-gradient(90deg, var(--bar-klu-a), var(--bar-klu-b)); }
 .bar-fill.sparse { background: linear-gradient(90deg, var(--bar-sparse-a), var(--bar-sparse-b)); }
 .bar-fill.stock { background: linear-gradient(90deg, var(--bar-stock-a), var(--bar-stock-b)); }
-
-.bar-axis-row {
-  display: grid;
-  grid-template-columns: minmax(210px, 310px) 1fr 142px;
-  align-items: center;
-  gap: 12px;
-  margin-top: 2px;
-}
-
-.bar-axis {
-  position: relative;
-  height: 18px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.bar-axis-tick {
-  position: absolute;
-  top: 0;
-  transform: translateX(-50%);
-  white-space: nowrap;
-}
-
-.bar-axis-tick:first-child { transform: translateX(0); }
-.bar-axis-tick:last-child { transform: translateX(-100%); }
 
 .bar-metric {
   font-family: var(--mono);
@@ -748,7 +719,5 @@ code {
 
 @media (max-width: 760px) {
   .bar-row { grid-template-columns: 1fr; gap: 4px; }
-  .bar-axis-row { grid-template-columns: 1fr; gap: 0; }
-  .bar-axis-row > :first-child, .bar-axis-row > :last-child { display: none; }
   .bar-metric { text-align: left; }
 }
