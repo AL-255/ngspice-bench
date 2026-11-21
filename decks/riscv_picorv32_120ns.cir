@@ -1,0 +1,83 @@
+* GF180MCU Post-APR 32-bit RISC-V SoC (YosysHQ PicoRV32 + RV32I ROM + MMIO GPIO)
+* Full LibreLane v3.0.2 RTL-to-GDS + OpenRCX Nominal SPEF Extraction (5.0V TT, 25 MHz)
+* 5,896 active stdcells | 58,320 BSIM4 MOSFETs | 16 antenna diodes | 21,955 R | 73,964 C (52.30 pF)
+* 51,670 MNA equations | 501,259 orig NNZ | 2,675,926 total KLU NNZ
+* 120 ns (3 clock cycles @ 25 MHz): synchronous reset -> release -> instruction fetch 0x00 (ADDI x1,x0,0x5A)
+.include "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/design.ngspice"
+.param sw_stat_global=0
+.param sw_stat_mismatch=0
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" res_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" diode_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" mimcap_typical
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" cap_mim
+.lib "../pdk/gf180mcu/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" moscap_typical
+.include "../pdk/gf180mcu/gf180mcuD/libs.ref/gf180mcu_fd_sc_mcu7t5v0/spice/gf180mcu_fd_sc_mcu7t5v0.spice"
+
+.temp 27
+.option method=gear reltol=2e-3 abstol=1e-11 vntol=2e-5 itl4=100 gmin=1e-12 cshunt=1e-16
+
+.include "../circuits/picorv32_gf180_pex.spice"
+
+Vvdd vdd 0 DC 5.0
+Vvss vss 0 DC 0.0
+Vclk clk 0 PULSE(0 5.0 20n 0.2n 0.2n 19.8n 40n)
+Vrst resetn 0 PWL(0 0 30n 0 30.2n 5.0)
+
+Xdut clk gpio_we mem_instr mem_valid resetn trap
++ gpio_out_7_ gpio_out_6_ gpio_out_5_ gpio_out_4_ gpio_out_3_ gpio_out_2_ gpio_out_1_ gpio_out_0_
++ mem_addr_lo_7_ mem_addr_lo_6_ mem_addr_lo_5_ mem_addr_lo_4_ mem_addr_lo_3_ mem_addr_lo_2_ mem_addr_lo_1_ mem_addr_lo_0_
++ mem_wdata_lo_7_ mem_wdata_lo_6_ mem_wdata_lo_5_ mem_wdata_lo_4_ mem_wdata_lo_3_ mem_wdata_lo_2_ mem_wdata_lo_1_ mem_wdata_lo_0_
++ mem_wstrb_3_ mem_wstrb_2_ mem_wstrb_1_ mem_wstrb_0_
++ vdd vss picorv32_gf180_soc
+
+* Output pin load capacitances (20 fF each)
+Cl_gv  gpio_we 0 20f
+Cl_mi  mem_instr 0 20f
+Cl_mv  mem_valid 0 20f
+Cl_tr  trap 0 20f
+Cl_g0  gpio_out_0_ 0 20f
+Cl_g1  gpio_out_1_ 0 20f
+Cl_g2  gpio_out_2_ 0 20f
+Cl_g3  gpio_out_3_ 0 20f
+Cl_g4  gpio_out_4_ 0 20f
+Cl_g5  gpio_out_5_ 0 20f
+Cl_g6  gpio_out_6_ 0 20f
+Cl_g7  gpio_out_7_ 0 20f
+Cl_a0  mem_addr_lo_0_ 0 20f
+Cl_a1  mem_addr_lo_1_ 0 20f
+Cl_a2  mem_addr_lo_2_ 0 20f
+Cl_a3  mem_addr_lo_3_ 0 20f
+Cl_a4  mem_addr_lo_4_ 0 20f
+Cl_a5  mem_addr_lo_5_ 0 20f
+Cl_a6  mem_addr_lo_6_ 0 20f
+Cl_a7  mem_addr_lo_7_ 0 20f
+Cl_d0  mem_wdata_lo_0_ 0 20f
+Cl_d1  mem_wdata_lo_1_ 0 20f
+Cl_d2  mem_wdata_lo_2_ 0 20f
+Cl_d3  mem_wdata_lo_3_ 0 20f
+Cl_d4  mem_wdata_lo_4_ 0 20f
+Cl_d5  mem_wdata_lo_5_ 0 20f
+Cl_d6  mem_wdata_lo_6_ 0 20f
+Cl_d7  mem_wdata_lo_7_ 0 20f
+Cl_w0  mem_wstrb_0_ 0 20f
+Cl_w1  mem_wstrb_1_ 0 20f
+Cl_w2  mem_wstrb_2_ 0 20f
+Cl_w3  mem_wstrb_3_ 0 20f
+
+.save v(clk) v(resetn) v(trap) v(mem_valid) v(mem_instr) v(gpio_we) i(Vvdd)
++ v(mem_addr_lo_0_) v(mem_addr_lo_1_) v(mem_addr_lo_2_) v(mem_addr_lo_3_)
++ v(mem_addr_lo_4_) v(mem_addr_lo_5_) v(mem_addr_lo_6_) v(mem_addr_lo_7_)
++ v(gpio_out_0_) v(gpio_out_1_) v(gpio_out_2_) v(gpio_out_3_)
++ v(gpio_out_4_) v(gpio_out_5_) v(gpio_out_6_) v(gpio_out_7_)
++ v(mem_wdata_lo_0_) v(mem_wdata_lo_1_) v(mem_wdata_lo_2_) v(mem_wdata_lo_3_)
++ v(mem_wdata_lo_4_) v(mem_wdata_lo_5_) v(mem_wdata_lo_6_) v(mem_wdata_lo_7_)
++ v(mem_wstrb_0_) v(mem_wstrb_1_) v(mem_wstrb_2_) v(mem_wstrb_3_)
+
+.control
+tran 200p 120n uic
+rusage all
+write riscv_picorv32_120ns.raw v(clk) v(resetn) v(trap) v(mem_valid) v(mem_instr) v(gpio_we) i(Vvdd) v(mem_addr_lo_0_) v(mem_addr_lo_1_) v(mem_addr_lo_2_) v(mem_addr_lo_3_) v(mem_addr_lo_4_) v(mem_addr_lo_5_) v(mem_addr_lo_6_) v(mem_addr_lo_7_) v(gpio_out_0_) v(gpio_out_1_) v(gpio_out_2_) v(gpio_out_3_) v(gpio_out_4_) v(gpio_out_5_) v(gpio_out_6_) v(gpio_out_7_) v(mem_wdata_lo_0_) v(mem_wdata_lo_1_) v(mem_wdata_lo_2_) v(mem_wdata_lo_3_) v(mem_wdata_lo_4_) v(mem_wdata_lo_5_) v(mem_wdata_lo_6_) v(mem_wdata_lo_7_) v(mem_wstrb_0_) v(mem_wstrb_1_) v(mem_wstrb_2_) v(mem_wstrb_3_)
+quit
+.endc
+.end

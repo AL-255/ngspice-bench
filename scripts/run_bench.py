@@ -42,6 +42,8 @@ PROBE_DECKS = [
     "sar12_probe_2cyc",
 ]
 HERO_DECKS = ["sar12_hero_16cyc"]
+SCALING_DECKS = ["riscv_picorv32_120ns"]
+KLU_ONLY_DECKS = {"riscv_picorv32_120ns"}
 ALL_DECKS = PROBE_DECKS + HERO_DECKS
 
 PDK_DIRECTIVE_PAT = re.compile(
@@ -603,7 +605,7 @@ def main() -> None:
     ap.add_argument("--bin", required=True, help="Path to ngspice executable")
     ap.add_argument("--submission-id", required=True, help="Unique submission slug (saved to results/<id>.json)")
     ap.add_argument("--build-name", required=True, help="Human-readable ngspice build label")
-    ap.add_argument("--suite", choices=["probe", "hero", "all"], default="all")
+    ap.add_argument("--suite", choices=["probe", "hero", "scaling", "all", "full"], default="all")
     ap.add_argument("--decks", nargs="+", help="Explicit deck list (overrides --suite)")
     ap.add_argument("--solvers", nargs="+", default=["klu", "sparse"], choices=["klu", "sparse"])
     ap.add_argument("--uselib", action="store_true", help="Precompile GF180 PDK once via --precompile and run with .uselib")
@@ -624,6 +626,7 @@ def main() -> None:
     ap.add_argument("--opt-apple", type=int, choices=[0, 1], default=None, help="NGSPICE_OPT_APPLE flag value (0 or 1)")
     ap.add_argument("--notes", default="", help="Free-form notes about build or hardware")
     ap.add_argument("--tol-rms", type=float, default=1e-3)
+    ap.add_argument("--results-dir", default="", help="Override output directory for submission JSON (default: repo results/)")
     ap.add_argument("--no-rebuild-leaderboard", action="store_true")
     args = ap.parse_args()
 
@@ -636,7 +639,18 @@ def main() -> None:
         sys.exit(2)
 
     ng_bin = Path(args.bin).resolve()
-    decks = args.decks if args.decks else (PROBE_DECKS if args.suite == "probe" else (HERO_DECKS if args.suite == "hero" else ALL_DECKS))
+    if args.decks:
+        decks = args.decks
+    elif args.suite == "probe":
+        decks = PROBE_DECKS
+    elif args.suite == "hero":
+        decks = HERO_DECKS
+    elif args.suite == "scaling":
+        decks = SCALING_DECKS
+    elif args.suite == "full":
+        decks = ALL_DECKS + SCALING_DECKS
+    else:
+        decks = ALL_DECKS
 
     detected_classes = detect_core_classes()
     host_info = detect_host_info(
@@ -674,7 +688,8 @@ def main() -> None:
     else:
         target_classes = [detected_classes[0]]
 
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    out_results_dir = Path(args.results_dir).expanduser().resolve() if args.results_dir else RESULTS_DIR
+    out_results_dir.mkdir(parents=True, exist_ok=True)
     overall_ok = True
 
     for cls in target_classes:
@@ -699,6 +714,9 @@ def main() -> None:
             all_ok = True
             for d in decks:
                 for s in args.solvers:
+                    if d in KLU_ONLY_DECKS and s != "klu":
+                        print(f"  [SKIP] {d:22s} {s:6s} 1c | KLU-only VLSI scaling deck (Sparse stalls at N>=50k)")
+                        continue
                     r = run_one(ng_bin, d, s, work_dir, args.tol_rms, pin_cpu, macos_qos, nglib_path, higher_tier_cores)
                     runs.append(r)
                     ru = r["rusage"]
@@ -754,7 +772,7 @@ def main() -> None:
             },
             "runs": runs,
         }
-        out_path = RESULTS_DIR / f"{sub_id}.json"
+        out_path = out_results_dir / f"{sub_id}.json"
         out_path.write_text(json.dumps(payload, indent=2) + "\n")
         print(f"Saved submission -> {out_path} (all_ok={all_ok})")
 

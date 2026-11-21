@@ -27,6 +27,34 @@ def parse_raw(path: Path) -> Dict[str, np.ndarray]:
     body = data[m.end() :]
     nvars = int(re.search(r"No\. Variables:\s*(\d+)", hdr).group(1))
     npts = int(re.search(r"No\. Points:\s*(\d+)", hdr).group(1))
+    # Auto-detect Cadence Spectre -format nutbin (big-endian IEEE-754 >f8, variable 0 on Variables: line)
+    if "Variables:\t0\t" in hdr or "plot=0 grid=0" in hdr:
+        vars_: List[str] = []
+        in_vars = False
+        for line in hdr.splitlines():
+            if line.startswith("Variables:"):
+                in_vars = True
+                rest = line.split("Variables:", 1)[1].strip()
+                if rest:
+                    vars_.append(rest.split()[1])
+                continue
+            if in_vars:
+                toks = line.strip().split()
+                if toks and toks[0].isdigit():
+                    vars_.append(toks[1])
+        arr = np.frombuffer(body[: nvars * npts * 8], dtype=">f8").reshape(npts, nvars)
+        out: Dict[str, np.ndarray] = {}
+        for i, name in enumerate(vars_):
+            kl = name.lower()
+            if kl == "time":
+                out["time"] = arr[:, i].astype(np.float64)
+            elif kl.endswith(":p"):
+                out[f"i({kl[:-2]})"] = arr[:, i].astype(np.float64)
+            elif kl.startswith("v(") or kl.startswith("i("):
+                out[kl] = arr[:, i].astype(np.float64)
+            else:
+                out[f"v({kl})"] = arr[:, i].astype(np.float64)
+        return out
     vars_ = re.findall(r"^\s*\d+\s+(\S+)\s+", hdr, re.M)
     arr = np.frombuffer(body[: nvars * npts * 8], dtype=np.float64).reshape(npts, nvars)
     return {vars_[i].lower(): arr[:, i] for i in range(nvars)}
@@ -162,6 +190,44 @@ def decode_pll_metrics(d: Dict[str, np.ndarray], vdd: float = 1.8) -> Dict[str, 
     }
 
 
+def decode_riscv_cycles(d: Dict[str, np.ndarray], vdd: float = 5.0) -> List[Dict[str, int]]:
+    """Extract settled RISC-V bus & control state +10 ns after each 25 MHz rising clock edge."""
+    req = ("v(clk)", "v(resetn)", "v(mem_valid)", "v(mem_instr)", "v(trap)", "v(mem_addr_lo_0_)")
+    if not all(k in d for k in req):
+        return []
+    t = d["time"]
+    vth = 0.5 * vdd
+    t_end = float(t[-1])
+    # Rising clock edges at 20ns, 60ns, 100ns, 140ns, ... -> sample at +10ns (30ns, 70ns, 110ns, ...)
+    states: List[Dict[str, int]] = []
+    cyc = 0
+    while True:
+        t_sample = (30.0 + 40.0 * cyc) * 1e-9
+        if t_sample > t_end + 0.5e-9:
+            break
+        idx = int(np.argmin(np.abs(t - t_sample)))
+        def _bit(name: str) -> int:
+            return 1 if (name in d and float(d[name][idx]) > vth) else 0
+        addr = sum(_bit(f"v(mem_addr_lo_{b}_)") << b for b in range(8))
+        wdata = sum(_bit(f"v(mem_wdata_lo_{b}_)") << b for b in range(8))
+        gpio = sum(_bit(f"v(gpio_out_{b}_)") << b for b in range(8))
+        wstrb = sum(_bit(f"v(mem_wstrb_{b}_)") << b for b in range(4))
+        states.append({
+            "cyc": cyc,
+            "rst": _bit("v(resetn)"),
+            "valid": _bit("v(mem_valid)"),
+            "instr": _bit("v(mem_instr)"),
+            "addr": addr,
+            "wstrb": wstrb,
+            "wdata": wdata,
+            "gpio_we": _bit("v(gpio_we)"),
+            "gpio": gpio,
+            "trap": _bit("v(trap)"),
+        })
+        cyc += 1
+    return states
+
+
 def _rising_edges(d: Dict[str, np.ndarray], sig: str, vth: float = 0.9) -> List[float]:
     tt, vv = d["time"], d[sig]
     idx = np.where((vv[:-1] < vth) & (vv[1:] >= vth))[0]
@@ -239,6 +305,8 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
             "pll_vc_final_v": None,
             "pll_vc_err_mv": None,
             "opa_tasks_count": n_ref,
+            "riscv_cycles_count": 0,
+            "riscv_cycles_match": True,
             "per_vec": per_vec,
         }
 
@@ -290,6 +358,10 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
     pll_code_match = True
     pll_fout_rel_err = 0.0
     pll_vc_err_mv = 0.0
+
+    ref_riscv = decode_riscv_cycles(ref)
+    cand_riscv = decode_riscv_cycles(cand)
+    riscv_cycles_match = (ref_riscv == cand_riscv) and (len(ref_riscv) >= 3) if ref_riscv else True
 
     eoc_max_dt_ps = 0.0
     if ref_codes:
@@ -359,6 +431,24 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
             and (analog_worst <= 0.01)
             and (sdm_dac_corr >= 0.99)
         )
+    elif ref_riscv:
+        # Post-1ns startup analog voltage RMS normalized to 5.0 V CMOS supply across all 34 voltage nodes
+        t_post = np.linspace(max(t_min, 1e-9), t_max, min(8000, max(len(t_ref), 1000)))
+        post_worst = 0.0
+        post_worst_vec = ""
+        for k in ref:
+            if not k.startswith("v(") or k not in cand:
+                continue
+            vr = np.interp(t_post, t_ref, ref[k])
+            vc = np.interp(t_post, t_cand, cand[k])
+            rms = float(np.sqrt(np.mean((vc - vr) ** 2)))
+            rel_rms = rms / 5.0
+            if rel_rms > post_worst:
+                post_worst = rel_rms
+                post_worst_vec = k
+        worst_rel_rms = post_worst
+        worst_vec = post_worst_vec
+        passed = (t_cov < 1e-6) and riscv_cycles_match and (post_worst <= 0.01)
     else:
         sdm_dac_corr = None
         passed = (t_cov < 1e-6) and (worst_rel_rms <= tol_rms) and codes_match
@@ -385,6 +475,8 @@ def compare_waveforms(ref_path: Path, cand_path: Path, tol_rms: float = 1e-3) ->
         "pll_fout_mhz": round(cand_pll.get("fout_mhz", 0.0), 3) if cand_pll else None,
         "pll_vc_final_v": round(cand_pll.get("vc_final_v", 0.0), 4) if cand_pll else None,
         "pll_vc_err_mv": round(pll_vc_err_mv, 3) if ref_pll else None,
+        "riscv_cycles_count": len(ref_riscv),
+        "riscv_cycles_match": riscv_cycles_match,
         "per_vec": per_vec,
     }
 
@@ -404,4 +496,6 @@ if __name__ == "__main__":
         print(f"  SAR codes match={res['sar_codes_match']}: ref={res['sar_codes_ref']} cand={res['sar_codes_cand']}")
     if res.get("pll_code_ref") is not None:
         print(f"  PLL code={res['pll_code_cand']}/{res['pll_code_ref']} fout={res['pll_fout_mhz']} MHz vc={res['pll_vc_final_v']} V")
+    if res.get("riscv_cycles_count", 0) > 0:
+        print(f"  RISC-V cycles={res['riscv_cycles_count']}/{res['riscv_cycles_count']} match={res['riscv_cycles_match']}")
     sys.exit(0 if res["pass"] else 1)
