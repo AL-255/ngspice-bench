@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Simulation Settings — ngspice-bench Cross-Simulator Reference</title>
   <meta name="theme-color" content="#d9423a" />
-  <link rel="stylesheet" href="style.css?v=11" />
+  <link rel="stylesheet" href="style.css?v=12" />
   <script>try{var t=localStorage.getItem('ngspice-bench-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
   <style>
     .toc-bar {
@@ -163,6 +163,7 @@
       <a href="#cross-sim">4. Cross-Simulator Translation</a>
       <a href="#porting-pitfalls">5. Porting Pitfalls</a>
       <a href="#verification-rules">6. Verification &amp; Reproducibility</a>
+      <a href="#spectre-calibration">7. Spectre X Calibration</a>
     </nav>
 
     <!-- Section 1: Global Engine Defaults -->
@@ -851,6 +852,33 @@ option klu            # omitted when --solvers sparse
             </tr>
           </tbody>
         </table>
+      </div>
+    </section>
+
+    <!-- Section 7: Empirical Spectre X 25.10 Calibration -->
+    <section class="card section-card" id="spectre-calibration" style="margin-top:16px;">
+      <div class="card-header">
+        <h2>7. Empirical Cadence Spectre X 25.10 Calibration (Commercial GF180MCU PDK)</h2>
+        <span class="hint">Measured on AMD EPYC 9684X (1c / <code>+mt=1</code>) with GF180MCU <code>YI-141-SM064 Rev9</code> Spectre PDK</span>
+      </div>
+      <p class="section-lead">
+        To compare <code>ngspice</code> fairly against commercial Cadence Spectre 25.10 using the official GlobalFoundries GF180MCU Spectre PDK (<code>sw_stat_global=0</code>, <code>sw_stat_mismatch=0</code>, matching open-source <code>sm141064.ngspice</code> to 6–7 digits on single-device DC IV and AC capacitances), we swept Spectre engines (<code>++aps</code> vs Spectre X <code>+preset=cx/ax/mx</code>) and error tolerances against Spectre X <code>+preset=cx</code> and <code>ngspice-47</code> goldens.
+      </p>
+      <div class="callout-grid">
+        <div class="callout-box">
+          <h4>Recommended ngspice-Matched Setting: <code>+preset=ax -preset_override="reltol,vabstol,iabstol"</code></h4>
+          <p>
+            By default, Spectre X presets ignore deck <code>reltol</code>/<code>vabstol</code>/<code>iabstol</code> and enforce tighter <code>1e-3 / 1 &mu;V / 1 pA</code> floors (10–20&times; tighter than our <code>ngspice</code> decks). Passing <code>-preset_override="reltol,vabstol,iabstol"</code> honors each deck's exact <code>ngspice</code> tolerances while keeping Spectre X's analog-accurate <code>ax</code> solver (<code>relref=sigglobal</code>, <code>lteratio=3.5</code>, <code>method=trap</code>): <strong>15–22% faster</strong> with <strong>16/16 bit-exact SAR codes</strong> (<code>67.5 ps</code> EOC vs <code>+preset=cx</code>), exact PLL AFC lock parity, <code>ti12</code> voltage RMS <code>2.12e-4</code>, <code>sdm16</code> DAC <code>r=0.9991</code>, and <strong>3/3 cycle-exact RISC-V</strong> (<code>rms 1.66e-4</code> vs <code>ax</code>).
+          </p>
+        </div>
+        <div class="callout-box warn">
+          <h4>Key Porting Findings Observed on Real Silicon Decks</h4>
+          <p>
+            <strong>(1) <code>+preset=mx</code> tradeoff:</strong> Relaxing <code>relref</code> from <code>sigglobal</code> (<code>ax</code>) to <code>allglobal</code> (<code>mx</code>) cuts runtime another 25–43% (matching 16/16 SAR codes and 3/3 RISC-V cycles), but shifts the sensitive 6-bit SAR AFC lock code in <code>pll_ring_150m_4us</code> by 5 codes and widens SAR EOC skew to <code>437–620 ps</code>.<br/>
+            <strong>(2) Don't force <code>gear2only</code> in Spectre:</strong> Forcing <code>method=gear2only</code> + <code>lteratio=1.0</code> + <code>maxstep=tstep</code> runs 1.5–2.5&times; slower and adds Gear-2 numerical damping delay (<code>290–1214 ps</code> EOC skew); dropping <code>maxstep</code> under <code>gear2only</code> loses 12-bit SAR bit-exactness.<br/>
+            <strong>(3) <code>++aps</code> DC OP homotopy:</strong> On floating-node dynamic SAR ADCs, Spectre <code>++aps</code> needs <code>+fastdc</code> (cutting DC OP from <code>313.8 s</code> to <code>1.70 s</code>), whereas Spectre X converges in <code>0.53 s</code> automatically.
+          </p>
+        </div>
       </div>
     </section>
   </main>

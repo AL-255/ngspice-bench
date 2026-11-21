@@ -61,7 +61,13 @@
     } else if (d.pll_code != null) {
       accText = `code ${d.pll_code} · ${d.pll_fout_mhz != null ? d.pll_fout_mhz.toFixed(1) + " MHz" : ""}`;
     } else if (d.sdm_bits_count > 0) {
-      accText = `${d.sdm_bits_count}/${d.sdm_bits_count} PDM bits${d.sdm_bits_match ? "" : " MISMATCH"}`;
+      if (d.sdm_bits_match) {
+        accText = `${d.sdm_bits_count}/${d.sdm_bits_count} PDM bits`;
+      } else if (d.sdm_dac_corr != null) {
+        accText = `DAC r=${Number(d.sdm_dac_corr).toFixed(4)} (${d.sdm_bits_count} cyc)`;
+      } else {
+        accText = `${d.sdm_bits_count} cyc MISMATCH`;
+      }
     } else if (d.opa_tasks_count > 0) {
       accText = `${d.opa_tasks_count.toLocaleString()} tasks · rms ${fmtSci(d.rel_rms)}`;
     } else if (d.riscv_cycles_count > 0) {
@@ -164,6 +170,9 @@
   }
 
   function enabledOptFlagsLabel(build) {
+    if (build && build.simulator === "spectre") {
+      return build.preset_label || "Spectre X";
+    }
     const ff = (build && build.feature_flags) || {};
     const flags = [];
     if (ff.NGSPICE_OPT_GENERAL === 1) flags.push("OPT_GENERAL");
@@ -184,22 +193,29 @@
       return;
     }
 
-    const visible = rows.slice(0, 12);
+    const visible = rows.slice(0, 14);
     const maxWall = Math.max(...visible.map((r) => r.m.wall || 0), 0.01);
 
     chart.innerHTML = visible
       .map(({ e, m }) => {
         const pct = Math.max(2, ((m.wall || 0) / maxWall) * 100);
         const isStock = (e.build.name || "").toLowerCase().includes("stock");
+        const isSpectre = e.solver === "spectrex" || e.build.simulator === "spectre";
         let cls = "klu-std";
-        if (isStock) cls = "stock";
+        if (isSpectre) cls = "spectre";
+        else if (isStock) cls = "stock";
         else if (e.solver === "sparse") cls = "sparse";
         else if (e.build.pdk_mode === "precompiled_uselib") cls = "klu-uselib";
         const cpuTier = `${shortCpuName(e.host.cpu_model)} · ${e.core_class.label}`;
         const optFlags = enabledOptFlagsLabel(e.build);
-        const algo = e.solver === "klu" ? "KLU" : "Sparse";
-        const pdkTag = e.build.pdk_mode === "precompiled_uselib" ? " · .uselib" : "";
-        const line2 = `${optFlags} · ${algo}${pdkTag}`;
+        const algo = e.solver === "klu" ? "KLU" : e.solver === "sparse" ? "Sparse" : e.solver === "spectrex" ? "Spectre X" : e.solver.toUpperCase();
+        const pdkTag =
+          e.build.pdk_mode === "precompiled_uselib"
+            ? " · .uselib"
+            : e.build.pdk_mode === "commercial_spectre"
+            ? " · Comm. PDK"
+            : "";
+        const line2 = isSpectre ? `${optFlags}${pdkTag}` : `${optFlags} · ${algo}${pdkTag}`;
         return `
           <div class="bar-row">
             <div class="bar-label" title="${esc(e.host.cpu_model)} [${esc(e.core_class.label)}] — ${esc(e.build.name)} (${e.solver})">
@@ -216,11 +232,14 @@
   }
 
   function renderDetailRow(e) {
+    const isSpectre = e.solver === "spectrex" || e.build.simulator === "spectre";
     const ff = (e.build && e.build.feature_flags) || {};
     const optGen = ff.NGSPICE_OPT_GENERAL == null ? "n/a" : String(ff.NGSPICE_OPT_GENERAL);
     const optZen4 = ff.NGSPICE_OPT_ZEN4 == null ? "n/a" : String(ff.NGSPICE_OPT_ZEN4);
     const optApple = ff.NGSPICE_OPT_APPLE == null ? null : String(ff.NGSPICE_OPT_APPLE);
-    const ffStr = `NGSPICE_OPT_GENERAL=${optGen}, NGSPICE_OPT_ZEN4=${optZen4}` + (optApple != null ? `, NGSPICE_OPT_APPLE=${optApple}` : "");
+    const ffStr = isSpectre
+      ? Object.entries(ff).map(([k, v]) => `${k}=${v}`).join(", ") || "Commercial binary"
+      : `NGSPICE_OPT_GENERAL=${optGen}, NGSPICE_OPT_ZEN4=${optZen4}` + (optApple != null ? `, NGSPICE_OPT_APPLE=${optApple}` : "");
     const isa = (e.host.isa_features || []).join(", ") || "—";
     const deckOrder = [DATA.hero_deck, ...DATA.probe_decks, ...(DATA.scaling_decks || [])];
     const deckRows = deckOrder
@@ -233,7 +252,9 @@
         } else if (d.pll_code != null) {
           acc = `AFC code ${d.pll_code} · ${d.pll_fout_mhz != null ? d.pll_fout_mhz.toFixed(2) + " MHz" : "—"} · VC ${d.pll_vc_final_v != null ? d.pll_vc_final_v.toFixed(3) + " V" : "—"}`;
         } else if (d.sdm_bits_count > 0) {
-          acc = `${d.sdm_bits_count}/${d.sdm_bits_count} PDM bits (Δt ${d.sdm_pdm_max_dt_ps != null ? d.sdm_pdm_max_dt_ps.toFixed(1) + " ps" : "—"})`;
+          acc = d.sdm_bits_match
+            ? `${d.sdm_bits_count}/${d.sdm_bits_count} PDM bits (Δt ${d.sdm_pdm_max_dt_ps != null ? d.sdm_pdm_max_dt_ps.toFixed(1) + " ps" : "—"})`
+            : `DAC r=${d.sdm_dac_corr != null ? Number(d.sdm_dac_corr).toFixed(4) : "—"} (${d.sdm_bits_count} cyc)`;
         } else if (d.riscv_cycles_count > 0) {
           acc = `${d.riscv_cycles_count}/${d.riscv_cycles_count} cyc (bit-exact) · rms ${fmtSci(d.rel_rms)}`;
         } else if (d.exact_grid) {
@@ -263,7 +284,7 @@
               <h4>Build &amp; Compile Flags</h4>
               <div class="kv-list">
                 <div class="kv-k">Build Name</div><div class="kv-v">${esc(e.build.name)}</div>
-                <div class="kv-k">ngspice Version</div><div class="kv-v">${esc(e.build.ngspice_version || "—")}</div>
+                <div class="kv-k">Simulator Version</div><div class="kv-v">${esc(e.build.ngspice_version || "—")}</div>
                 <div class="kv-k">Repo / Ref</div><div class="kv-v">${esc(e.build.repo || "—")} ${e.build.git_ref ? `@ ${esc(e.build.git_ref)}` : ""}</div>
                 <div class="kv-k">Compiler</div><div class="kv-v">${esc(e.build.compiler || "—")}</div>
                 <div class="kv-k">Feature Flags</div><div class="kv-v">${esc(ffStr)}</div>
@@ -374,6 +395,8 @@
         const rankCls = rank <= 3 ? `rank-${rank}` : "";
         const ff = (e.build && e.build.feature_flags) || {};
         const pills = [];
+        if (e.build.simulator === "spectre") pills.push(`<span class="pill pill-spectre">${esc(e.build.preset_label || "Spectre X")}</span>`);
+        if (e.build.pdk_mode === "commercial_spectre") pills.push(`<span class="pill pill-commercial">Commercial GF180 PDK</span>`);
         if (ff.NGSPICE_OPT_GENERAL === 1) pills.push(`<span class="pill pill-opt">OPT_GENERAL</span>`);
         if (ff.NGSPICE_OPT_ZEN4 === 1) pills.push(`<span class="pill pill-opt">OPT_ZEN4</span>`);
         if (ff.NGSPICE_OPT_APPLE === 1) pills.push(`<span class="pill pill-opt">OPT_APPLE</span>`);

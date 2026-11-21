@@ -28,6 +28,8 @@
   --bar-sparse-b: #f59e0b;
   --bar-stock-a: #7a5c52;
   --bar-stock-b: #a47148;
+  --bar-spectre-a: #5b21b6;
+  --bar-spectre-b: #8b5cf6;
   --rank1: #b45309;
   --rank2: #7a5c52;
   --rank3: #a47148;
@@ -66,6 +68,8 @@
     --bar-sparse-b: #f59e0b;
     --bar-stock-a: #6b534a;
     --bar-stock-b: #a47148;
+    --bar-spectre-a: #6d28d9;
+    --bar-spectre-b: #a78bfa;
     --rank1: #fcd34d;
     --rank2: #e5d5cc;
     --rank3: #f59e0b;
@@ -102,6 +106,8 @@
   --bar-sparse-b: #f59e0b;
   --bar-stock-a: #6b534a;
   --bar-stock-b: #a47148;
+  --bar-spectre-a: #6d28d9;
+  --bar-spectre-b: #a78bfa;
   --rank1: #fcd34d;
   --rank2: #e5d5cc;
   --rank3: #f59e0b;
@@ -453,6 +459,7 @@ h1 .brand-mark {
 .bar-fill.klu-std { background: linear-gradient(90deg, var(--bar-klu-a), var(--bar-klu-b)); }
 .bar-fill.sparse { background: linear-gradient(90deg, var(--bar-sparse-a), var(--bar-sparse-b)); }
 .bar-fill.stock { background: linear-gradient(90deg, var(--bar-stock-a), var(--bar-stock-b)); }
+.bar-fill.spectre { background: linear-gradient(90deg, var(--bar-spectre-a), var(--bar-spectre-b)); }
 
 .bar-metric {
   font-family: var(--mono);
@@ -536,6 +543,8 @@ tbody td {
 .pill-ecore { background: var(--amber-bg); color: var(--amber); }
 .pill-opt { background: var(--purple-bg); color: var(--purple); }
 .pill-uselib { background: var(--green-bg); color: var(--green); }
+.pill-commercial { background: var(--amber-bg); color: var(--amber); }
+.pill-spectre { background: var(--purple-bg); color: var(--purple); }
 .pill-solver { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); text-transform: uppercase; }
 .pill-pass { background: var(--green-bg); color: var(--green); }
 .pill-fail { background: var(--red-bg); color: var(--red); }

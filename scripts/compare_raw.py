@@ -27,6 +27,34 @@ def parse_raw(path: Path) -> Dict[str, np.ndarray]:
     body = data[m.end() :]
     nvars = int(re.search(r"No\. Variables:\s*(\d+)", hdr).group(1))
     npts = int(re.search(r"No\. Points:\s*(\d+)", hdr).group(1))
+    # Auto-detect Cadence Spectre -format nutbin (big-endian IEEE-754 >f8, variable 0 on Variables: line)
+    if "Variables:\t0\t" in hdr or "plot=0 grid=0" in hdr:
+        vars_: List[str] = []
+        in_vars = False
+        for line in hdr.splitlines():
+            if line.startswith("Variables:"):
+                in_vars = True
+                rest = line.split("Variables:", 1)[1].strip()
+                if rest:
+                    vars_.append(rest.split()[1])
+                continue
+            if in_vars:
+                toks = line.strip().split()
+                if toks and toks[0].isdigit():
+                    vars_.append(toks[1])
+        arr = np.frombuffer(body[: nvars * npts * 8], dtype=">f8").reshape(npts, nvars)
+        out: Dict[str, np.ndarray] = {}
+        for i, name in enumerate(vars_):
+            kl = name.lower()
+            if kl == "time":
+                out["time"] = arr[:, i].astype(np.float64)
+            elif kl.endswith(":p"):
+                out[f"i({kl[:-2]})"] = arr[:, i].astype(np.float64)
+            elif kl.startswith("v(") or kl.startswith("i("):
+                out[kl] = arr[:, i].astype(np.float64)
+            else:
+                out[f"v({kl})"] = arr[:, i].astype(np.float64)
+        return out
     vars_ = re.findall(r"^\s*\d+\s+(\S+)\s+", hdr, re.M)
     arr = np.frombuffer(body[: nvars * npts * 8], dtype=np.float64).reshape(npts, nvars)
     return {vars_[i].lower(): arr[:, i] for i in range(nvars)}

@@ -193,6 +193,7 @@ def build() -> None:
                     "sdm_bits_match": ac.get("sdm_bits_match"),
                     "sdm_bits_count": ac.get("sdm_bits_count", 0),
                     "sdm_pdm_max_dt_ps": ac.get("sdm_pdm_max_dt_ps"),
+                    "sdm_dac_corr": ac.get("sdm_dac_corr"),
                     "pll_code": ac.get("pll_code_cand"),
                     "pll_code_match": ac.get("pll_code_match"),
                     "pll_fout_mhz": ac.get("pll_fout_mhz"),
