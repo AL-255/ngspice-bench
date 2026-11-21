@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import math
+import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -111,6 +112,73 @@ REFERENCE_BASELINE_WALL_S = {
 }
 
 
+HEX_SHA_RE = re.compile(r"^[0-9a-fA-F]{7,40}$")
+SPECTRE_VER_RE = re.compile(r"\((\d+\.\d+\.\d+\.\d+)")
+GENERIC_VER_RE = re.compile(r"\b(\d+\.\d+(?:\.\d+)+)\b")
+GITHUB_REPO_RE = re.compile(r"^https?://github\.com/([^/\s]+)/([^/\s]+?)(?:\.git)?/?$")
+
+
+def extract_commit_info(sub: Dict[str, Any]) -> Dict[str, Optional[str]]:
+    """Extract normalized git commit SHA, short display string, and commit URL."""
+    build = sub.get("build", {}) or {}
+    repo = str(build.get("repo") or "").strip()
+    git_ref = str(build.get("git_ref") or "").strip()
+
+    raw_sha: Optional[str] = None
+    branch_or_tag: Optional[str] = None
+
+    for container in (build, sub):
+        for key in ("git_commit", "git_sha", "ngspice_commit", "commit"):
+            val = container.get(key)
+            if isinstance(val, str) and HEX_SHA_RE.match(val.strip()):
+                raw_sha = val.strip().lower()
+                break
+        if raw_sha:
+            break
+
+    if git_ref:
+        if "@" in git_ref:
+            ref_part, sha_part = git_ref.rsplit("@", 1)
+            ref_part = ref_part.strip()
+            sha_part = sha_part.strip()
+            if ref_part:
+                branch_or_tag = ref_part
+            if not raw_sha and HEX_SHA_RE.match(sha_part):
+                raw_sha = sha_part.lower()
+        elif not raw_sha and HEX_SHA_RE.match(git_ref):
+            raw_sha = git_ref.lower()
+
+    if raw_sha:
+        short_sha = raw_sha[:9] if len(raw_sha) > 9 else raw_sha
+        commit_url: Optional[str] = None
+        m_gh = GITHUB_REPO_RE.match(repo)
+        if m_gh:
+            owner, repo_name = m_gh.group(1), m_gh.group(2)
+            commit_url = f"https://github.com/{owner}/{repo_name}/commit/{raw_sha}"
+        return {
+            "commit": raw_sha,
+            "short_commit": short_sha,
+            "commit_url": commit_url,
+            "git_branch": branch_or_tag,
+        }
+
+    version_str = str(build.get("ngspice_version") or "").strip()
+    m_ver = SPECTRE_VER_RE.search(version_str) or GENERIC_VER_RE.search(version_str)
+    if m_ver:
+        fallback = m_ver.group(1)
+    elif git_ref:
+        fallback = git_ref
+    else:
+        fallback = "—"
+
+    return {
+        "commit": None,
+        "short_commit": fallback,
+        "commit_url": None,
+        "git_branch": None,
+    }
+
+
 def geomean(vals: List[float]) -> Optional[float]:
     if not vals or any(v <= 0 for v in vals):
         return None
@@ -128,6 +196,7 @@ def build() -> None:
         if sub.get("build", {}).get("pdk_mode") == "precompiled_uselib":
             continue
         submissions.append(sub)
+        commit_info = extract_commit_info(sub)
 
         # Group runs within a submission by solver (klu vs sparse) -> one leaderboard row per (submission, solver)
         by_solver: Dict[str, Dict[str, Dict[str, Any]]] = {}
@@ -214,6 +283,10 @@ def build() -> None:
                 "host": sub["host"],
                 "core_class": sub["core_class"],
                 "build": sub["build"],
+                "commit": commit_info["commit"],
+                "short_commit": commit_info["short_commit"],
+                "commit_url": commit_info["commit_url"],
+                "git_branch": commit_info["git_branch"],
                 "probe_total_s": probe_total_s,
                 "probe_geomean_s": probe_geomean_s,
                 "probe_geomean_speedup": probe_geomean_speedup,

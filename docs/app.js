@@ -39,6 +39,21 @@
     return "pill-core";
   }
 
+  function renderCommitBadge(e, showBranch) {
+    const shortCommit = e.short_commit || "—";
+    if (e.commit_url) {
+      const tip = `View commit ${e.commit || shortCommit} on GitHub` + (e.git_branch ? ` (${e.git_branch})` : "");
+      const branchHtml = showBranch && e.git_branch ? ` <span class="commit-branch">${esc(e.git_branch)}</span>` : "";
+      return `<a class="commit-link" href="${esc(e.commit_url)}" target="_blank" rel="noopener" title="${esc(tip)}"><code class="commit-code">${esc(shortCommit)}</code></a>${branchHtml}`;
+    }
+    if (e.commit) {
+      const branchHtml = showBranch && e.git_branch ? ` <span class="commit-branch">${esc(e.git_branch)}</span>` : "";
+      return `<code class="commit-code" title="${esc(`Commit ${e.commit}`)}">${esc(shortCommit)}</code>${branchHtml}`;
+    }
+    const tip = (e.build && e.build.ngspice_version) || "Commercial / non-git release";
+    return `<code class="commit-code commit-nongit" title="${esc(tip)}">${esc(shortCommit)}</code>`;
+  }
+
   function getMetric(entry, workload) {
     if (workload === "probe_geomean") {
       return {
@@ -218,7 +233,7 @@
         const line2 = isSpectre ? `${optFlags}${pdkTag}` : `${optFlags} · ${algo}${pdkTag}`;
         return `
           <div class="bar-row">
-            <div class="bar-label" title="${esc(e.host.cpu_model)} [${esc(e.core_class.label)}] — ${esc(e.build.name)} (${e.solver})">
+            <div class="bar-label" title="${esc(e.host.cpu_model)} [${esc(e.core_class.label)}] — ${esc(e.build.name)} (${e.solver}${e.short_commit ? `, ${esc(e.short_commit)}` : ""})">
               <div class="bar-label-main">${esc(cpuTier)}</div>
               <div class="bar-label-sub">${esc(line2)}</div>
             </div>
@@ -276,16 +291,23 @@
       })
       .join("");
 
+    const repoHtml =
+      e.build.repo && /^https?:\/\//.test(e.build.repo)
+        ? `<a class="inline-link" href="${esc(e.build.repo)}" target="_blank" rel="noopener">${esc(e.build.repo)}</a>`
+        : esc(e.build.repo || "—");
+    const refHtml = e.build.git_ref ? ` <span class="muted-ref">(${esc(e.build.git_ref)})</span>` : "";
+
     return `
       <tr class="detail-row">
-        <td colspan="8">
+        <td colspan="9">
           <div class="detail-grid">
             <div class="detail-box">
               <h4>Build &amp; Compile Flags</h4>
               <div class="kv-list">
                 <div class="kv-k">Build Name</div><div class="kv-v">${esc(e.build.name)}</div>
                 <div class="kv-k">Simulator Version</div><div class="kv-v">${esc(e.build.ngspice_version || "—")}</div>
-                <div class="kv-k">Repo / Ref</div><div class="kv-v">${esc(e.build.repo || "—")} ${e.build.git_ref ? `@ ${esc(e.build.git_ref)}` : ""}</div>
+                <div class="kv-k">Commit / Release</div><div class="kv-v">${renderCommitBadge(e, true)}</div>
+                <div class="kv-k">Repo / Ref</div><div class="kv-v">${repoHtml}${refHtml}</div>
                 <div class="kv-k">Compiler</div><div class="kv-v">${esc(e.build.compiler || "—")}</div>
                 <div class="kv-k">Feature Flags</div><div class="kv-v">${esc(ffStr)}</div>
                 <div class="kv-k">PDK Mode</div><div class="kv-v">${esc(e.build.pdk_mode)}${e.build.pdk_precompile_s != null ? ` (precompile ${(e.build.pdk_precompile_s * 1000).toFixed(1)} ms)` : ""}</div>
@@ -361,6 +383,9 @@
             e.build.cflags,
             e.build.configure_flags,
             e.build.git_ref,
+            e.commit || "",
+            e.short_commit || "",
+            e.git_branch || "",
             e.solver,
           ]
             .join(" ")
@@ -376,6 +401,7 @@
       else if (sortCol === "speedup") cmp = (b.m.speedup || 0) - (a.m.speedup || 0);
       else if (sortCol === "cpu") cmp = a.e.host.cpu_model.localeCompare(b.e.host.cpu_model);
       else if (sortCol === "build") cmp = a.e.build.name.localeCompare(b.e.build.name);
+      else if (sortCol === "commit") cmp = String(a.e.short_commit || "").localeCompare(String(b.e.short_commit || ""));
       else if (sortCol === "solver") cmp = a.e.solver.localeCompare(b.e.solver);
       return sortAsc ? cmp : -cmp;
     });
@@ -384,7 +410,7 @@
 
     const tbody = $("leaderboard-body");
     if (!rows.length) {
-      tbody.innerHTML = `<tr><td colspan="8" class="empty">No matching single-core entries for the selected filters.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" class="empty">No matching single-core entries for the selected filters.</td></tr>`;
       return;
     }
 
@@ -422,6 +448,7 @@
               <div class="cpu-name">${esc(e.build.name)}</div>
               <div class="subline">${pills.join("")}${esc(e.build.compiler || "")}</div>
             </td>
+            <td class="col-commit">${renderCommitBadge(e, false)}</td>
             <td><span class="pill pill-solver">${esc(e.solver)}</span></td>
             <td class="num"><strong>${fmtSec(m.wall)}</strong></td>
             <td class="num speedup-val">${fmtSpeedup(m.speedup)}</td>
@@ -436,7 +463,8 @@
       .join("");
 
     tbody.querySelectorAll("tr.main-row").forEach((tr) => {
-      tr.addEventListener("click", () => {
+      tr.addEventListener("click", (ev) => {
+        if (ev.target.closest("a")) return;
         const id = tr.getAttribute("data-id");
         if (expanded.has(id)) expanded.delete(id);
         else expanded.add(id);
@@ -492,7 +520,7 @@
         });
       });
     } catch (err) {
-      $("leaderboard-body").innerHTML = `<tr><td colspan="8" class="empty">Failed to load leaderboard.json: ${esc(err.message)}</td></tr>`;
+      $("leaderboard-body").innerHTML = `<tr><td colspan="9" class="empty">Failed to load leaderboard.json: ${esc(err.message)}</td></tr>`;
     }
   }
 

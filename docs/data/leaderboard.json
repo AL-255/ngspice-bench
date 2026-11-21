@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-21T07:37:07Z",
+  "generated_utc": "2026-11-21T07:48:03Z",
   "mode": "single_core",
   "reference_baseline": {
     "description": "Stock ngspice-47 (Sparse 1-core) on AMD Ryzen 9 7940HX (Zen 4)",
@@ -166,6 +166,10 @@
         "pdk_precompile_s": null,
         "notes": "MacBook Pro (Mac18,1, MHWV4LL/A), Apple M6 Super core (perflevel0, 128 KiB L1D / 20 MiB L2): Stages A-G + Zen 4 Stages 9-12 (Stage 11 exact CSR Sparse + NGSPICE_OPT_GENERAL convergence, Stage 12 multirate DEFCAP+TRUNC+LATENT+COMPFAST + per-instance Apple NEON BSIM4 Stage G + L1-resident InstArray Sparse DCOP/TRANOP stamping order, strict IEEE-754 double precision, fresh Clang 21 PGO+ThinLTO)"
       },
+      "commit": "2cdc02f45",
+      "short_commit": "2cdc02f45",
+      "commit_url": "https://github.com/AL-255/ngspice-sf-mirror/commit/2cdc02f45",
+      "git_branch": "opt/apple-silicon-transient",
       "probe_total_s": 155.2401,
       "probe_geomean_s": 17.8335,
       "probe_geomean_speedup": 13.462,
@@ -406,6 +410,10 @@
         "pdk_precompile_s": null,
         "notes": "MacBook Pro (Mac18,1, MHWV4LL/A), Apple M6 Performance core (perflevel1, 64 KiB L1D / 20 MiB L2, pinned via taskpolicy -c utility while 2 zero-memory register spinners occupy perflevel0 Super cores): Stages A-G + Zen 4 Stages 9-12 (Stage 11 exact CSR Sparse + NGSPICE_OPT_GENERAL convergence, Stage 12 multirate DEFCAP+TRUNC+LATENT+COMPFAST + per-instance Apple NEON BSIM4 Stage G, strict IEEE-754 double precision, fresh Clang 21 PGO+ThinLTO)"
       },
+      "commit": "2cdc02f45",
+      "short_commit": "2cdc02f45",
+      "commit_url": "https://github.com/AL-255/ngspice-sf-mirror/commit/2cdc02f45",
+      "git_branch": "opt/apple-silicon-transient",
       "probe_total_s": 199.6733,
       "probe_geomean_s": 23.0307,
       "probe_geomean_speedup": 10.424,
@@ -646,6 +654,10 @@
         "pdk_precompile_s": null,
         "notes": "Stages 1-12: Stage 12 multirate & latency-partitioned transient integration (DEFCAP+TRUNC+LATENT+COMPFAST active-submatrix KLU, VLSI N>=10k directional strong-coupling + sensitivity wake + adaptive Chord Newton) + Stages 1-11 portable general opts (flat CSC Sparse, pre-baked CAP + KLU identity map, fast nghash/numparam, Shamanskii/Chord KLU Newton, partial KLU refactor + div-free solve) + Zen 4 AVX-512 BSIM4v5/v6 SoA transient/DCOP + dynamic active-lane SIMD compaction"
       },
+      "commit": "c9300bfb9",
+      "short_commit": "c9300bfb9",
+      "commit_url": "https://github.com/AL-255/ngspice-sf-mirror/commit/c9300bfb9",
+      "git_branch": "opt/zen4-transient",
       "probe_total_s": 197.2746,
       "probe_geomean_s": 23.5896,
       "probe_geomean_speedup": 10.177,
@@ -914,6 +926,10 @@
         "pdk_precompile_s": null,
         "notes": "MacBook Pro (Mac18,1, MHWV4LL/A), Apple M6 Super core (perflevel0, 128 KiB L1D / 20 MiB L2): Stages A-G + Zen 4 Stages 9-12 (Stage 11 exact CSR Sparse + NGSPICE_OPT_GENERAL convergence, Stage 12 multirate DEFCAP+TRUNC+LATENT+COMPFAST + per-instance Apple NEON BSIM4 Stage G + L1-resident InstArray Sparse DCOP/TRANOP stamping order, strict IEEE-754 double precision, fresh Clang 21 PGO+ThinLTO)"
       },
+      "commit": "2cdc02f45",
+      "short_commit": "2cdc02f45",
+      "commit_url": "https://github.com/AL-255/ngspice-sf-mirror/commit/2cdc02f45",
+      "git_branch": "opt/apple-silicon-transient",
       "probe_total_s": 192.4479,
       "probe_geomean_s": 28.9813,
       "probe_geomean_speedup": 8.284,
@@ -1154,6 +1170,10 @@
         "pdk_precompile_s": null,
         "notes": "Stages 1-12: Stage 12 multirate & latency-partitioned transient integration (DEFCAP+TRUNC+LATENT+COMPFAST active-submatrix KLU, VLSI N>=10k directional strong-coupling + sensitivity wake + adaptive Chord Newton) + Stages 1-11 portable general opts (flat CSC Sparse, pre-baked CAP + KLU identity map, fast nghash/numparam, Shamanskii/Chord KLU Newton, partial KLU refactor + div-free solve) + Zen 4 AVX-512 BSIM4v5/v6 SoA transient/DCOP + dynamic active-lane SIMD compaction"
       },
+      "commit": "c9300bfb9",
+      "short_commit": "c9300bfb9",
+      "commit_url": "https://github.com/AL-255/ngspice-sf-mirror/commit/c9300bfb9",
+      "git_branch": "opt/zen4-transient",
       "probe_total_s": 254.8809,
       "probe_geomean_s": 37.2062,
       "probe_geomean_speedup": 6.453,
@@ -1394,6 +1414,10 @@
         "pdk_precompile_s": null,
         "notes": "MacBook Pro (Mac18,1, MHWV4LL/A), Apple M6 Efficiency core (perflevel2, 96 KiB L1D / 8 MiB L2, pinned via taskpolicy -c background): Stages A-G + Zen 4 Stages 9-12 (Stage 11 exact CSR Sparse + NGSPICE_OPT_GENERAL convergence, Stage 12 multirate DEFCAP+TRUNC+LATENT+COMPFAST + per-instance Apple NEON BSIM4 Stage G, strict IEEE-754 double precision, fresh Clang 21 PGO+ThinLTO)"
       },
+      "commit": "2cdc02f45",
+      "short_commit": "2cdc02f45",
+      "commit_url": "https://github.com/AL-255/ngspice-sf-mirror/commit/2cdc02f45",
+      "git_branch": "opt/apple-silicon-transient",
       "probe_total_s": 787.243,
       "probe_geomean_s": 91.4204,
       "probe_geomean_speedup": 2.626,
@@ -1638,6 +1662,10 @@
         "pdk_precompile_s": null,
         "notes": "Commercial GF180MCU PDK (YI-141-SM064 Rev9, sw_stat_global=0, sw_stat_mismatch=0) + Cadence Spectre X 25.10 (+preset=ax -preset_override=reltol,vabstol,iabstol +mt=1, relref=sigglobal, lteratio=3.5, method=trap). Calibrated optimal ngspice-matched tolerance setting: 16/16 bit-exact SAR codes (67.5 ps EOC vs +preset=cx), exact PLL AFC code parity, SDM ideal-DAC r=0.99912, 3/3 bit-exact RISC-V cycles, 16,000/16,000 opa1k tasks PASS (rms 7.74e-4). Note: opa1k_pvt16 wall_s=1037.24 s includes 383.41 s FlexLM license checkout across 1,000 invocations (653.83 s ex-licensing)."
       },
+      "commit": null,
+      "short_commit": "25.10.06.274",
+      "commit_url": null,
+      "git_branch": null,
       "probe_total_s": 1279.325,
       "probe_geomean_s": 92.6713,
       "probe_geomean_speedup": 2.591,
@@ -1906,6 +1934,10 @@
         "pdk_precompile_s": null,
         "notes": "Unmodified upstream ngspice-47 baseline"
       },
+      "commit": "a80f6e3e9",
+      "short_commit": "a80f6e3e9",
+      "commit_url": "https://github.com/AL-255/ngspice-sf-mirror/commit/a80f6e3e9",
+      "git_branch": "ngspice-47",
       "probe_total_s": 1466.0806,
       "probe_geomean_s": 207.2934,
       "probe_geomean_speedup": 1.158,
@@ -2146,6 +2178,10 @@
         "pdk_precompile_s": null,
         "notes": "Unmodified upstream ngspice-47 baseline"
       },
+      "commit": "a80f6e3e9",
+      "short_commit": "a80f6e3e9",
+      "commit_url": "https://github.com/AL-255/ngspice-sf-mirror/commit/a80f6e3e9",
+      "git_branch": "ngspice-47",
       "probe_total_s": 1549.4943,
       "probe_geomean_s": 240.0714,
       "probe_geomean_speedup": 1.0,
@@ -2390,6 +2426,10 @@
         "pdk_precompile_s": null,
         "notes": "Commercial GF180MCU PDK (YI-141-SM064 Rev9, sw_stat_global=0, sw_stat_mismatch=0) + Cadence Spectre X 25.10 (+preset=mx -preset_override=reltol,vabstol,iabstol +mt=1, relref=allglobal, lteratio=3.5, method=trap). Faster moderate preset (25-43% faster than ax): 16/16 bit-exact SAR codes (437-620 ps EOC), SDM ideal-DAC r=0.99963, 3/3 bit-exact RISC-V cycles (180.22 s, 5.20x vs Stock ngspice-47 KLU), 16,000/16,000 opa1k tasks PASS (rms 7.74e-4), but relref=allglobal shifts PLL SAR AFC lock code by 5 codes (35 vs 40 on ax, marked FAIL on pll_ring). Note: opa1k_pvt16 wall_s=1025.13 s includes 408.61 s FlexLM license checkout across 1,000 invocations (616.52 s ex-licensing)."
       },
+      "commit": null,
+      "short_commit": "25.10.06.274",
+      "commit_url": null,
+      "git_branch": null,
       "probe_total_s": 1178.6904,
       "probe_geomean_s": 65.3548,
       "probe_geomean_speedup": 3.673,
@@ -2658,6 +2698,10 @@
         "pdk_precompile_s": null,
         "notes": "Stock unmodified ngspice-47 baseline on MacBook Pro (Mac18,1, MHWV4LL/A), Apple M6 Super core (perflevel0, 128 KiB L1D / 20 MiB L2) (Note: upstream ngspice-47 numparse.c UB overflows rshunt=1e12 to INT_MAX on Clang 21/ARM64, causing opa1k_pvt16 failure in stock build.)"
       },
+      "commit": "a80f6e3e9",
+      "short_commit": "a80f6e3e9",
+      "commit_url": "https://github.com/AL-255/ngspice-sf-mirror/commit/a80f6e3e9",
+      "git_branch": "master",
       "probe_total_s": 896.4572,
       "probe_geomean_s": 109.5377,
       "probe_geomean_speedup": 2.192,
@@ -2898,6 +2942,10 @@
         "pdk_precompile_s": null,
         "notes": "Stock unmodified ngspice-47 baseline on MacBook Pro (Mac18,1, MHWV4LL/A), Apple M6 Super core (perflevel0, 128 KiB L1D / 20 MiB L2) (Note: upstream ngspice-47 numparse.c UB overflows rshunt=1e12 to INT_MAX on Clang 21/ARM64, causing opa1k_pvt16 failure in stock build.)"
       },
+      "commit": "a80f6e3e9",
+      "short_commit": "a80f6e3e9",
+      "commit_url": "https://github.com/AL-255/ngspice-sf-mirror/commit/a80f6e3e9",
+      "git_branch": "master",
       "probe_total_s": 941.8053,
       "probe_geomean_s": 127.4101,
       "probe_geomean_speedup": 1.884,
