@@ -712,6 +712,54 @@
         "pll_vc_final_v": null,
         "pll_vc_err_mv": null
       }
+    },
+    {
+      "deck": "riscv_picorv32_120ns",
+      "solver": "klu",
+      "num_threads": 1,
+      "rc": 0,
+      "wall_s": 936.6159,
+      "rusage": {
+        "total_elapsed_s": 935.686,
+        "total_analysis_s": 927.965,
+        "tran_analysis_s": 927.037,
+        "tran_load_s": 308.638,
+        "tran_factor_s": 563.816,
+        "tran_solve_s": 16.0308,
+        "tran_trunc_s": 17.9784,
+        "reorder_s": 0.343944,
+        "tot_iter": 4141,
+        "tran_iter": 4141,
+        "tran_pts": 924,
+        "accepted_pts": 807,
+        "rejected_pts": 117,
+        "eqns": 51670
+      },
+      "accuracy": {
+        "pass": true,
+        "exact_grid": true,
+        "npts_ref": 806,
+        "npts_cand": 806,
+        "t_end_rel_diff": 0.0,
+        "worst_rel_rms": 0.0,
+        "worst_vec": "",
+        "sar_codes_ref": [],
+        "sar_codes_cand": [],
+        "sar_codes_match": true,
+        "eoc_max_dt_ps": 0.0,
+        "sdm_bits_count": 0,
+        "sdm_bits_match": true,
+        "sdm_pdm_max_dt_ps": 0.0,
+        "sdm_dac_corr": null,
+        "pll_code_ref": null,
+        "pll_code_cand": null,
+        "pll_code_match": true,
+        "pll_fout_mhz": null,
+        "pll_vc_final_v": null,
+        "pll_vc_err_mv": null,
+        "riscv_cycles_count": 3,
+        "riscv_cycles_match": true
+      }
     }
   ]
 }

@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulation Settings — ngspice-bench Cross-Simulator Reference</title>
+  <meta name="theme-color" content="#d9423a" />
+  <link rel="stylesheet" href="style.css?v=11" />
+  <script>try{var t=localStorage.getItem('ngspice-bench-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+  <style>
+    .toc-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 12px 16px;
+      margin-top: 22px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      font-size: 13px;
+    }
+    .toc-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+    .toc-bar a {
+      padding: 4px 10px;
+      border-radius: 7px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 12.5px;
+    }
+    .toc-bar a:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .section-card {
+      padding: 18px 20px 20px;
+      scroll-margin-top: 16px;
+    }
+    .section-card .card-header {
+      padding: 0 0 12px;
+    }
+    .section-lead {
+      margin: 0 0 14px;
+      font-size: 13.5px;
+      color: var(--muted);
+      max-width: 980px;
+    }
+    .dense-table {
+      font-size: 12.5px;
+    }
+    .dense-table thead th {
+      padding: 9px 11px;
+      font-size: 11px;
+    }
+    .dense-table tbody td {
+      padding: 9px 11px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .dense-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .dense-table tbody tr:hover {
+      background: var(--surface-2);
+    }
+    .callout-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .callout-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .callout-box.warn {
+      border-left-color: var(--amber);
+    }
+    .callout-box h3 {
+      margin: 0 0 6px;
+      font-size: 13.5px;
+      color: var(--text);
+    }
+    .callout-box p {
+      margin: 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .code-block {
+      margin: 10px 0 0;
+      padding: 11px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.55;
+      overflow-x: auto;
+      color: var(--text);
+      white-space: pre;
+    }
+    .formula-note {
+      margin-top: 12px;
+      padding: 11px 14px;
+      background: var(--accent-soft);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      font-size: 12.5px;
+      color: var(--text);
+    }
+    .muted-cell {
+      color: var(--muted);
+    }
+    .nowrap {
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="header-main">
+        <div class="eyebrow">GF180MCU Post-PEX Suite &middot; Cross-Simulator Methodology &amp; Engine Specification</div>
+        <h1><span class="brand-mark">ngspice</span>-bench <span class="badge-mode">Simulation Settings</span></h1>
+        <p class="subtitle">
+          Complete, source-verified documentation of every <code>ngspice-47</code> default, runner-injected option,
+          per-deck <code>.options</code> / <code>.tran</code> configuration, and cross-simulator translation table
+          for fair apples-to-apples benchmarking against <strong>Spectre</strong>, <strong>HSPICE</strong>, <strong>Xyce</strong>, and <strong>LTspice</strong>.
+        </p>
+        <nav class="header-links" aria-label="Primary navigation">
+          <a class="btn-link btn-secondary" href="index.html">Leaderboard</a>
+          <a class="btn-link btn-secondary" href="workloads.html">Workloads</a>
+          <a class="btn-link" href="settings.html" aria-current="page">Settings</a>
+          <a class="btn-link btn-secondary" href="https://github.com/AL-255/ngspice-bench" target="_blank" rel="noopener">GitHub Repo</a>
+          <a class="btn-link btn-secondary" href="https://github.com/AL-255/ngspice-bench#quick-start--run-guide" target="_blank" rel="noopener">Run &amp; Submit</a>
+          <button class="iconbtn" id="theme" title="Toggle light / dark theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg></button>
+        </nav>
+      </div>
+      <a class="brand-logo-link" href="https://analogmiko.com/" target="_blank" rel="noopener" title="AnalogMiko" aria-label="AnalogMiko"><img class="brand-logo" src="https://analogmiko.com/static/AMK1.png" alt="AnalogMiko" width="149" height="144" /></a>
+    </div>
+  </header>
+
+  <main class="container">
+    <nav class="toc-bar" aria-label="Page sections">
+      <span class="toc-label">Jump to</span>
+      <a href="#engine-defaults">1. Global Engine Defaults</a>
+      <a href="#runner-injection">2. Runner &amp; .spiceinit Injection</a>
+      <a href="#deck-matrix">3. Per-Deck Matrix (All 7 Workloads)</a>
+      <a href="#cross-sim">4. Cross-Simulator Translation</a>
+      <a href="#porting-pitfalls">5. Porting Pitfalls</a>
+      <a href="#verification-rules">6. Verification &amp; Reproducibility</a>
+    </nav>
+
+    <!-- Section 1: Global Engine Defaults -->
+    <section class="card section-card" id="engine-defaults" style="margin-top:16px;">
+      <div class="card-header">
+        <h2>1. Global Engine Defaults (<code>ngspice-47</code>)</h2>
+        <span class="hint">Verified directly against <code>cktntask.c</code>, <code>cktdojob.c</code>, <code>traninit.c</code>, <code>cktop.c</code>, <code>niiter.c</code>, and <code>b4set.c</code></span>
+      </div>
+      <p class="section-lead">
+        Every parameter below reflects unmodified stock <code>ngspice-47</code> source defaults before per-deck <code>.options</code> overrides.
+        Pay special attention to <code>CKTmaxStep</code> clamping, the <code>itl4 &lt; 100</code> floor in <code>NIiter()</code>, and <code>bypass=0</code> when translating decks to commercial or open-source SPICE engines.
+      </p>
+      <div class="table-wrap">
+        <table class="dense-table">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th><code>ngspice-47</code> Default</th>
+              <th>Source / Formula</th>
+              <th>Role &amp; Behavioral Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="nowrap"><code>reltol</code></td>
+              <td class="nowrap"><code>1e-3</code> (0.1%)</td>
+              <td><code>cktntask.c:97</code> (<code>TSKreltol</code>)</td>
+              <td>Relative tolerance for Newton voltage/current convergence and charge-based LTE estimation.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>abstol</code></td>
+              <td class="nowrap"><code>1e-12</code> A (1 pA)</td>
+              <td><code>cktntask.c:96</code> (<code>TSKabstol</code>)</td>
+              <td>Absolute branch-current error tolerance for Newton convergence and LTE denominator floor.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>vntol</code></td>
+              <td class="nowrap"><code>1e-6</code> V (1 &mu;V)</td>
+              <td><code>cktntask.c:99</code> (<code>TSKvoltTol</code>)</td>
+              <td>Absolute node-voltage convergence tolerance (<code>|v_k - v_{k-1}| &le; reltol&middot;max(|v_k|,|v_{k-1}|) + vntol</code>).</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>chgtol</code></td>
+              <td class="nowrap"><code>1e-14</code> C (10 fC)</td>
+              <td><code>cktntask.c:98</code> (<code>TSKchgtol</code>)</td>
+              <td>Charge tolerance floor in device charge-based LTE (<code>CKTterr</code>).</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>trtol</code></td>
+              <td class="nowrap"><code>7.0</code></td>
+              <td><code>cktntask.c:104</code> (<code>TSKtrtol</code>)</td>
+              <td>Transient truncation error overestimation factor; scales allowed LTE step by <code>trtol<sup>1/ord</sup></code>. (Note: reduced to <code>1</code> only when XSPICE <code>A</code>-devices are present.)</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>newtrunc</code></td>
+              <td class="nowrap"><code>0</code> (off)</td>
+              <td><code>cktntask.c:100–103</code></td>
+              <td>Uses classic device charge-based <code>CKTterr</code>. Voltage-based LTE (<code>ltereltol=1e-3</code>, <code>lteabstol=1e-6</code>, <code>ltetrtol=500</code>) is inactive unless <code>option newtrunc</code> is enabled.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>method</code> / <code>maxord</code></td>
+              <td class="nowrap"><code>trap</code> / <code>2</code></td>
+              <td><code>cktntask.c:109–110</code></td>
+              <td>Default integrator is 2nd-order Trapezoidal; <strong>all 7 benchmark decks explicitly select <code>method=gear</code></strong> (Gear-2, <code>maxord=2</code>).</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>xmu</code></td>
+              <td class="nowrap"><code>0.5</code></td>
+              <td><code>cktntask.c:119</code> (<code>TSKxmu</code>)</td>
+              <td>Trapezoidal blending weight: <code>0.5</code> = pure Trap, <code>0.0</code> = Backward Euler, <code>0.49</code> = damped Trap. Unused under <code>method=gear</code>.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>CKTmaxStep</code> / <code>delmin</code></td>
+              <td class="nowrap"><code>min(tstep, (tstop-tstart)/50)</code></td>
+              <td><code>traninit.c:29–36</code></td>
+              <td>When <code>tmax</code> is omitted on <code>.tran tstep tstop</code>, <strong><code>ngspice</code> caps max step at <code>tstep</code></strong> unless <code>set nostepsizelimit</code> is set. Minimum step <code>CKTdelmin = 1e-11 &times; CKTmaxStep</code>.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>gmin</code></td>
+              <td class="nowrap"><code>1e-12</code> S (1 T&Omega;)</td>
+              <td><code>cktntask.c:93</code> (<code>TSKgmin</code>)</td>
+              <td>Minimum conductance placed across nonlinear PN junctions and MOS channels, and target floor of DC gmin stepping.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>rshunt</code> / <code>gshunt</code></td>
+              <td class="nowrap">off (<code>0</code> S)</td>
+              <td><code>cktntask.c:94</code>, <code>cktsopt.c:246</code></td>
+              <td>Shunt conductance from <strong>every analog node to ground</strong>. Enabled only on <code>ti12_full_300ns</code> and <code>opa1k_pvt16</code> (<code>rshunt=1e12</code> &rArr; <code>1e-12</code> S/node).</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>cshunt</code></td>
+              <td class="nowrap">off (<code>-1</code>)</td>
+              <td><code>cktntask.c:95</code> (<code>TSKcshunt</code>)</td>
+              <td>Shunt capacitance from every analog node to ground. Enabled on <code>sar12_*</code> &amp; <code>ti12_full_300ns</code> (<code>0.15 fF</code>) and <code>riscv_picorv32_120ns</code> (<code>0.10 fF</code>).</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>gminsteps</code> / <code>gminfactor</code></td>
+              <td class="nowrap"><code>1</code> / <code>10</code></td>
+              <td><code>cktntask.c:121–122</code>, <code>cktop.c:57–70</code></td>
+              <td><code>gminsteps=1</code> selects adaptive <code>dynamic_gmin</code> (with <code>new_gmin</code> fallback), not a single fixed step; values <code>&gt;1</code> select legacy fixed SPICE3 gmin stepping.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>srcsteps</code> (<code>itl6</code>)</td>
+              <td class="nowrap"><code>1</code></td>
+              <td><code>cktntask.c:120</code>, <code>cktop.c:85–90</code></td>
+              <td><code>srcsteps=1</code> enables adaptive Gillespie source stepping (<code>gillespie_src</code>) if DC OP &amp; gmin stepping fail.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>itl1</code> / <code>itl2</code> / <code>itl4</code></td>
+              <td class="nowrap"><code>100</code> / <code>50</code> / <code>10*</code></td>
+              <td><code>cktntask.c:106–108</code>, <code>niiter.c:47</code></td>
+              <td>DC OP (<code>itl1</code>), DC sweep (<code>itl2</code>), and transient Newton (<code>itl4</code>) limits. <strong>*Caveat:</strong> <code>NIiter()</code> enforces <code>if (maxIter &lt; 100) maxIter = 100</code>, so effective <code>itl4</code> is always <code>&ge;100</code>.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>bypass</code></td>
+              <td class="nowrap"><code>0</code> (disabled)</td>
+              <td><code>cktntask.c:105</code> (<code>TSKbypass</code>)</td>
+              <td>Legacy SPICE3 device-bypass is <strong>OFF by default</strong> in <code>ngspice-47</code> (unlike historical SPICE3F5 where <code>bypass=1</code> was default). None of the 7 decks enable legacy <code>bypass=1</code>.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>temp</code> / <code>tnom</code></td>
+              <td class="nowrap"><code>27 &deg;C</code> / <code>27 &deg;C</code></td>
+              <td><code>cktntask.c:125–126</code> (<code>300.15 K</code>)</td>
+              <td>Nominal and operating temperature. All transient decks pin <code>.temp 27</code>; <code>opa1k_pvt16</code> sweeps <code>-40, 27, 85, 125 &deg;C</code>.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>pivrel</code> / <code>pivtol</code></td>
+              <td class="nowrap"><code>1e-3</code> / <code>1e-13</code></td>
+              <td><code>cktntask.c:123–124</code></td>
+              <td>Markowitz relative and absolute pivot thresholds for Sparse 1.3 and KLU numeric factorization (<code>kluMemGrowFactor=1.2</code>).</td>
+            </tr>
+            <tr>
+              <td class="nowrap">Linear Solver</td>
+              <td class="nowrap"><code>Sparse 1.3</code> (<code>klu</code> off)</td>
+              <td><code>cktntask.c:143</code></td>
+              <td><code>run_bench.py</code> tests both <code>sparse</code> (default) and <code>klu</code> (<code>option klu</code>) on Probe/Hero decks, and <code>klu</code>-only on <code>riscv_picorv32_120ns</code>.</td>
+            </tr>
+            <tr>
+              <td class="nowrap">BSIM4 Model Version</td>
+              <td class="nowrap"><code>4.8.3</code> (fallback)</td>
+              <td><code>b4set.c:205</code>, <code>sm141064.ngspice</code></td>
+              <td>GF180MCU PDK explicitly specifies <code>level=54 version=4.5</code> (<code>nfet_03v3</code>, <code>pfet_03v3</code>, <code>nfet_06v0</code>) and <code>version=4.6</code> (<code>pfet_06v0</code>, <code>nfet_06v0_nvt</code>), plus <code>level=3</code> diodes and <code>level=1</code> BJTs.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="formula-note">
+        <strong>Charge-Based LTE Formula (<code>cktterr.c</code>):</strong> For each energy-storage element with charge <code>q<sub>n</sub></code> and current <code>i<sub>n</sub></code>,
+        <code>tol = max(abstol + reltol &middot; max(|i<sub>n</sub>|, |i<sub>n&minus;1</sub>|), reltol &middot; max(|q<sub>n</sub>|, |q<sub>n&minus;1</sub>|, chgtol) / h<sub>n</sub>)</code>,
+        and the proposed step is <code>h<sub>next</sub> = (trtol &middot; tol / max(abstol, c<sub>ord</sub> &middot; |DD<sub>ord+1</sub>(q)|))<sup>1/ord</sup></code>,
+        where <code>c<sub>1</sub> = 1/2</code>, <code>c<sub>2</sub> = 1/12</code> (Trap) or <code>2/9</code> (Gear-2). Steps are rejected whenever <code>min(2h<sub>n</sub>, h<sub>next</sub>) &le; 0.9 &middot; h<sub>n</sub></code> (<code>dctran.c:801</code>).
+      </div>
+    </section>
+
+    <!-- Section 2: Runner & .spiceinit Injection -->
+    <section class="card section-card" id="runner-injection">
+      <div class="card-header">
+        <h2>2. Benchmark Runner &amp; <code>.spiceinit</code> Injection</h2>
+        <span class="hint">Exact runtime environment enforced by <code>scripts/run_bench.py</code></span>
+      </div>
+      <div class="detail-grid" style="margin-bottom:0;">
+        <div class="detail-box">
+          <h4>Injected <code>.spiceinit</code> (per temporary <code>work_dir</code>)</h4>
+          <pre class="code-block">set ngbehavior=hsa
+set filetype=binary
+set num_threads=1</pre>
+          <p style="margin:10px 0 0;font-size:12.5px;color:var(--muted);">
+            <code>ngbehavior=hsa</code> enables <strong>HSPICE compatibility mode</strong> (<code>hs</code>) across the <strong>entire netlist</strong> (<code>a</code>, including top-level deck and <code>.lib</code>/<code>.include</code> PDK files — verified in <code>inpcompat.c:76–88</code>), required by GF180MCU parameter expressions (<code>'...'</code> quotes, <code>agauss</code>, model binning).
+            <code>set num_threads=1</code> overrides the default <code>set num_threads=8</code> shipped in ngspice's system <code>spinit</code>.
+          </p>
+        </div>
+        <div class="detail-box">
+          <h4>Control Block, Solver &amp; Process Environment</h4>
+          <pre class="code-block"># Environment variables (run_bench.py:545-549)
+OMP_NUM_THREADS=1
+OMP_PROC_BIND=true
+taskset -c &lt;pin_cpu&gt; ngspice -b &lt;deck&gt;.cir -o &lt;log&gt;
+
+# Prepended inside .control immediately before `tran`
+set num_threads=1
+option klu            # omitted when --solvers sparse
+# (For opa1k_pvt16: `.option klu` appended to pdk_opa.inc)</pre>
+          <p style="margin:10px 0 0;font-size:12.5px;color:var(--muted);">
+            In <strong>Precompiled (<code>.uselib</code>)</strong> mode, the GF180 PDK bundle (<code>decks/pdk_gf180_typ.spice</code>) is compiled once via <code>ngspice --precompile</code> into a binary <code>.nglib</code> file while every top-level circuit netlist remains uncached ASCII.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Per-Deck Options & .tran Matrix -->
+    <section class="card section-card" id="deck-matrix">
+      <div class="card-header">
+        <h2>3. Per-Deck <code>.options</code> &amp; <code>.tran</code> Matrix (All 7 Workloads)</h2>
+        <span class="hint">Exact directives extracted from <code>decks/*.cir</code>, <code>circuits/opa1000/p_*.cir</code>, and <code>riscv_picorv32_120ns</code></span>
+      </div>
+      <p class="section-lead">
+        All 7 workloads share the exact same open-source <strong>GF180MCU D</strong> PDK (<code>wafer-space/gf180mcu</code>, typical corner: <code>sw_stat_global=0</code>, <code>sw_stat_mismatch=0</code>, BSIM4v5 <code>4.5</code> + BSIM4v6 <code>4.6</code>) and integrate with <strong>Gear-2</strong> (<code>method=gear</code>, <code>maxord=2</code>).
+        Every <code>.tran</code> line omits the 4th <code>tmax</code> argument, so ngspice implicitly sets <code>CKTmaxStep = tstep</code> (because <code>tstep &lt; tstop/50</code> on all 7 decks).
+      </p>
+      <div class="table-wrap">
+        <table class="dense-table">
+          <thead>
+            <tr>
+              <th>Workload</th>
+              <th>Category</th>
+              <th>Analysis / <code>.tran</code><br/><span style="font-weight:400;text-transform:none;">(<code>tstep</code> / <code>tstop</code> / <code>tmax*</code> / <code>uic</code>)</span></th>
+              <th><code>method</code> / <code>maxord</code></th>
+              <th><code>reltol</code> / <code>abstol</code> / <code>vntol</code></th>
+              <th><code>gmin</code> / <code>cshunt</code> / <code>rshunt</code></th>
+              <th><code>itl4</code> / <code>bypass</code> / <code>temp</code></th>
+              <th>PDK Models &amp; Solver Policy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="nowrap"><a class="inline-link" href="workloads.html#opa1k_pvt16"><code>opa1k_pvt16</code></a></td>
+              <td><span class="pill pill-core">Probe</span></td>
+              <td>
+                16,000 tasks (1k &times; 16 PVT):<br/>
+                <code>op</code> + <code>ac dec 20 1 1e9</code> +<br/>
+                <code>tran tstop/100 tstop</code><br/>
+                <span class="muted-cell"><code>tstop</code> &isin; <code>60n..53.7u</code> &middot; no <code>uic</code></span>
+              </td>
+              <td class="nowrap"><code>gear</code> / <code>2</code> <span class="muted-cell">(def)</span></td>
+              <td class="nowrap">
+                <code>1e-3</code><br/>
+                <code>1e-12</code><br/>
+                <code>1e-5</code>
+              </td>
+              <td class="nowrap">
+                <code>gmin=1e-12</code><br/>
+                <span class="muted-cell">cshunt: off</span><br/>
+                <code>rshunt=1e12</code>
+              </td>
+              <td class="nowrap">
+                <code>10</code> &rarr; <code>100*</code><br/>
+                <code>bypass=0</code><br/>
+                <code>-40,27,85,125&deg;C</code>
+              </td>
+              <td>
+                GF180D typical (<code>BSIM4v5/4v6</code>, MIM/MOS cap, res)<br/>
+                <span class="pill pill-solver">KLU</span> <span class="pill pill-solver">Sparse</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="nowrap"><a class="inline-link" href="workloads.html#sar12_probe_2cyc"><code>sar12_probe_2cyc</code></a></td>
+              <td><span class="pill pill-core">Probe</span></td>
+              <td class="nowrap">
+                <code>tran 150p 825n</code><br/>
+                <span class="muted-cell"><code>tmax=150p</code> (implicit) &middot; no <code>uic</code></span>
+              </td>
+              <td class="nowrap"><code>gear</code> / <code>2</code> <span class="muted-cell">(def)</span></td>
+              <td class="nowrap">
+                <code>1e-3</code><br/>
+                <code>5e-12</code><br/>
+                <code>2e-5</code>
+              </td>
+              <td class="nowrap">
+                <code>gmin=1e-12</code><br/>
+                <code>cshunt=1.5e-16</code><br/>
+                <span class="muted-cell">rshunt: off</span>
+              </td>
+              <td class="nowrap">
+                <code>itl4=150</code><br/>
+                <code>bypass=0</code><br/>
+                <code>27&deg;C</code>
+              </td>
+              <td>
+                GF180D typical + 7T stdcells (<code>BSIM4v5/4v6</code>, MIM)<br/>
+                <span class="pill pill-solver">KLU</span> <span class="pill pill-solver">Sparse</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="nowrap"><a class="inline-link" href="workloads.html#sar12_hero_16cyc"><code>sar12_hero_16cyc</code></a></td>
+              <td><span class="pill pill-pcore">Hero</span></td>
+              <td class="nowrap">
+                <code>tran 150p 6.6u</code><br/>
+                <span class="muted-cell"><code>tmax=150p</code> (implicit) &middot; no <code>uic</code></span>
+              </td>
+              <td class="nowrap"><code>gear</code> / <code>2</code> <span class="muted-cell">(def)</span></td>
+              <td class="nowrap">
+                <code>1e-3</code><br/>
+                <code>5e-12</code><br/>
+                <code>2e-5</code>
+              </td>
+              <td class="nowrap">
+                <code>gmin=1e-12</code><br/>
+                <code>cshunt=1.5e-16</code><br/>
+                <span class="muted-cell">rshunt: off</span>
+              </td>
+              <td class="nowrap">
+                <code>itl4=150</code><br/>
+                <code>bypass=0</code><br/>
+                <code>27&deg;C</code>
+              </td>
+              <td>
+                GF180D typical + 7T stdcells (<code>BSIM4v5/4v6</code>, MIM)<br/>
+                <span class="pill pill-solver">KLU</span> <span class="pill pill-solver">Sparse</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="nowrap"><a class="inline-link" href="workloads.html#ti12_full_300ns"><code>ti12_full_300ns</code></a></td>
+              <td><span class="pill pill-core">Probe</span></td>
+              <td class="nowrap">
+                <code>tran 50p 300n uic</code><br/>
+                <span class="muted-cell"><code>tmax=50p</code> (implicit) &middot; <code>uic</code></span>
+              </td>
+              <td class="nowrap"><code>gear</code> / <code>2</code> <span class="muted-cell">(def)</span></td>
+              <td class="nowrap">
+                <code>2e-3</code><br/>
+                <code>1e-11</code><br/>
+                <code>2e-5</code>
+              </td>
+              <td class="nowrap">
+                <code>gmin=1e-12</code><br/>
+                <code>cshunt=1.5e-16</code><br/>
+                <code>rshunt=1e12</code>
+              </td>
+              <td class="nowrap">
+                <code>itl4=150</code><br/>
+                <code>bypass=0</code><br/>
+                <code>27&deg;C</code>
+              </td>
+              <td>
+                GF180D typical + 7T stdcells (<code>BSIM4v5/4v6</code>, MIM)<br/>
+                <span class="pill pill-solver">KLU</span> <span class="pill pill-solver">Sparse</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="nowrap"><a class="inline-link" href="workloads.html#pll_ring_150m_4us"><code>pll_ring_150m_4us</code></a></td>
+              <td><span class="pill pill-core">Probe</span></td>
+              <td class="nowrap">
+                <code>tran 150p 4.0u uic</code><br/>
+                <span class="muted-cell"><code>tmax=150p</code> (implicit) &middot; <code>uic</code></span>
+              </td>
+              <td class="nowrap"><code>gear</code> / <code>2</code> <span class="muted-cell">(def)</span></td>
+              <td class="nowrap">
+                <code>2e-3</code><br/>
+                <code>1e-11</code><br/>
+                <code>2e-5</code>
+              </td>
+              <td class="nowrap">
+                <code>1e-12</code> <span class="muted-cell">(def)</span><br/>
+                <span class="muted-cell">cshunt: off</span><br/>
+                <span class="muted-cell">rshunt: off</span>
+              </td>
+              <td class="nowrap">
+                <code>itl4=100</code><br/>
+                <code>bypass=0</code><br/>
+                <code>27&deg;C</code>
+              </td>
+              <td>
+                GF180D typical + 7T stdcells (<code>BSIM4v5/4v6</code>)<br/>
+                <span class="pill pill-solver">KLU</span> <span class="pill pill-solver">Sparse</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="nowrap"><a class="inline-link" href="workloads.html#sdm16_120cyc"><code>sdm16_120cyc</code></a></td>
+              <td><span class="pill pill-core">Probe</span></td>
+              <td class="nowrap">
+                <code>tran 15.625n 37.5u</code><br/>
+                <span class="muted-cell"><code>tmax=15.625n</code> (implicit) &middot; no <code>uic</code></span>
+              </td>
+              <td class="nowrap"><code>gear</code> / <code>2</code> <span class="muted-cell">(explicit)</span></td>
+              <td class="nowrap">
+                <code>2.5e-3</code><br/>
+                <code>1e-11</code><br/>
+                <code>1e-5</code>
+              </td>
+              <td class="nowrap">
+                <code>1e-12</code> <span class="muted-cell">(def)</span><br/>
+                <span class="muted-cell">cshunt: off</span><br/>
+                <span class="muted-cell">rshunt: off</span>
+              </td>
+              <td class="nowrap">
+                <code>itl4=100</code><br/>
+                <code>bypass=0</code><br/>
+                <code>27&deg;C</code>
+              </td>
+              <td>
+                GF180D typical + 7T stdcells (<code>BSIM4v5/4v6</code>, MIM)<br/>
+                <span class="pill pill-solver">KLU</span> <span class="pill pill-solver">Sparse</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="nowrap"><a class="inline-link" href="workloads.html#riscv_picorv32_120ns"><code>riscv_picorv32_120ns</code></a></td>
+              <td><span class="pill pill-opt">Scaling</span></td>
+              <td class="nowrap">
+                <code>tran 200p 120n uic</code><br/>
+                <span class="muted-cell"><code>tmax=200p</code> (implicit) &middot; <code>uic</code></span><br/>
+                <span class="muted-cell">5.0 V &middot; 25 MHz (3 cyc)</span>
+              </td>
+              <td class="nowrap"><code>gear</code> / <code>2</code> <span class="muted-cell">(def)</span></td>
+              <td class="nowrap">
+                <code>2e-3</code><br/>
+                <code>1e-11</code><br/>
+                <code>2e-5</code>
+              </td>
+              <td class="nowrap">
+                <code>gmin=1e-12</code><br/>
+                <code>cshunt=1e-16</code><br/>
+                <span class="muted-cell">rshunt: off</span>
+              </td>
+              <td class="nowrap">
+                <code>itl4=100</code><br/>
+                <code>bypass=0</code><br/>
+                <code>27&deg;C</code>
+              </td>
+              <td>
+                GF180D typical + <code>diode_typical</code> + 7T 5V stdcells (58,320 <code>BSIM4v5/4v6</code> + 16 <code>L3</code> diodes, 51,670 eqns, 2.68M NNZ)<br/>
+                <span class="pill pill-solver">KLU-only</span> <span class="muted-cell">(Sparse 1.3 stalls at step 1)</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:10px 0 0;font-size:12px;color:var(--muted);">
+        <code>*</code> For <code>opa1k_pvt16</code>, <code>itl4</code> is left at the ngspice default (<code>10</code>), which <code>NIiter()</code> clamps to <code>100</code>.
+        All 7 decks leave <code>trtol=7.0</code>, <code>chgtol=1e-14</code>, <code>newtrunc=0</code>, <code>gminsteps=1</code>, <code>srcsteps=1</code>, and <code>pivrel=1e-3</code> / <code>pivtol=1e-13</code> at defaults.
+      </p>
+    </section>
+
+    <!-- Section 4: Cross-Simulator Translation Table -->
+    <section class="card section-card" id="cross-sim">
+      <div class="card-header">
+        <h2>4. Cross-Simulator Translation Table</h2>
+        <span class="hint">Equivalent settings for fair wall-time &amp; accuracy comparisons across SPICE engines</span>
+      </div>
+      <p class="section-lead">
+        Commercial and research simulators use different default accuracy presets, LTE estimators, step limits, and device-bypass heuristics.
+        To benchmark <strong>Spectre</strong>, <strong>HSPICE</strong>, <strong>Xyce</strong>, or <strong>LTspice</strong> fairly against <code>ngspice-bench</code>, lock all rows below explicitly rather than relying on simulator defaults.
+      </p>
+      <div class="table-wrap">
+        <table class="dense-table">
+          <thead>
+            <tr>
+              <th>Setting Concept</th>
+              <th><code>ngspice-47</code></th>
+              <th>Cadence Spectre</th>
+              <th>Synopsys HSPICE</th>
+              <th>Sandia Xyce</th>
+              <th>LTspice</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Relative Tolerance</strong></td>
+              <td><code>reltol</code><br/><span class="muted-cell">def: <code>1e-3</code></span></td>
+              <td><code>options reltol=...</code><br/><span class="muted-cell">def: <code>1e-3</code> (<code>moderate</code>)</span></td>
+              <td><code>.option reltol=...</code><br/><span class="muted-cell">(sets <code>relv</code>, <code>reli</code>, <code>relq</code>; lock <code>runlvl=0</code>)</span></td>
+              <td><code>.options timeint reltol=...</code><br/><code>.options nonlin-tran reltol=...</code></td>
+              <td><code>.options reltol=...</code><br/><span class="muted-cell">def: <code>1e-3</code></span></td>
+            </tr>
+            <tr>
+              <td><strong>Voltage Abs Tol</strong></td>
+              <td><code>vntol</code><br/><span class="muted-cell">def: <code>1e-6</code> V</span></td>
+              <td><code>vabstol=...</code><br/><span class="muted-cell">def: <code>1e-6</code> V</span></td>
+              <td><code>vntol=...</code> / <code>absv=...</code><br/><span class="muted-cell">def: <code>5e-5</code> V (looser!)</span></td>
+              <td><code>.options nonlin-tran abstol=...</code><br/><code>.options timeint abstol=...</code></td>
+              <td><code>vntol=...</code><br/><span class="muted-cell">def: <code>1e-6</code> V</span></td>
+            </tr>
+            <tr>
+              <td><strong>Current Abs Tol</strong></td>
+              <td><code>abstol</code><br/><span class="muted-cell">def: <code>1e-12</code> A</span></td>
+              <td><code>iabstol=...</code><br/><span class="muted-cell">def: <code>1e-12</code> A</span></td>
+              <td><code>abstol=...</code> / <code>absi=...</code><br/><span class="muted-cell">def: <code>1e-9</code> A (1000&times; looser!)</span></td>
+              <td><code>.options nonlin-tran abstol=...</code><br/><span class="muted-cell">(unified residual norm)</span></td>
+              <td><code>abstol=...</code><br/><span class="muted-cell">def: <code>1e-12</code> A</span></td>
+            </tr>
+            <tr>
+              <td><strong>LTE Ratio / Charge Tol</strong></td>
+              <td><code>trtol=7.0</code>, <code>chgtol=1e-14</code><br/><span class="muted-cell">(charge-based LTE)</span></td>
+              <td><code>lteratio=3.5</code> (<code>moderate</code>) or <code>10</code> (<code>conservative</code>)<br/><span class="muted-cell">(voltage-based LTE; no <code>chgtol</code>)</span></td>
+              <td><code>trtol=7</code>, <code>chgtol=1e-14</code> / <code>absq</code><br/><span class="muted-cell">(use <code>lvltim=1</code> for classic LTE)</span></td>
+              <td><code>.options timeint erroption=0</code><br/><span class="muted-cell">(DAE solution-norm LTE)</span></td>
+              <td><code>trtol=7</code>, <code>chgtol=1e-14</code><br/><span class="muted-cell">(<strong>LTspice default is <code>trtol=1</code></strong>!)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Integration Method &amp; Order</strong></td>
+              <td><code>method=gear maxord=2</code><br/><span class="muted-cell">(default: <code>trap</code>, <code>xmu=0.5</code>)</span></td>
+              <td><code>tran method=gear2only</code><br/><span class="muted-cell">(note: Spectre <code>trap</code> mixes Gear-2 &amp; Trap)</span></td>
+              <td><code>.option method=gear maxord=2</code><br/><span class="muted-cell">(def: <code>trap</code>)</span></td>
+              <td><code>.options timeint method=gear maxord=2</code><br/><span class="muted-cell">(def: <code>trap</code>, order 2)</span></td>
+              <td><code>.options method=gear</code><br/><span class="muted-cell">(def: <code>modified trap</code>!)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Max Timestep Limit</strong></td>
+              <td>Implicit <code>CKTmaxStep = min(tstep, tstop/50)</code> unless <code>nostepsizelimit</code></td>
+              <td><strong>Must pass</strong> <code>maxstep=&lt;tstep&gt;</code><br/><span class="muted-cell">(Spectre def is <code>tstop/50</code>, not <code>tstep</code>!)</span></td>
+              <td><strong>Must pass</strong> <code>delmax=&lt;tstep&gt;</code> (or 4th arg on <code>.tran</code>)</td>
+              <td><strong>Must pass</strong> <code>.options timeint delmax=&lt;tstep&gt;</code></td>
+              <td><strong>Must pass</strong> 4th arg <code>.tran 0 tstop 0 &lt;tstep&gt;</code></td>
+            </tr>
+            <tr>
+              <td><strong><code>gmin</code> &amp; Shunt Conductance</strong></td>
+              <td><code>gmin=1e-12</code> (devices)<br/><code>rshunt=1e12</code> (every node&ndash;GND)</td>
+              <td><code>gmin=1e-12</code>, <code>gmindc=1e-12</code><br/><code>gmin</code> across nodes via <code>rforce</code>/shunt subckt</td>
+              <td><code>gmin=1e-12</code>, <code>gmindc=1e-12</code><br/><code>gshunt=1e-12</code> (every node&ndash;GND)</td>
+              <td><code>.options device gmin=1e-12</code><br/><code>gshunt</code> / node conductance</td>
+              <td><code>gmin=1e-12</code><br/><code>gshunt=1e-12</code></td>
+            </tr>
+            <tr>
+              <td><strong>Node-to-GND Shunt Cap</strong></td>
+              <td><code>cshunt=1.5e-16</code> / <code>1e-16</code></td>
+              <td><code>tran cmin=1.5e-16</code><br/><span class="muted-cell">(adds <code>cmin</code> from every node to GND)</span></td>
+              <td><code>.option cshunt=1.5e-16</code></td>
+              <td><code>.options device cshunt=1.5e-16</code></td>
+              <td><code>.options cshunt=1.5e-16</code></td>
+            </tr>
+            <tr>
+              <td><strong>Device Bypass &amp; FastSPICE</strong></td>
+              <td><code>bypass=0</code> (SPICE3 bypass off)<br/><span class="muted-cell">No accuracy-degrading FastSPICE</span></td>
+              <td>Standard Spectre (<strong>not</strong> Spectre FX/XPS); <code>errpreset=moderate</code></td>
+              <td><code>.option bypass=0 runlvl=6</code> (or <code>accurate=1</code>; def <code>runlvl=3</code> enables bypass!)</td>
+              <td><code>.options device bypass=0</code><br/><span class="muted-cell">(full SPICE Newton)</span></td>
+              <td>No SPICE3 bypass (disable waveform compression: <code>.options plotwinsize=0</code>)</td>
+            </tr>
+            <tr>
+              <td><strong>Skip DC OP (<code>uic</code>)</strong></td>
+              <td><code>tran ... uic</code></td>
+              <td><code>tran ... skipdc=yes</code> (or <code>readic</code>)</td>
+              <td><code>.tran ... uic</code></td>
+              <td><code>.tran ... uic</code></td>
+              <td><code>.tran ... uic</code></td>
+            </tr>
+            <tr>
+              <td><strong>BSIM4 Compact Model</strong></td>
+              <td><code>level=54</code>, PDK pins <code>version=4.5</code> / <code>4.6</code>, <code>binunit=1</code></td>
+              <td><code>bsim4</code> with <code>version=4.5</code> / <code>4.6</code> (or HSPICE compatibility parser)</td>
+              <td><code>level=54 version=4.5</code> / <code>4.6</code></td>
+              <td><code>level=54 version=4.5</code> / <code>4.6</code> (BSIM4.6.1/4.8)</td>
+              <td><code>level=54</code> (check <code>version=4.5/4.6</code> parameter compatibility &amp; <code>m</code>/<code>nf</code>)</td>
+            </tr>
+            <tr>
+              <td><strong>Linear Solver</strong></td>
+              <td><code>option klu</code> (SuiteSparse KLU) vs default <code>Sparse 1.3</code></td>
+              <td><code>klu</code> / Spectre direct sparse LU (avoid iterative FastSPICE)</td>
+              <td>Direct sparse LU / KLU (<code>.option klu</code> / <code>mtrx</code>)</td>
+              <td><code>.options linsol type=klu</code> (default serial) or <code>superlu</code></td>
+              <td>Built-in custom sparse LU</td>
+            </tr>
+            <tr>
+              <td><strong>Threading &amp; Precision</strong></td>
+              <td><code>num_threads=1</code>, <code>OMP_NUM_THREADS=1</code>, strict IEEE-754 (no <code>-ffast-math</code>)</td>
+              <td><code>+threads=1</code> (disable APS multithreading &amp; <code>+mt</code>)</td>
+              <td><code>-mt 1</code>, <code>.option accurate=1</code></td>
+              <td>Serial build (<code>mpirun -np 1</code>), IEEE-754 double</td>
+              <td><code>.options maxthreads=1</code>, <code>numdgt=15</code>, <code>plotwinsize=0</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 5: Subtle Porting Pitfalls -->
+    <section class="card section-card" id="porting-pitfalls">
+      <div class="card-header">
+        <h2>5. Six Critical Porting Pitfalls for Fair Cross-Simulator Benchmarks</h2>
+        <span class="hint">Common silent mismatches that skew wall-time comparisons by 2&times;&ndash;10&times;</span>
+      </div>
+      <div class="callout-grid">
+        <div class="callout-box warn">
+          <h3>1. Implicit <code>maxstep = tstep</code> Clamping</h3>
+          <p>
+            In <code>ngspice</code> (<code>traninit.c:30</code>), writing <code>tran 150p 6.6u</code> without a 4th argument silently caps <code>CKTmaxStep = 150 ps</code> (unless <code>set nostepsizelimit</code> is set).
+            Spectre, Xyce, and LTspice default to <code>tstop/50</code> or unconstrained steps. Always pass explicit <code>maxstep</code> / <code>delmax</code> = <code>tstep</code> (or run both simulators unconstrained) before comparing wall time.
+          </p>
+        </div>
+        <div class="callout-box warn">
+          <h3>2. Charge LTE (<code>trtol=7</code>) vs Voltage LTE (<code>lteratio</code>)</h3>
+          <p>
+            <code>ngspice</code> controls truncation error on element <strong>charge</strong> with <code>trtol=7.0</code> and <code>chgtol=1e-14</code> (which can over-step or under-step on sub-fF post-PEX parasitics).
+            Spectre controls LTE directly on <strong>node voltages</strong> with <code>lteratio=3.5</code> (<code>moderate</code>), while LTspice defaults to <code>trtol=1</code> (far tighter than SPICE3's <code>7</code>). Report accepted/rejected timepoints alongside wall time.
+          </p>
+        </div>
+        <div class="callout-box">
+          <h3>3. Gear-2 Damping vs Trap / Modified-Trap Ringing</h3>
+          <p>
+            All 7 <code>ngspice-bench</code> decks run <strong>Gear-2</strong> (<code>method=gear</code>) to suppress 2-step trapezoidal ringing on switched-cap/digital edges.
+            Spectre's default <code>trap</code> blends Trap and Gear-2, and LTspice's default <code>modified trap</code> applies post-filtering; use <code>gear2only</code> (Spectre) and <code>method=gear</code> (HSPICE/Xyce/LTspice) for identical numerical damping — especially on <code>pll_ring_150m_4us</code> where integrator damping shifts VCO lock frequency.
+          </p>
+        </div>
+        <div class="callout-box">
+          <h3>4. <code>gmin</code> Placement vs <code>rshunt</code> / <code>gshunt</code></h3>
+          <p>
+            <code>gmin=1e-12</code> is inserted across nonlinear junctions and transistor channels, whereas <code>rshunt=1e12</code> (<code>ti12_full_300ns</code>, <code>opa1k_pvt16</code>) adds a <code>1 T&Omega;</code> resistor from <strong>every analog node to ground</strong> to regularize floating post-PEX nodes.
+            Similarly, <code>cshunt</code> maps to Spectre's <code>cmin</code> (node-to-ground cap), not a device junction parameter.
+          </p>
+        </div>
+        <div class="callout-box warn">
+          <h3>5. Legacy <code>bypass=0</code> vs <code>RUNLVL</code> / FastSPICE</h3>
+          <p>
+            Stock <code>ngspice-47</code> runs with legacy SPICE3 <code>bypass=0</code> and full exact MNA Newton solves.
+            HSPICE's default <code>RUNLVL=3</code> and Spectre APS/XPS enable aggressive bypass, looser <code>abstol=1e-9</code>/<code>vntol=5e-5</code>, and circuit partitioning.
+            Verify every ported run against the exact golden waveforms (SAR codes, PLL lock code, SDM PDM bits, RISC-V cycles) and report whether any approximate FastSPICE mode was enabled.
+          </p>
+        </div>
+        <div class="callout-box">
+          <h3>6. Hidden <code>itl4 &ge; 100</code> Floor &amp; LTspice Waveform Compression</h3>
+          <p>
+            <code>ngspice</code> silently raises any <code>itl4 &lt; 100</code> to <code>100</code> (<code>niiter.c:47</code>), so a deck omitting <code>itl4</code> (like <code>opa1k_pvt16</code>) still gets 100 Newton iterations per step.
+            When exporting waveforms from LTspice for <code>compare_raw.py</code> verification, always set <code>.options plotwinsize=0 numdgt=15</code> so lossy 1st-order compression does not corrupt RMS metrics.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Verification & Reproducibility Rules -->
+    <section class="card section-card" id="verification-rules">
+      <div class="card-header">
+        <h2>6. Verification, Pinning &amp; Reproducibility Policy</h2>
+        <span class="hint">Enforced automatically by <code>scripts/run_bench.py</code> and <code>scripts/compare_raw.py</code></span>
+      </div>
+      <div class="info-grid" style="margin-top:0;margin-bottom:16px;">
+        <div>
+          <h3>Single-Core Pinning &amp; Core-Class Isolation</h3>
+          <p>
+            Every leaderboard entry runs strictly single-threaded (<code>num_threads=1</code>, <code>OMP_NUM_THREADS=1</code>, <code>OMP_PROC_BIND=true</code>) pinned to one logical CPU:
+            <code>taskset -c &lt;cpu&gt;</code> on Linux; <code>taskpolicy -c</code> (with zero-memory register spinners for 3-tier intermediate clusters) on macOS Apple Silicon.
+            Hybrid CPUs (Intel P/E/LP-E, ARM big.LITTLE, Apple P/E) report each core class independently.
+          </p>
+        </div>
+        <div>
+          <h3>Strict IEEE-754 Compliance (No <code>-ffast-math</code>)</h3>
+          <p>
+            Builds compiled with <code>-ffast-math</code>, <code>-Ofast</code>, or unsafe reciprocal/transcendental approximations are <strong>disqualified</strong>.
+            Strict IEEE-754 double precision preserves NaN/Inf guards inside <code>fetlim</code>/<code>pnjlim</code>, prevents KLU pivot drift, and guarantees deterministic comparator and digital-state switching across CPUs.
+            Permitted optimization flags: <code>-O3 -fno-math-errno -fno-trapping-math -fno-semantic-interposition -flto</code>.
+          </p>
+        </div>
+        <div>
+          <h3>Golden Reference Policy</h3>
+          <p>
+            Every run writes a binary IEEE-754 double <code>.raw</code> file verified against unmodified stock <code>ngspice-47</code> baselines in <code>golden/</code>.
+            For Probe and Hero decks, the leaderboard reference speedup is normalized to stock <code>ngspice-47</code> <strong>Sparse 1c</strong> on Ryzen 9 7940HX; for the 51,670-equation <code>riscv_picorv32_120ns</code> scaling deck, the reference is stock <code>ngspice-47</code> <strong>KLU 1c</strong>.
+          </p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="dense-table">
+          <thead>
+            <tr>
+              <th>Workload Class</th>
+              <th>Coverage &amp; Finiteness</th>
+              <th>Analog Waveform RMS Tolerance</th>
+              <th>Digital / Functional Pass Criteria (<code>compare_raw.py</code>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="nowrap"><code>sar12_probe_2cyc</code><br/><code>sar12_hero_16cyc</code></td>
+              <td><code>t_end_rel_diff &lt; 1e-6</code>, all finite</td>
+              <td>Post-reset (<code>t &ge; 5 ns</code>) worst relative RMS <code>&lt; 0.05</code> across all 21 signals</td>
+              <td><strong>Bit-exact</strong> 15-bit redundant SAR bit patterns on <code>2/2</code> (probe) and <code>16/16</code> (hero) cycles + <code>v(eoc)</code> rising-edge skew <code>&lt; 500 ps</code>.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>ti12_full_300ns</code></td>
+              <td><code>t_end_rel_diff &lt; 1e-6</code>, all finite</td>
+              <td>Worst relative RMS <code>&le; 1e-3</code> (<code>--tol-rms</code>) across all 19 saved signals</td>
+              <td>Full-waveform parity against golden 3-ch TI SAR + PLL startup trajectory.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>pll_ring_150m_4us</code></td>
+              <td><code>t_end_rel_diff &lt; 1e-6</code>, all finite</td>
+              <td><code>v(vc)</code> relative RMS <code>&le; 0.02</code>, final locked <code>|&Delta;v(vc)| &lt; 10 mV</code></td>
+              <td><strong>Exact</strong> 6-bit SAR AFC lock code (<code>code_final</code>), AFC completion time diff <code>&lt; 20 ns</code>, locked <code>f_out</code> relative error <code>&lt; 0.2%</code>.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>sdm16_120cyc</code></td>
+              <td><code>t_end_rel_diff &lt; 1e-6</code>, all finite</td>
+              <td>Non-switching analog nodes worst relative RMS <code>&le; 0.01</code></td>
+              <td><strong>Bit-exact</strong> 115 post-reset PDM bits (<code>t &ge; 5 cyc</code>), PDM rising-edge skew <code>&lt; 500 ps</code>, and ideal-DAC 25-tap Sinc3 reconstructed sinewave correlation <code>&ge; 0.99</code>.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>opa1k_pvt16</code></td>
+              <td>Exact <code>16,000 / 16,000</code> tasks, all finite</td>
+              <td>Worst relative RMS <code>&le; 1e-3</code> across all 7 summary vectors (<code>vout_dc</code>, <code>idd_dc</code>, <code>ac_dc</code>, <code>ac_pk</code>, <code>tr_v0</code>, <code>tr_v1</code>, <code>tr_pk</code>)</td>
+              <td>Covers DC operating point, 9-decade AC sweep, and 10 mV transient step across 1,000 post-PEX op-amp topologies &times; 16 PVT corners.</td>
+            </tr>
+            <tr>
+              <td class="nowrap"><code>riscv_picorv32_120ns</code></td>
+              <td><code>t_end_rel_diff &lt; 1e-6</code>, all finite</td>
+              <td>Worst voltage RMS <code>&le; 0.05 V</code> (1% of 5.0 V rail) across all 34 saved signals (<code>t &ge; 1 ns</code>, excluding UIC impulse)</td>
+              <td><strong>Cycle-exact</strong> match vs <code>iverilog</code> RTL across all 3 cycles (<code>30, 70, 110 ns</code>): synchronous reset release, <code>mem_valid</code>, <code>mem_instr</code>, <code>mem_addr_lo[7:0]</code> fetch at <code>0x00</code>, and <code>trap=0</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>ngspice-bench &middot; Cross-Simulator Settings &amp; Verification Reference</span>
+      <span>
+        <a href="index.html">Leaderboard</a> &middot;
+        <a href="workloads.html">Workloads</a> &middot;
+        <a href="data/leaderboard.json">Raw JSON</a>
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      var b = document.getElementById('theme');
+      if (!b) return;
+      b.addEventListener('click', function(){
+        var r = document.documentElement;
+        var d = r.dataset.theme ? r.dataset.theme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        r.dataset.theme = d ? 'light' : 'dark';
+        try { localStorage.setItem('ngspice-bench-theme', r.dataset.theme); } catch(e) {}
+      });
+    })();
+  </script>
+</body>
+</html>

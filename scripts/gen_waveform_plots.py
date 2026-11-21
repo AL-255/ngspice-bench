@@ -21,6 +21,7 @@ OUT_DIR = REPO_ROOT / "docs" / "img"
 sys.path.insert(0, str(SCRIPT_DIR))
 from compare_raw import (  # noqa: E402
     decode_pll_metrics,
+    decode_riscv_cycles,
     decode_sar12_codes,
     decode_sar12_weighted,
     decode_sdm_bits,
@@ -651,6 +652,58 @@ def main() -> None:
     def want(name: str) -> bool:
         return (not only) or (only in name.lower())
 
+    if only == "riscv":
+        rv_raw = GOLDEN_DIR / "riscv_picorv32_120ns_baseline.raw.gz"
+        if rv_raw.exists():
+            d = parse_raw(rv_raw)
+            t = d["time"]
+            cycs = decode_riscv_cycles(d)
+            si_t, si_i = _mask_window(t, -d["i(vvdd)"] * 1e3, 2e-9)
+            avg_i = float(np.trapezoid(si_i, si_t) / max(float(si_t[-1] - si_t[0]), 1e-12)) if len(si_t) > 1 else 0.0
+            render_svg(
+                title="riscv_picorv32_120ns — Post-APR GF180 32-bit RISC-V CPU (PicoRV32, 58,320 MOSFETs)",
+                subtitle=f"0 to 120 ns (3 cycles @ 25 MHz, 5.0 V) · {len(t):,} pts · {len(cycs)}/3 cycles verified · avg IDD={avg_i:.2f} mA ({5.0*avg_i:.1f} mW)",
+                t_scale=1e9,
+                t_unit="ns",
+                t_max_raw=float(t[-1]),
+                panels=[
+                    {
+                        "title": "System Clock (25 MHz) & Synchronous Reset Release (V)",
+                        "ylim": (-0.3, 5.5),
+                        "traces": [
+                            {"t": t, "y": d["v(clk)"], "label": "v(clk)", "color": COLORS["blue"], "width": 1.4},
+                            {"t": t, "y": d["v(resetn)"], "label": "v(resetn)", "color": COLORS["green"], "width": 1.6},
+                        ],
+                    },
+                    {
+                        "title": "RISC-V Instruction Fetch Handshake & Trap Status (V, Fetch 0x00: ADDI x1,x0,0x5A)",
+                        "ylim": (-0.3, 5.5),
+                        "traces": [
+                            {"t": t, "y": d["v(mem_valid)"], "label": "v(mem_valid)", "color": COLORS["orange"], "width": 1.6},
+                            {"t": t, "y": d["v(mem_instr)"], "label": "v(mem_instr)", "color": COLORS["purple"], "width": 1.4},
+                            {"t": t, "y": d["v(trap)"], "label": "v(trap)", "color": COLORS["red"], "width": 1.2, "dash": "5 3"},
+                        ],
+                    },
+                    {
+                        "title": "Memory Address Bus mem_addr_lo[3:0] & GPIO Write Strobe (V)",
+                        "ylim": (-0.3, 5.5),
+                        "traces": [
+                            {"t": t, "y": d["v(mem_addr_lo_2_)"], "label": "v(addr[2])", "color": COLORS["cyan"], "width": 1.4},
+                            {"t": t, "y": d["v(mem_addr_lo_3_)"], "label": "v(addr[3])", "color": COLORS["blue"], "width": 1.2},
+                            {"t": t, "y": d["v(gpio_we)"], "label": "v(gpio_we)", "color": COLORS["brown"], "width": 1.2},
+                        ],
+                    },
+                    {
+                        "title": "Core Supply Current -i(Vvdd) Post-Startup Transient (mA, 5.0 V Rail)",
+                        "traces": [
+                            {"t": si_t, "y": si_i, "label": "-i(Vvdd) [mA]", "color": COLORS["red"], "width": 1.25},
+                        ],
+                    },
+                ],
+                out_path=OUT_DIR / "riscv_picorv32_120ns.svg",
+            )
+        return
+
     if only == "opa1k":
         opa_bode_npz = GOLDEN_DIR / "opa1k_bode_step_1k.npz"
         opa_manifest = REPO_ROOT / "circuits" / "opa1000" / "manifest.json"
@@ -1013,6 +1066,58 @@ def main() -> None:
                 },
             ],
             out_path=OUT_DIR / "opa1k_pvt16.svg",
+        )
+
+
+    # 7. riscv_picorv32_120ns (51,670-eqn post-APR GF180 32-bit RISC-V processor)
+    rv_raw = GOLDEN_DIR / "riscv_picorv32_120ns_baseline.raw.gz"
+    if want("riscv") and rv_raw.exists():
+        d = parse_raw(rv_raw)
+        t = d["time"]
+        cycs = decode_riscv_cycles(d)
+        si_t, si_i = _mask_window(t, -d["i(vvdd)"] * 1e3, 2e-9)
+        avg_i = float(np.trapezoid(si_i, si_t) / max(float(si_t[-1] - si_t[0]), 1e-12)) if len(si_t) > 1 else 0.0
+        render_svg(
+            title="riscv_picorv32_120ns — Post-APR GF180 32-bit RISC-V CPU (PicoRV32, 58,320 MOSFETs)",
+            subtitle=f"0 to 120 ns (3 cycles @ 25 MHz, 5.0 V) · {len(t):,} pts · {len(cycs)}/3 cycles verified · avg IDD={avg_i:.2f} mA ({5.0*avg_i:.1f} mW)",
+            t_scale=1e9,
+            t_unit="ns",
+            t_max_raw=float(t[-1]),
+            panels=[
+                {
+                    "title": "System Clock (25 MHz) & Synchronous Reset Release (V)",
+                    "ylim": (-0.3, 5.5),
+                    "traces": [
+                        {"t": t, "y": d["v(clk)"], "label": "v(clk)", "color": COLORS["blue"], "width": 1.4},
+                        {"t": t, "y": d["v(resetn)"], "label": "v(resetn)", "color": COLORS["green"], "width": 1.6},
+                    ],
+                },
+                {
+                    "title": "RISC-V Instruction Fetch Handshake & Trap Status (V, Fetch 0x00: ADDI x1,x0,0x5A)",
+                    "ylim": (-0.3, 5.5),
+                    "traces": [
+                        {"t": t, "y": d["v(mem_valid)"], "label": "v(mem_valid)", "color": COLORS["orange"], "width": 1.6},
+                        {"t": t, "y": d["v(mem_instr)"], "label": "v(mem_instr)", "color": COLORS["purple"], "width": 1.4},
+                        {"t": t, "y": d["v(trap)"], "label": "v(trap)", "color": COLORS["red"], "width": 1.2, "dash": "5 3"},
+                    ],
+                },
+                {
+                    "title": "Memory Address Bus mem_addr_lo[3:0] & GPIO Write Strobe (V)",
+                    "ylim": (-0.3, 5.5),
+                    "traces": [
+                        {"t": t, "y": d["v(mem_addr_lo_2_)"], "label": "v(addr[2])", "color": COLORS["cyan"], "width": 1.4},
+                        {"t": t, "y": d["v(mem_addr_lo_3_)"], "label": "v(addr[3])", "color": COLORS["blue"], "width": 1.2},
+                        {"t": t, "y": d["v(gpio_we)"], "label": "v(gpio_we)", "color": COLORS["brown"], "width": 1.2},
+                    ],
+                },
+                {
+                    "title": "Core Supply Current -i(Vvdd) Post-Startup Transient (mA, 5.0 V Rail)",
+                    "traces": [
+                        {"t": si_t, "y": si_i, "label": "-i(Vvdd) [mA]", "color": COLORS["red"], "width": 1.25},
+                    ],
+                },
+            ],
+            out_path=OUT_DIR / "riscv_picorv32_120ns.svg",
         )
 
 

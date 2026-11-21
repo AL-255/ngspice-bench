@@ -21,6 +21,7 @@
         <nav class="header-links" aria-label="Primary navigation">
           <a class="btn-link" href="index.html" aria-current="page">Leaderboard</a>
           <a class="btn-link btn-secondary" href="workloads.html">Workloads</a>
+          <a class="btn-link btn-secondary" href="settings.html">Settings</a>
           <a class="btn-link btn-secondary" href="https://github.com/AL-255/ngspice-bench" target="_blank" rel="noopener">GitHub Repo</a>
           <a class="btn-link btn-secondary" href="https://github.com/AL-255/ngspice-bench#quick-start--run-guide" target="_blank" rel="noopener">Run &amp; Submit</a>
           <button class="iconbtn" id="theme" title="Toggle light / dark theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg></button>
@@ -65,6 +66,7 @@
           <option value="ti12_full_300ns">Probe: 3-ch TI 12b SAR + PLL (300 ns, 7,221 eqns)</option>
           <option value="pll_ring_150m_4us">Probe: 150 MHz Wide-Tuning Ring PLL Startup (4 µs, 1,015 eqns)</option>
           <option value="sdm16_120cyc">Probe: 16-bit Switched-Cap SDM (120 Cycles, 5,345 eqns)</option>
+          <option value="riscv_picorv32_120ns">Scaling (KLU): Post-APR GF180 32-bit RISC-V PicoRV32 (120 ns, 51,670 eqns)</option>
         </select>
       </div>
       <div class="control-group">
@@ -150,7 +152,7 @@
           <h3>Open-Source Circuits &amp; PDK</h3>
           <p>
             Models use the official open-source GlobalFoundries 180nm MCU PDK (<code>wafer-space/gf180mcu</code> git submodule).
-            Circuits are real post-PEX mixed-signal netlists from <code>aicdb</code> (12b SAR ADC, 3-ch TI 12b SAR+PLL, 150 MHz ring PLL, 16b switched-cap SDM, and a 1,000-design × 16-PVT op-amp bundle).
+            Circuits are real post-PEX mixed-signal netlists from <code>aicdb</code> (12b SAR ADC, 3-ch TI 12b SAR+PLL, 150 MHz ring PLL, 16b switched-cap SDM, and a 1,000-design × 16-PVT op-amp bundle) plus a post-APR 32-bit <code>YosysHQ/picorv32</code> RISC-V processor (51,670 eqns, 58,320 MOSFETs) for VLSI KLU scaling.
           </p>
         </div>
       </div>
@@ -164,6 +166,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=7"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>

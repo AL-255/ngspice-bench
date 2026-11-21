@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-20T20:35:03Z",
+  "generated_utc": "2026-11-21T02:03:12Z",
   "mode": "single_core",
   "reference_baseline": {
     "description": "Stock ngspice-47 (Sparse 1-core) on AMD Ryzen 9 7940HX (Zen 4)",
@@ -9,7 +9,8 @@
       "sar12_probe_2cyc": 81.46,
       "ti12_full_300ns": 464.51,
       "pll_ring_150m_4us": 232.14,
-      "sdm16_120cyc": 144.92
+      "sdm16_120cyc": 144.92,
+      "riscv_picorv32_120ns": 936.62
     }
   },
   "probe_decks": [
@@ -20,10 +21,14 @@
     "sar12_probe_2cyc"
   ],
   "hero_deck": "sar12_hero_16cyc",
+  "scaling_decks": [
+    "riscv_picorv32_120ns"
+  ],
   "deck_meta": {
     "opa1k_pvt16": {
       "title": "16,000 Scattered Op-Amp PVT Tasks (1k \u00d7 16)",
       "category": "probe",
+      "reference_label": "Stock Sparse 1c",
       "eqns": 120,
       "iters_approx": 16000,
       "pdk": "GF180MCU D",
@@ -33,6 +38,7 @@
     "sar12_hero_16cyc": {
       "title": "12-bit SAR ADC (16 Cycles, Hero)",
       "category": "hero",
+      "reference_label": "Stock Sparse 1c",
       "eqns": 1559,
       "iters_approx": 202322,
       "pdk": "GF180MCU D",
@@ -42,6 +48,7 @@
     "sar12_probe_2cyc": {
       "title": "12-bit SAR ADC (2 Cycles)",
       "category": "probe",
+      "reference_label": "Stock Sparse 1c",
       "eqns": 1559,
       "iters_approx": 25457,
       "pdk": "GF180MCU D",
@@ -51,6 +58,7 @@
     "ti12_full_300ns": {
       "title": "Full-Chip 3-ch TI 12b SAR + PLL (300 ns)",
       "category": "probe",
+      "reference_label": "Stock Sparse 1c",
       "eqns": 7221,
       "iters_approx": 17619,
       "pdk": "GF180MCU D",
@@ -60,6 +68,7 @@
     "pll_ring_150m_4us": {
       "title": "150 MHz Wide-Tuning Ring PLL Startup (4 \u00b5s)",
       "category": "probe",
+      "reference_label": "Stock Sparse 1c",
       "eqns": 1015,
       "iters_approx": 153944,
       "pdk": "GF180MCU D",
@@ -69,11 +78,26 @@
     "sdm16_120cyc": {
       "title": "16-bit Switched-Cap SDM (120 Cycles)",
       "category": "probe",
+      "reference_label": "Stock Sparse 1c",
       "eqns": 5345,
       "iters_approx": 66348,
       "pdk": "GF180MCU D",
       "source": "aicdb/sdm-gen-gemini4",
       "description": "Post-PEX 16-bit switched-capacitor CIFB sigma-delta modulator with non-overlapping clocks and SC-CMFB over 37.5 \u00b5s (120 clock cycles, \u00b10.80 V diff in-band sine, bit-exact on all 115 PDM bits, ideal-DAC + Sinc3 recovery r=0.9993)."
+    },
+    "riscv_picorv32_120ns": {
+      "title": "Post-APR GF180 32-bit RISC-V CPU (PicoRV32, 120 ns)",
+      "category": "scaling",
+      "klu_only": true,
+      "reference_label": "Stock KLU 1c",
+      "eqns": 51670,
+      "nnz": 2675926,
+      "mosfets": 58320,
+      "stdcells": 5896,
+      "iters_approx": 4141,
+      "pdk": "GF180MCU D",
+      "source": "YosysHQ/picorv32 (LibreLane v3.0.2 + OpenRCX)",
+      "description": "Post-APR 32-bit RV32I RISC-V SoC (PicoRV32 + 8-word RV32I ROM + MMIO GPIO) synthesized & routed on GF180MCU 7T5V0 (5,896 active stdcells, 58,320 BSIM4 MOSFETs, 16 antenna diodes, 21,955 R + 73,964 C = 52.3 pF OpenRCX parasitics; 51,670 MNA eqns / 2.68M KLU NNZ) over 120 ns (3 cycles @ 25 MHz, 5.0 V). Bit-exact across reset, release, and instruction fetch 0x00 (ADDI x1,x0,0x5A)."
     }
   },
   "entry_count": 10,
@@ -171,7 +195,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 16000
+          "opa_tasks_count": 16000,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sdm16_120cyc": {
           "wall_s": 19.94,
@@ -196,7 +222,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 21.5666,
@@ -221,7 +249,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": 153.25,
           "pll_vc_final_v": 0.9529,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 14.9725,
@@ -246,7 +276,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 6.8931,
@@ -271,7 +303,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 53.7358,
@@ -296,7 +330,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         }
       }
     },
@@ -393,7 +429,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 16000
+          "opa_tasks_count": 16000,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sdm16_120cyc": {
           "wall_s": 23.0478,
@@ -418,7 +456,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 21.3683,
@@ -443,7 +483,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": 153.251,
           "pll_vc_final_v": 0.9526,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 33.3025,
@@ -468,7 +510,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 7.4828,
@@ -493,7 +537,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 55.5586,
@@ -518,7 +564,36 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
+        },
+        "riscv_picorv32_120ns": {
+          "wall_s": 394.5836,
+          "speedup_vs_ref": 2.374,
+          "tran_s": 388.9,
+          "load_s": 47.0311,
+          "factor_s": 323.219,
+          "solve_s": 15.3242,
+          "trunc_s": 2.21151,
+          "tot_iter": 4216,
+          "eqns": 51670,
+          "pass": true,
+          "rel_rms": 0.0015920852168863596,
+          "exact_grid": false,
+          "sar_codes_match": true,
+          "sar_codes_count": 0,
+          "eoc_max_dt_ps": 0.0,
+          "sdm_bits_match": true,
+          "sdm_bits_count": 0,
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": true,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": true,
+          "riscv_cycles_count": 3
         }
       }
     },
@@ -615,7 +690,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 16000
+          "opa_tasks_count": 16000,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sdm16_120cyc": {
           "wall_s": 27.2441,
@@ -640,7 +717,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 27.8987,
@@ -665,7 +744,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": 153.25,
           "pll_vc_final_v": 0.9529,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 19.7352,
@@ -690,7 +771,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 8.8607,
@@ -715,7 +798,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 67.9413,
@@ -740,7 +825,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         }
       }
     },
@@ -837,7 +924,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 16000
+          "opa_tasks_count": 16000,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sdm16_120cyc": {
           "wall_s": 32.0657,
@@ -862,7 +951,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 24.0383,
@@ -887,7 +978,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": 153.252,
           "pll_vc_final_v": 0.9527,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 56.7674,
@@ -912,7 +1005,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 11.2032,
@@ -937,7 +1032,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 77.84,
@@ -962,7 +1059,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         }
       }
     },
@@ -1059,7 +1158,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 16000
+          "opa_tasks_count": 16000,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sdm16_120cyc": {
           "wall_s": 107.7563,
@@ -1084,7 +1185,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 127.8247,
@@ -1109,7 +1212,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": 153.25,
           "pll_vc_final_v": 0.9529,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 119.4246,
@@ -1134,7 +1239,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 36.8412,
@@ -1159,7 +1266,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 303.3121,
@@ -1184,7 +1293,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         }
       }
     },
@@ -1281,7 +1392,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 16000
+          "opa_tasks_count": 16000,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sdm16_120cyc": {
           "wall_s": 86.7352,
@@ -1306,7 +1419,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 228.4925,
@@ -1331,7 +1446,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": 153.252,
           "pll_vc_final_v": 0.9525,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 446.8181,
@@ -1356,7 +1473,9 @@
           "pll_code_match": null,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 67.9544,
@@ -1381,7 +1500,36 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
+        },
+        "riscv_picorv32_120ns": {
+          "wall_s": 936.6159,
+          "speedup_vs_ref": 1.0,
+          "tran_s": 927.037,
+          "load_s": 308.638,
+          "factor_s": 563.816,
+          "solve_s": 16.0308,
+          "trunc_s": 17.9784,
+          "tot_iter": 4141,
+          "eqns": 51670,
+          "pass": true,
+          "rel_rms": 0.0,
+          "exact_grid": true,
+          "sar_codes_match": true,
+          "sar_codes_count": 0,
+          "eoc_max_dt_ps": 0.0,
+          "sdm_bits_match": true,
+          "sdm_bits_count": 0,
+          "sdm_pdm_max_dt_ps": 0.0,
+          "pll_code": null,
+          "pll_code_match": true,
+          "pll_fout_mhz": null,
+          "pll_vc_final_v": null,
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": true,
+          "riscv_cycles_count": 3
         }
       }
     },
@@ -1478,7 +1626,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 16000
+          "opa_tasks_count": 16000,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sdm16_120cyc": {
           "wall_s": 144.9154,
@@ -1503,7 +1653,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 232.1391,
@@ -1528,7 +1680,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": 153.249,
           "pll_vc_final_v": 0.9528,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 464.5063,
@@ -1553,7 +1707,9 @@
           "pll_code_match": null,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 81.4602,
@@ -1578,7 +1734,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 626.7474,
@@ -1603,7 +1761,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         }
       }
     },
@@ -1700,7 +1860,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 16000
+          "opa_tasks_count": 16000,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sdm16_120cyc": {
           "wall_s": 26.1831,
@@ -1725,7 +1887,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 23.5392,
@@ -1750,7 +1914,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": 153.248,
           "pll_vc_final_v": 0.953,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 27.4721,
@@ -1775,7 +1941,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 8.6208,
@@ -1800,7 +1968,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 68.8435,
@@ -1825,7 +1995,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         }
       }
     },
@@ -1922,7 +2094,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 16000
+          "opa_tasks_count": 16000,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sdm16_120cyc": {
           "wall_s": 46.6451,
@@ -1947,7 +2121,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 117.4664,
@@ -1972,7 +2148,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": 153.251,
           "pll_vc_final_v": 0.9531,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 171.9486,
@@ -1997,7 +2175,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 31.656,
@@ -2022,7 +2202,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 247.8362,
@@ -2047,7 +2229,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         }
       }
     },
@@ -2144,7 +2328,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 16000
+          "opa_tasks_count": 16000,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sdm16_120cyc": {
           "wall_s": 75.9763,
@@ -2169,7 +2355,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "pll_ring_150m_4us": {
           "wall_s": 120.1353,
@@ -2194,7 +2382,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": 153.253,
           "pll_vc_final_v": 0.9526,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "ti12_full_300ns": {
           "wall_s": 175.6146,
@@ -2219,7 +2409,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_probe_2cyc": {
           "wall_s": 39.4767,
@@ -2244,7 +2436,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         },
         "sar12_hero_16cyc": {
           "wall_s": 308.0979,
@@ -2269,7 +2463,9 @@
           "pll_code_match": true,
           "pll_fout_mhz": null,
           "pll_vc_final_v": null,
-          "opa_tasks_count": 0
+          "opa_tasks_count": 0,
+          "riscv_cycles_match": null,
+          "riscv_cycles_count": 0
         }
       }
     }

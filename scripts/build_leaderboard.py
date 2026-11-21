@@ -20,11 +20,13 @@ PROBE_DECKS = [
     "sar12_probe_2cyc",
 ]
 HERO_DECK = "sar12_hero_16cyc"
+SCALING_DECKS = ["riscv_picorv32_120ns"]
 
 DECK_META = {
     "opa1k_pvt16": {
         "title": "16,000 Scattered Op-Amp PVT Tasks (1k × 16)",
         "category": "probe",
+        "reference_label": "Stock Sparse 1c",
         "eqns": 120,
         "iters_approx": 16000,
         "pdk": "GF180MCU D",
@@ -34,6 +36,7 @@ DECK_META = {
     "sar12_hero_16cyc": {
         "title": "12-bit SAR ADC (16 Cycles, Hero)",
         "category": "hero",
+        "reference_label": "Stock Sparse 1c",
         "eqns": 1559,
         "iters_approx": 202322,
         "pdk": "GF180MCU D",
@@ -43,6 +46,7 @@ DECK_META = {
     "sar12_probe_2cyc": {
         "title": "12-bit SAR ADC (2 Cycles)",
         "category": "probe",
+        "reference_label": "Stock Sparse 1c",
         "eqns": 1559,
         "iters_approx": 25457,
         "pdk": "GF180MCU D",
@@ -52,6 +56,7 @@ DECK_META = {
     "ti12_full_300ns": {
         "title": "Full-Chip 3-ch TI 12b SAR + PLL (300 ns)",
         "category": "probe",
+        "reference_label": "Stock Sparse 1c",
         "eqns": 7221,
         "iters_approx": 17619,
         "pdk": "GF180MCU D",
@@ -61,6 +66,7 @@ DECK_META = {
     "pll_ring_150m_4us": {
         "title": "150 MHz Wide-Tuning Ring PLL Startup (4 µs)",
         "category": "probe",
+        "reference_label": "Stock Sparse 1c",
         "eqns": 1015,
         "iters_approx": 153944,
         "pdk": "GF180MCU D",
@@ -70,15 +76,30 @@ DECK_META = {
     "sdm16_120cyc": {
         "title": "16-bit Switched-Cap SDM (120 Cycles)",
         "category": "probe",
+        "reference_label": "Stock Sparse 1c",
         "eqns": 5345,
         "iters_approx": 66348,
         "pdk": "GF180MCU D",
         "source": "aicdb/sdm-gen-gemini4",
         "description": "Post-PEX 16-bit switched-capacitor CIFB sigma-delta modulator with non-overlapping clocks and SC-CMFB over 37.5 µs (120 clock cycles, ±0.80 V diff in-band sine, bit-exact on all 115 PDM bits, ideal-DAC + Sinc3 recovery r=0.9993).",
     },
+    "riscv_picorv32_120ns": {
+        "title": "Post-APR GF180 32-bit RISC-V CPU (PicoRV32, 120 ns)",
+        "category": "scaling",
+        "klu_only": True,
+        "reference_label": "Stock KLU 1c",
+        "eqns": 51670,
+        "nnz": 2675926,
+        "mosfets": 58320,
+        "stdcells": 5896,
+        "iters_approx": 4141,
+        "pdk": "GF180MCU D",
+        "source": "YosysHQ/picorv32 (LibreLane v3.0.2 + OpenRCX)",
+        "description": "Post-APR 32-bit RV32I RISC-V SoC (PicoRV32 + 8-word RV32I ROM + MMIO GPIO) synthesized & routed on GF180MCU 7T5V0 (5,896 active stdcells, 58,320 BSIM4 MOSFETs, 16 antenna diodes, 21,955 R + 73,964 C = 52.3 pF OpenRCX parasitics; 51,670 MNA eqns / 2.68M KLU NNZ) over 120 ns (3 cycles @ 25 MHz, 5.0 V). Bit-exact across reset, release, and instruction fetch 0x00 (ADDI x1,x0,0x5A).",
+    },
 }
 
-# Reference baseline (stock ngspice-47 Sparse 1-core pinned to cpu0 on AMD Ryzen 9 7940HX)
+# Reference baseline (stock ngspice-47 pinned to cpu0 on AMD Ryzen 9 7940HX; Sparse 1c for probe/hero, KLU 1c for VLSI scaling)
 REFERENCE_BASELINE_WALL_S = {
     "opa1k_pvt16": 626.47,
     "sar12_hero_16cyc": 626.75,
@@ -86,6 +107,7 @@ REFERENCE_BASELINE_WALL_S = {
     "ti12_full_300ns": 464.51,
     "pll_ring_150m_4us": 232.14,
     "sdm16_120cyc": 144.92,
+    "riscv_picorv32_120ns": 936.62,
 }
 
 
@@ -176,6 +198,8 @@ def build() -> None:
                     "pll_fout_mhz": ac.get("pll_fout_mhz"),
                     "pll_vc_final_v": ac.get("pll_vc_final_v"),
                     "opa_tasks_count": ac.get("opa_tasks_count", 0),
+                    "riscv_cycles_match": ac.get("riscv_cycles_match"),
+                    "riscv_cycles_count": ac.get("riscv_cycles_count", 0),
                 }
 
             entries.append({
@@ -218,6 +242,7 @@ def build() -> None:
                 },
                 "probe_decks": PROBE_DECKS,
                 "hero_deck": HERO_DECK,
+                "scaling_decks": SCALING_DECKS,
                 "deck_meta": DECK_META,
                 "entry_count": len(entries),
                 "entries": entries,

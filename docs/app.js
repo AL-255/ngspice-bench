@@ -64,6 +64,8 @@
       accText = `${d.sdm_bits_count}/${d.sdm_bits_count} PDM bits${d.sdm_bits_match ? "" : " MISMATCH"}`;
     } else if (d.opa_tasks_count > 0) {
       accText = `${d.opa_tasks_count.toLocaleString()} tasks · rms ${fmtSci(d.rel_rms)}`;
+    } else if (d.riscv_cycles_count > 0) {
+      accText = `${d.riscv_cycles_count}/${d.riscv_cycles_count} cyc${d.riscv_cycles_match ? "" : " MISMATCH"} · rms ${fmtSci(d.rel_rms)}`;
     } else if (d.exact_grid) {
       accText += " · exact";
     }
@@ -145,9 +147,11 @@
     } else {
       const m = DATA.deck_meta[workload] || {};
       const refS = DATA.reference_baseline.wall_s[workload];
+      const refLabel = m.reference_label || "Stock Sparse 1c";
+      const eqStr = m.eqns != null ? `${m.eqns.toLocaleString()} eqns` : "? eqns";
       el.innerHTML =
-        `<div><strong>${esc(m.title || workload)}</strong> — ${esc(m.description || "")} (<code>${m.eqns || "?"} eqns</code>, source: <code>${esc(m.source || "")}</code>)</div>` +
-        `<div>Reference Baseline (Stock Sparse 1c): <strong>${fmtSec(refS)}</strong></div>`;
+        `<div><strong>${esc(m.title || workload)}</strong> — ${esc(m.description || "")} (<code>${eqStr}</code>, source: <code>${esc(m.source || "")}</code>)</div>` +
+        `<div>Reference Baseline (${esc(refLabel)}): <strong>${fmtSec(refS)}</strong></div>`;
     }
   }
 
@@ -218,7 +222,7 @@
     const optApple = ff.NGSPICE_OPT_APPLE == null ? null : String(ff.NGSPICE_OPT_APPLE);
     const ffStr = `NGSPICE_OPT_GENERAL=${optGen}, NGSPICE_OPT_ZEN4=${optZen4}` + (optApple != null ? `, NGSPICE_OPT_APPLE=${optApple}` : "");
     const isa = (e.host.isa_features || []).join(", ") || "—";
-    const deckOrder = [DATA.hero_deck, ...DATA.probe_decks];
+    const deckOrder = [DATA.hero_deck, ...DATA.probe_decks, ...(DATA.scaling_decks || [])];
     const deckRows = deckOrder
       .filter((dk) => e.decks && e.decks[dk])
       .map((dk) => {
@@ -230,6 +234,8 @@
           acc = `AFC code ${d.pll_code} · ${d.pll_fout_mhz != null ? d.pll_fout_mhz.toFixed(2) + " MHz" : "—"} · VC ${d.pll_vc_final_v != null ? d.pll_vc_final_v.toFixed(3) + " V" : "—"}`;
         } else if (d.sdm_bits_count > 0) {
           acc = `${d.sdm_bits_count}/${d.sdm_bits_count} PDM bits (Δt ${d.sdm_pdm_max_dt_ps != null ? d.sdm_pdm_max_dt_ps.toFixed(1) + " ps" : "—"})`;
+        } else if (d.riscv_cycles_count > 0) {
+          acc = `${d.riscv_cycles_count}/${d.riscv_cycles_count} cyc (bit-exact) · rms ${fmtSci(d.rel_rms)}`;
         } else if (d.exact_grid) {
           acc += " (exact grid)";
         }

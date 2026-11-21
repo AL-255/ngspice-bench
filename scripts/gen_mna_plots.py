@@ -248,6 +248,7 @@ def write_mna_svg(
     vals: np.ndarray,
     dev_cnt: Counter,
     sparse_fill: int | None = None,
+    fill_label: str = "Sp fill",
 ) -> None:
     nnz = len(rows)
     density_pct = (100.0 * nnz / (n * n)) if n > 0 else 0.0
@@ -334,7 +335,7 @@ def write_mna_svg(
             f'<text x="{px0 + 258}" y="{py0 + psize + 24}" font-size="10" font-family="ui-monospace,Menlo,monospace" fill="{MUTED_COL}">{max_bin:,}/px</text>'
         )
 
-    fill_str = f" · {sparse_fill:,} Sp fill" if sparse_fill is not None else ""
+    fill_str = f" · {sparse_fill:,} {fill_label}" if sparse_fill is not None else ""
     sub1 = f"{n:,} × {n:,} MNA · {nnz:,} orig NNZ ({density_pct:.2f}%){fill_str}"
     sub2 = f"{total_devs:,} devs ({fmt_dev_breakdown(dev_cnt)})"
     if subtitle_extra:
@@ -367,30 +368,36 @@ def write_mna_svg(
 
 
 def main() -> None:
+    import sys
+    only = sys.argv[1].lower() if len(sys.argv) > 1 else ""
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     specs = [
-        ("sar12_probe_2cyc", "sar12_mna.svg", "MNA Matrix — sar12 (12b Redundant SAR ADC)", 12459),
-        ("ti12_full_300ns", "ti12_full_300ns_mna.svg", "MNA Matrix — ti12_full_300ns (3-ch TI SAR + PLL)", 30954),
-        ("pll_ring_150m_4us", "pll_ring_150m_4us_mna.svg", "MNA Matrix — pll_ring_150m_4us (150 MHz Ring PLL)", 2498),
-        ("sdm16_120cyc", "sdm16_120cyc_mna.svg", "MNA Matrix — sdm16_120cyc (16b SC-CIFB SDM)", 30530),
+        ("sar12_probe_2cyc", "sar12_mna.svg", "MNA Matrix — sar12 (12b Redundant SAR ADC)", 12459, "Sp fill"),
+        ("ti12_full_300ns", "ti12_full_300ns_mna.svg", "MNA Matrix — ti12_full_300ns (3-ch TI SAR + PLL)", 30954, "Sp fill"),
+        ("pll_ring_150m_4us", "pll_ring_150m_4us_mna.svg", "MNA Matrix — pll_ring_150m_4us (150 MHz Ring PLL)", 2498, "Sp fill"),
+        ("sdm16_120cyc", "sdm16_120cyc_mna.svg", "MNA Matrix — sdm16_120cyc (16b SC-CIFB SDM)", 30530, "Sp fill"),
+        ("riscv_picorv32_120ns", "riscv_picorv32_120ns_mna.svg", "MNA Matrix — riscv_picorv32_120ns (GF180 PicoRV32)", 2174667, "KLU fill"),
     ]
-    for deck, fname, title, sp_fill in specs:
+    for deck, fname, title, fill_cnt, flbl in specs:
+        if only and only not in deck.lower():
+            continue
         n, r, c, v, cnt = extract_deck_mna_and_devices(deck)
-        write_mna_svg(OUT_DIR / fname, title, "", n, r, c, v, cnt, sparse_fill=sp_fill)
+        write_mna_svg(OUT_DIR / fname, title, "", n, r, c, v, cnt, sparse_fill=fill_cnt, fill_label=flbl)
 
-    hdr, n_med, r_med, c_med, v_med, cnt_med, stats = extract_opa_mna_and_stats()
-    print("opa1k_pvt16 stats:", stats, "median header:", hdr, "median cnt:", dict(cnt_med))
-    write_mna_svg(
-        OUT_DIR / "opa1k_pvt16_mna.svg",
-        "MNA Matrix — opa1k_pvt16 (Median Op-Amp: p_0221)",
-        "Median op-amp",
-        n_med,
-        r_med,
-        c_med,
-        v_med,
-        cnt_med,
-        sparse_fill=None,
-    )
+    if not only or "opa1k" in only:
+        hdr, n_med, r_med, c_med, v_med, cnt_med, stats = extract_opa_mna_and_stats()
+        print("opa1k_pvt16 stats:", stats, "median header:", hdr, "median cnt:", dict(cnt_med))
+        write_mna_svg(
+            OUT_DIR / "opa1k_pvt16_mna.svg",
+            "MNA Matrix — opa1k_pvt16 (Median Op-Amp: p_0221)",
+            "Median op-amp",
+            n_med,
+            r_med,
+            c_med,
+            v_med,
+            cnt_med,
+            sparse_fill=None,
+        )
 
 
 if __name__ == "__main__":
