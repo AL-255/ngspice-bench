@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-21T07:48:03Z",
+  "generated_utc": "2026-11-21T07:53:45Z",
   "mode": "single_core",
   "reference_baseline": {
     "description": "Stock ngspice-47 (Sparse 1-core) on AMD Ryzen 9 7940HX (Zen 4)",
@@ -1663,7 +1663,7 @@
         "notes": "Commercial GF180MCU PDK (YI-141-SM064 Rev9, sw_stat_global=0, sw_stat_mismatch=0) + Cadence Spectre X 25.10 (+preset=ax -preset_override=reltol,vabstol,iabstol +mt=1, relref=sigglobal, lteratio=3.5, method=trap). Calibrated optimal ngspice-matched tolerance setting: 16/16 bit-exact SAR codes (67.5 ps EOC vs +preset=cx), exact PLL AFC code parity, SDM ideal-DAC r=0.99912, 3/3 bit-exact RISC-V cycles, 16,000/16,000 opa1k tasks PASS (rms 7.74e-4). Note: opa1k_pvt16 wall_s=1037.24 s includes 383.41 s FlexLM license checkout across 1,000 invocations (653.83 s ex-licensing)."
       },
       "commit": null,
-      "short_commit": "25.10.06.274",
+      "short_commit": "N/A",
       "commit_url": null,
       "git_branch": null,
       "probe_total_s": 1279.325,
@@ -2427,7 +2427,7 @@
         "notes": "Commercial GF180MCU PDK (YI-141-SM064 Rev9, sw_stat_global=0, sw_stat_mismatch=0) + Cadence Spectre X 25.10 (+preset=mx -preset_override=reltol,vabstol,iabstol +mt=1, relref=allglobal, lteratio=3.5, method=trap). Faster moderate preset (25-43% faster than ax): 16/16 bit-exact SAR codes (437-620 ps EOC), SDM ideal-DAC r=0.99963, 3/3 bit-exact RISC-V cycles (180.22 s, 5.20x vs Stock ngspice-47 KLU), 16,000/16,000 opa1k tasks PASS (rms 7.74e-4), but relref=allglobal shifts PLL SAR AFC lock code by 5 codes (35 vs 40 on ax, marked FAIL on pll_ring). Note: opa1k_pvt16 wall_s=1025.13 s includes 408.61 s FlexLM license checkout across 1,000 invocations (616.52 s ex-licensing)."
       },
       "commit": null,
-      "short_commit": "25.10.06.274",
+      "short_commit": "N/A",
       "commit_url": null,
       "git_branch": null,
       "probe_total_s": 1178.6904,

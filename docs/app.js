@@ -40,7 +40,7 @@
   }
 
   function renderCommitBadge(e, showBranch) {
-    const shortCommit = e.short_commit || "—";
+    const shortCommit = e.short_commit || "N/A";
     if (e.commit_url) {
       const tip = `View commit ${e.commit || shortCommit} on GitHub` + (e.git_branch ? ` (${e.git_branch})` : "");
       const branchHtml = showBranch && e.git_branch ? ` <span class="commit-branch">${esc(e.git_branch)}</span>` : "";
@@ -50,8 +50,10 @@
       const branchHtml = showBranch && e.git_branch ? ` <span class="commit-branch">${esc(e.git_branch)}</span>` : "";
       return `<code class="commit-code" title="${esc(`Commit ${e.commit}`)}">${esc(shortCommit)}</code>${branchHtml}`;
     }
-    const tip = (e.build && e.build.ngspice_version) || "Commercial / non-git release";
-    return `<code class="commit-code commit-nongit" title="${esc(tip)}">${esc(shortCommit)}</code>`;
+    const tip = (e.build && e.build.ngspice_version)
+      ? `Not a git build (${e.build.ngspice_version})`
+      : "Not applicable (non-git / commercial release)";
+    return `<code class="commit-code commit-nongit" title="${esc(tip)}">N/A</code>`;
   }
 
   function getMetric(entry, workload) {
@@ -233,7 +235,7 @@
         const line2 = isSpectre ? `${optFlags}${pdkTag}` : `${optFlags} · ${algo}${pdkTag}`;
         return `
           <div class="bar-row">
-            <div class="bar-label" title="${esc(e.host.cpu_model)} [${esc(e.core_class.label)}] — ${esc(e.build.name)} (${e.solver}${e.short_commit ? `, ${esc(e.short_commit)}` : ""})">
+            <div class="bar-label" title="${esc(e.host.cpu_model)} [${esc(e.core_class.label)}] — ${esc(e.build.name)} (${e.solver}${e.commit ? `, ${esc(e.short_commit || e.commit)}` : ""})">
               <div class="bar-label-main">${esc(cpuTier)}</div>
               <div class="bar-label-sub">${esc(line2)}</div>
             </div>
@@ -306,7 +308,7 @@
               <div class="kv-list">
                 <div class="kv-k">Build Name</div><div class="kv-v">${esc(e.build.name)}</div>
                 <div class="kv-k">Simulator Version</div><div class="kv-v">${esc(e.build.ngspice_version || "—")}</div>
-                <div class="kv-k">Commit / Release</div><div class="kv-v">${renderCommitBadge(e, true)}</div>
+                <div class="kv-k">Commit</div><div class="kv-v">${renderCommitBadge(e, true)}</div>
                 <div class="kv-k">Repo / Ref</div><div class="kv-v">${repoHtml}${refHtml}</div>
                 <div class="kv-k">Compiler</div><div class="kv-v">${esc(e.build.compiler || "—")}</div>
                 <div class="kv-k">Feature Flags</div><div class="kv-v">${esc(ffStr)}</div>
@@ -401,7 +403,7 @@
       else if (sortCol === "speedup") cmp = (b.m.speedup || 0) - (a.m.speedup || 0);
       else if (sortCol === "cpu") cmp = a.e.host.cpu_model.localeCompare(b.e.host.cpu_model);
       else if (sortCol === "build") cmp = a.e.build.name.localeCompare(b.e.build.name);
-      else if (sortCol === "commit") cmp = String(a.e.short_commit || "").localeCompare(String(b.e.short_commit || ""));
+      else if (sortCol === "commit") cmp = String(a.e.short_commit || "N/A").localeCompare(String(b.e.short_commit || "N/A"));
       else if (sortCol === "solver") cmp = a.e.solver.localeCompare(b.e.solver);
       return sortAsc ? cmp : -cmp;
     });

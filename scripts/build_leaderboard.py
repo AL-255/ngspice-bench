@@ -113,8 +113,6 @@ REFERENCE_BASELINE_WALL_S = {
 
 
 HEX_SHA_RE = re.compile(r"^[0-9a-fA-F]{7,40}$")
-SPECTRE_VER_RE = re.compile(r"\((\d+\.\d+\.\d+\.\d+)")
-GENERIC_VER_RE = re.compile(r"\b(\d+\.\d+(?:\.\d+)+)\b")
 GITHUB_REPO_RE = re.compile(r"^https?://github\.com/([^/\s]+)/([^/\s]+?)(?:\.git)?/?$")
 
 
@@ -162,18 +160,9 @@ def extract_commit_info(sub: Dict[str, Any]) -> Dict[str, Optional[str]]:
             "git_branch": branch_or_tag,
         }
 
-    version_str = str(build.get("ngspice_version") or "").strip()
-    m_ver = SPECTRE_VER_RE.search(version_str) or GENERIC_VER_RE.search(version_str)
-    if m_ver:
-        fallback = m_ver.group(1)
-    elif git_ref:
-        fallback = git_ref
-    else:
-        fallback = "—"
-
     return {
         "commit": None,
-        "short_commit": fallback,
+        "short_commit": "N/A",
         "commit_url": None,
         "git_branch": None,
     }
